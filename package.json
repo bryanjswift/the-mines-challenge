@@ -1,0 +1,29 @@
+{
+  "name": "the-mines-challenge",
+  "private": true,
+  "description": "Build a clone of the most significan Windows contribution to the world, Minesweeper™",
+  "repository": "https://github.com/bryanjswift/the-mines-challenge.git",
+  "bugs": {
+    "url": "https://github.com/bryanjswift/the-mines-challenge/issues"
+  },
+  "author": "Bryan Swift <bryan@bryanjswift.com>",
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "ui"
+    ]
+  },
+  "devDependencies": {
+    "husky": "4.2.3",
+    "prettier": "1.19.1",
+    "pretty-quick": "2.0.1",
+    "tslint": "6.0.0",
+    "tslint-config-prettier": "1.18.0",
+    "typescript": "3.8.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
+}
