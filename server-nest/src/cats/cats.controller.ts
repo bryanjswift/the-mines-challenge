@@ -5,7 +5,9 @@ import {
   Header,
   Param,
   Post,
+  UsePipes,
 } from '@nestjs/common';
+import { IoValidationPipe } from '../io-validation.pipe';
 import { CreateCatDto } from './cats.dto';
 import { Cat } from './cat.model';
 import { CatsService } from './cats.service';
@@ -15,6 +17,7 @@ export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
+  @UsePipes(new IoValidationPipe(CreateCatDto))
   create(@Body() data: CreateCatDto): Pick<Cat, 'id'> {
     return this.catsService.create(data);
   }
