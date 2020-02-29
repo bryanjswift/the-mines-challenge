@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { LoggerMiddleware } from '../logger.middleware';
 import { CatsController } from './cats.controller';
 import { CatsService } from './cats.service';
 
@@ -7,4 +8,8 @@ import { CatsService } from './cats.service';
   providers: [CatsService],
   exports: [CatsService],
 })
-export class CatsModule {}
+export class CatsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes(CatsController);
+  }
+}
