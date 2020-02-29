@@ -2,12 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ulid } from 'ulid';
 import { Cat } from './cat.model';
 
-const DEFAULT_CAT: Omit<Cat, 'id'> = {
-  name: 'Oscar',
-  dateOfBirth: new Date().toISOString(),
-  breed: 'Unknown',
-};
-
 @Injectable()
 export class CatsService {
   private readonly cats: Cat[] = [];
