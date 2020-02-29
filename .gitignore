@@ -3,6 +3,7 @@
 # generated assets
 .next/
 .now/
+dist/
 
 # dependencies
 node_modules/
