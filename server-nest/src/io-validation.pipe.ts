@@ -6,17 +6,22 @@ import { Type } from 'io-ts';
  * `guard`.
  * @param T representing the expected result.
  * @param guard specified with `io-ts` types.
- * @throws BadRequestException if given value can not be transformed to a `T`.
  */
 @Injectable()
 export class IoValidationPipe<T> implements PipeTransform {
-  constructor(private readonly guard: Type<T>) {}
+  constructor(private readonly decoder: Type<T>) {}
 
+  /**
+   * Attempts to create a `T` from the given `unknown` `value`.
+   * @param value to be decoded.
+   * @returns T instance decoded from the guard type associated with the pipe.
+   * @throws BadRequestException if given value can not be transformed to a `T`.
+   */
   transform(value: unknown): T {
-    if (this.guard.is(value)) {
+    if (this.decoder.is(value)) {
       return value;
     } else {
-      const result = this.guard.decode(value);
+      const result = this.decoder.decode(value);
       switch (result._tag) {
         case 'Left':
           // This is cribbed from the io-ts docs
