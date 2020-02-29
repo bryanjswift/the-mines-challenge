@@ -34,10 +34,20 @@ export class IoValidationPipe<T> implements PipeTransform {
                 .join('.')
             )
             .join(', ');
-          throw new BadRequestException(
-            `Missing required parameters. (${keys})`,
-            'invalid_params'
-          );
+          const invalidValues = result.left
+            .map(error => error.value)
+            .filter(value => !!value);
+          if (invalidValues.length > 0) {
+            throw new BadRequestException(
+              `Invalid parameters. (${keys})`,
+              'invalid_params'
+            );
+          } else {
+            throw new BadRequestException(
+              `Missing required parameters. (${keys})`,
+              'missing_params'
+            );
+          }
         case 'Right':
           return result.right;
       }
