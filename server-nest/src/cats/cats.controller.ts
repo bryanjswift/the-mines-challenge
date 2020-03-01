@@ -25,7 +25,7 @@ export class CatsController {
   @Get()
   @Header('Cache-Control', 'max-age=60')
   findAll(): Cat[] {
-    return this.catsService.findAll();
+    return this.catsService.list();
   }
 
   @Get(':id')

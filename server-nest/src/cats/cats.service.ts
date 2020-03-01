@@ -15,7 +15,7 @@ export class CatsService {
     return cat;
   }
 
-  findAll(): Cat[] {
+  list(): Cat[] {
     return this.cats;
   }
 
