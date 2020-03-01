@@ -4,6 +4,7 @@
 .next/
 .now/
 dist/
+server-nest/schema.gql
 
 # dependencies
 node_modules/
