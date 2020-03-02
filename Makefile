@@ -42,7 +42,12 @@ nest: $(NEST_OUT)
 
 ui: $(UI_NEXT_OUT)
 
-$(NEST_OUT): node_modules $(NEST_SRC)
+$(NEST)/.env: $(NEST)/.env.sample
+	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
+		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=") + (.Value)' \
+		> $@
+
+$(NEST_OUT): node_modules $(NEST)/.env $(NEST_SRC)
 	@# Remove files from `NEST_OUT` that don't correspond to source files
 	@rm -rf $(filter-out $(NEST_OUT), $(wildcard $(NEST_OUT_DIR)/*.* $(NEST_OUT_DIR)/*/*.*))
 	yarn workspace @mines/nest build
