@@ -29,7 +29,7 @@ UI_SRC := $(UI_TS_SRC) $(UI_TSX_SRC)
 NEST_SRC_OUT := $(NEST_SRC:.ts=.js) $(NEST_SRC:.ts=.js.map) $(NEST_SRC:.ts=.d.ts)
 UI_SRC_OUT := $(UI_TS_SRC:.ts=.js) $(UI_TS_SRC:.ts=.js.map) $(UI_TSX_SRC:.tsx=.js) $(UI_TSX_SRC:.tsx=.js.map)
 ## Replace src path with out path
-NEST_OUT := $(subst $(NEST_SRC_DIR), $(NEST_OUT_DIR), $(NEST_SRC_OUT)) $(NEST_OUT_DIR)/tsconfig.build.tsbuildinfo
+NEST_OUT := $(subst $(NEST_SRC_DIR), $(NEST_OUT_DIR), $(NEST_SRC_OUT))
 UI_OUT := $(subst $(UI_SRC_DIR), $(UI_OUT_DIR), $(UI_SRC_OUT))
 ## Use the build id as the only mapped result of a NextJS build
 UI_NEXT_OUT := $(UI_NEXT_OUT_DIR)/BUILD_ID
