@@ -3,9 +3,30 @@
 ## @mines/nest
 
 The `@mines/nest` package in [`server-nest`](./server-nest) defines a server
-using [NestJS][nestjs].
+using [NestJS][nestjs] to act as an API server. The API server has a naive
+authentication layer in
+[`LocalStrategy`](./server-nest/src/auth/local.strategy.ts). The `/auth/login`
+endpoint uses this strategy to provide a JWT.
 
 [nestjs]: https://docs.nestjs.com/
+
+The API server includes a GraphQL endpoint courtesy of the `@nestjs/graphql`
+package. The [NestJS GraphQL docs][nestjs-graphql] provide more detail on using
+the decorators which power the `@nestjs/graphql` setup.
+
+[nestjs-graphql]: https://docs.nestjs.com/graphql/quick-start
+
+### Environment Variables
+
+The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
+`/mines/dev/nest` path and place them into `server-nest/.env`. The
+`server-nest/.env.sample` file includes the names of environment variables the
+`@mines/nest` package expects.
+
+- _JWT_SECRET_ is used by `LocalStrategy` and `JwtModule` (via
+  `JwtConfigService`). It is the symmetric secret used to sign JWTs generated
+  and verified by the API.
+- _PORT_ is where the API will be served.
 
 ## @mines/ui
 
