@@ -4,6 +4,10 @@ import { AuthUser, User } from '../users/user.model';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './jwt.model';
 
+export interface TokenizedUser {
+  access_token: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -28,7 +32,7 @@ export class AuthService {
     }
   }
 
-  async login(user: AuthUser) {
+  async login(user: AuthUser): Promise<TokenizedUser> {
     const payload: JwtPayload = {
       username: user.username,
       sub: user.id,
