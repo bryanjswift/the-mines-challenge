@@ -49,3 +49,12 @@ Yarn workspaces. To build the web ui container locally execute:
 To run the locally built Docker image:
 
     docker run --name=mines-ui --detach --publish=8080:80 mines-ui:<version>
+
+## docker-compose
+
+The [`docker-compose.yml`](./docker-compose.yml) defines a
+[localstack][localstack] and [event store][eventstore] container. These were
+meant to be starting points for different types of databases.
+
+[localstack]: https://github.com/localstack/localstack
+[eventstore]: https://eventstore.com/
