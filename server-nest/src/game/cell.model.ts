@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 export interface CellLocations {
   topLeft?: Cell;
   top?: Cell;
@@ -16,12 +18,14 @@ export interface CellState {
 }
 
 export class Cell {
+  readonly id: string;
   readonly isFlagged: boolean;
   readonly isMine: boolean;
   readonly isOpen: boolean;
   readonly neighbors: CellLocations;
 
   constructor(neighbors: CellLocations, state?: CellState) {
+    this.id = uuid();
     this.isFlagged = state?.isFlagged || false;
     this.isMine = state?.isMine || false;
     this.isOpen = state?.isOpen || false;
