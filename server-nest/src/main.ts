@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 
 dotenv.config();
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   await app.listen(process.env.PORT);
   Logger.debug(`Started on port :${process.env.PORT}`);
