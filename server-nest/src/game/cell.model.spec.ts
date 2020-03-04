@@ -1,13 +1,12 @@
-import { Cell, CellLocations } from './cell.model';
+import { Cell } from './cell.model';
 
 describe(Cell, () => {
   describe('not a mine', () => {
     describe('no neighbors', () => {
-      const neighbors: CellLocations = {};
       let model: Cell;
 
       beforeAll(() => {
-        model = new Cell(neighbors);
+        model = new Cell();
       });
 
       it('is not a mine', () => {
@@ -23,14 +22,13 @@ describe(Cell, () => {
       });
     });
 
-    describe('topLeft neighbor', () => {
-      const neighbors: CellLocations = {
-        topLeft: new Cell({}, { isMine: true }),
-      };
+    describe('right neighbor', () => {
+      const neighbor = new Cell({ isMine: true });
       let model: Cell;
 
       beforeAll(() => {
-        model = new Cell(neighbors);
+        model = new Cell();
+        model.add('right', neighbor);
       });
 
       it('is not a mine', () => {

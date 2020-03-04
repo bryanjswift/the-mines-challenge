@@ -11,6 +11,29 @@ export interface CellLocations {
   left?: Cell;
 }
 
+type CellLocation = keyof CellLocations;
+
+function getOppositeLocation(location: CellLocation): CellLocation {
+  switch (location) {
+    case 'topLeft':
+      return 'bottomRight';
+    case 'top':
+      return 'bottom';
+    case 'topRight':
+      return 'bottomLeft';
+    case 'right':
+      return 'left';
+    case 'bottomRight':
+      return 'topLeft';
+    case 'bottom':
+      return 'top';
+    case 'bottomLeft':
+      return 'topRight';
+    case 'left':
+      return 'right';
+  }
+}
+
 export interface CellState {
   isFlagged?: boolean;
   isMine: boolean;
@@ -24,12 +47,12 @@ export class Cell {
   readonly isOpen: boolean;
   readonly neighbors: CellLocations;
 
-  constructor(neighbors: CellLocations, state?: CellState) {
+  constructor(state?: CellState) {
     this.id = uuid();
     this.isFlagged = state?.isFlagged || false;
     this.isMine = state?.isMine || false;
     this.isOpen = state?.isOpen || false;
-    this.neighbors = neighbors;
+    this.neighbors = {};
   }
 
   get isBorder(): boolean {
@@ -38,6 +61,21 @@ export class Cell {
 
   get mineCount(): number {
     return this.neighborCells.reduce((count, cell) => count + (cell.isMine ? 1 : 0), 0);
+  }
+
+  add(location: keyof CellLocations, cell: Cell): Cell {
+    this.setNeighbor(location, cell);
+    cell.setNeighbor(getOppositeLocation(location), this);
+    return this;
+  }
+
+  private setNeighbor(location: CellLocation, cell: Cell): Cell {
+    if (this.neighbors[location] !== undefined) {
+      throw new Error(`Neighbor(${location}) for ${this.id} already exists`);
+    } else {
+      this.neighbors[location] = cell;
+    }
+    return this;
   }
 
   private get neighborCells(): Cell[] {
