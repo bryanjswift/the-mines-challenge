@@ -44,7 +44,7 @@ ui: $(UI_NEXT_OUT)
 
 $(NEST)/.env: $(NEST)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
-		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=") + (.Value)' \
+		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
 
 $(NEST_OUT): node_modules $(NEST)/.env $(NEST_SRC)
@@ -54,7 +54,7 @@ $(NEST_OUT): node_modules $(NEST)/.env $(NEST_SRC)
 
 $(UI)/.env: $(UI)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/ui --recursive \
-		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=") + (.Value)' \
+		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
 
 $(UI_NEXT_OUT): node_modules $(UI)/.env $(UI_SRC)
