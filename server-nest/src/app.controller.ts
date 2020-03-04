@@ -2,6 +2,7 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { JwtPayload } from './auth/jwt.model';
 
 @Controller()
 export class AppController {
@@ -14,7 +15,9 @@ export class AppController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
-  getProfile(@Req() req: Request) {
-    return req.user;
+  getProfile(@Req() req: Request): JwtPayload {
+    // This is a safe cast because the JwtStrategy#validate method invoked by
+    // the `JwtAuthGuard` returns the `req.user` value.
+    return req.user as JwtPayload;
   }
 }
