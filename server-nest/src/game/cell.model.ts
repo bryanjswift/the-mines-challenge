@@ -11,7 +11,9 @@ export interface CellLocations {
   left?: Cell;
 }
 
-type CellLocation = keyof CellLocations;
+export type CellLocation = keyof CellLocations;
+
+export type CellId = string;
 
 function getOppositeLocation(location: CellLocation): CellLocation {
   switch (location) {
@@ -34,6 +36,27 @@ function getOppositeLocation(location: CellLocation): CellLocation {
   }
 }
 
+function getRelatedLocations(location: CellLocation): Array<{ location: CellLocation, neighbor: CellLocation }> {
+  switch (location) {
+    case 'topLeft':
+      return [{location: 'top', neighbor: 'left'}, {location: 'left', neighbor: 'top'}];
+    case 'top':
+      return [{location: 'topLeft', neighbor: 'right'}, {location: 'topRight', neighbor: 'left'}];
+    case 'topRight':
+      return [{location: 'top', neighbor: 'right'}, {location: 'right', neighbor: 'top'}];
+    case 'right':
+      return [{location: 'topRight', neighbor: 'bottom'}, {location: 'bottomRight', neighbor: 'top'}];
+    case 'bottomRight':
+      return [{location: 'bottom', neighbor: 'right'}, {location: 'right', neighbor: 'bottom'}];
+    case 'bottom':
+      return [{location: 'bottomLeft', neighbor: 'right'}, {location: 'bottomRight', neighbor: 'left'}];
+    case 'bottomLeft':
+      return [{location: 'bottom', neighbor: 'left'}, {location: 'left', neighbor: 'bottom'}];
+    case 'left':
+      return [{location: 'topLeft', neighbor: 'bottom'}, {location: 'bottomLeft', neighbor: 'top'}];
+  }
+}
+
 export interface CellState {
   isFlagged?: boolean;
   isMine: boolean;
@@ -41,10 +64,10 @@ export interface CellState {
 }
 
 export class Cell {
-  readonly id: string;
-  readonly isFlagged: boolean;
+  readonly id: CellId;
+  isFlagged: boolean;
   readonly isMine: boolean;
-  readonly isOpen: boolean;
+  isOpen: boolean;
   readonly neighbors: CellLocations;
 
   constructor(state?: CellState) {
@@ -64,16 +87,36 @@ export class Cell {
   }
 
   add(location: keyof CellLocations, cell: Cell): Cell {
+    // set my neighbor
     this.setNeighbor(location, cell);
+    // populate the neighbors
     cell.setNeighbor(getOppositeLocation(location), this);
+    /*
+    const relatedLocations = getRelatedLocations(location);
+    relatedLocations.forEach(props => {
+      const { location, neighbor } = props;
+      const neighborCell = this.neighbors[location];
+      if (neighborCell !== undefined) {
+        neighborCell.add(neighbor, cell);
+      }
+    });
+    */
     return this;
   }
 
+  getNeighbor(location: CellLocation): Cell {
+    return this.neighbors[location];
+  }
+
+  toString(): string {
+    return `Cell(${this.id})`;
+  }
+
   private setNeighbor(location: CellLocation, cell: Cell): Cell {
-    if (this.neighbors[location] !== undefined) {
-      throw new Error(`Neighbor(${location}) for ${this.id} already exists`);
-    } else {
+    if (this.neighbors[location] === undefined) {
       this.neighbors[location] = cell;
+    } else if (this.neighbors[location] !== cell) {
+      throw new Error(`Neighbor(${location}) for ${this.id} already exists`);
     }
     return this;
   }
