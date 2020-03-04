@@ -22,6 +22,8 @@ export class AuthService {
     // TODO: Authenticate securely
     const user = await this.usersService.findByUsername(username);
     if (user !== undefined && user.password === password) {
+      // Use destructuring to remove `password` from user.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     } else {
