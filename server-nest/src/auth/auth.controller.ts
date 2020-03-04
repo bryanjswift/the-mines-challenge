@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthUser } from '../users/user.model';
-import { AuthService } from './auth.service';
+import { AuthService, TokenizedUser } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller('/auth')
@@ -19,7 +19,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@Req() req: Request) {
+  async login(@Req() req: Request): Promise<TokenizedUser> {
     if (AuthUser.is(req.user)) {
       return this.authService.login(req.user);
     } else {
