@@ -1,5 +1,14 @@
 # Coding Challenge (Minesweeper)
 
+## @mines/express
+
+The `@mines/express` package in [`server-express`](./server-express) defines a
+server using [ExpressJS][expressjs] to act as an API server. The Express API
+server is not as well defined as the NestJS API server but it uses
+significantly fewer dependencies from the jump.
+
+[expressjs]: https://docs.nestjs.com/
+
 ## @mines/nest
 
 The `@mines/nest` package in [`server-nest`](./server-nest) defines a server

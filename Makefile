@@ -2,14 +2,17 @@
 AWS_PROFILE ?= default
 
 # Packages
+EXPRESS=./server-express
 NEST=./server-nest
 UI=./ui
 
 # Source directories
+EXPRESS_SRC_DIR=$(EXPRESS)/src
 NEST_SRC_DIR=$(NEST)/src
 UI_SRC_DIR=$(UI)/src
 
 # Output directories
+EXPRESS_OUT_DIR=$(EXPRESS)/dist
 NEST_OUT_DIR=$(NEST)/dist
 UI_OUT_DIR=$(UI)/dist
 UI_NEXT_OUT_DIR=$(UI)/src/.next
@@ -17,6 +20,8 @@ UI_NEXT_OUT_DIR=$(UI)/src/.next
 # Source files
 ## Find `package.json` files everywhere except `node_modules`
 PACKAGE_JSON := $(shell find . -maxdepth 2 -name 'package.json' -and -not -path './node_modules/*')
+## Find .ts files for nest server
+EXPRESS_SRC := $(shell find -E $(EXPRESS_SRC_DIR) -regex '.*\.ts' -not -name '*.d.ts' -not -name '*.spec.ts')
 ## Find .ts files for nest server
 NEST_SRC := $(shell find -E $(NEST_SRC_DIR) -regex '.*\.ts' -not -name '*.d.ts' -not -name '*.spec.ts')
 ## Find .ts and .tsx files separately
@@ -26,9 +31,11 @@ UI_SRC := $(UI_TS_SRC) $(UI_TSX_SRC)
 
 # Output files
 ## Replace file suffixes keeping src path
+EXPRESS_SRC_OUT := $(EXPRESS_SRC:.ts=.js) $(EXPRESS_SRC:.ts=.js.map) $(EXPRESS_SRC:.ts=.d.ts)
 NEST_SRC_OUT := $(NEST_SRC:.ts=.js) $(NEST_SRC:.ts=.js.map) $(NEST_SRC:.ts=.d.ts)
 UI_SRC_OUT := $(UI_TS_SRC:.ts=.js) $(UI_TS_SRC:.ts=.js.map) $(UI_TSX_SRC:.tsx=.js) $(UI_TSX_SRC:.tsx=.js.map)
 ## Replace src path with out path
+EXPRESS_OUT := $(subst $(EXPRESS_SRC_DIR), $(EXPRESS_OUT_DIR), $(EXPRESS_SRC_OUT))
 NEST_OUT := $(subst $(NEST_SRC_DIR), $(NEST_OUT_DIR), $(NEST_SRC_OUT))
 UI_OUT := $(subst $(UI_SRC_DIR), $(UI_OUT_DIR), $(UI_SRC_OUT))
 ## Use the build id as the only mapped result of a NextJS build
@@ -36,11 +43,23 @@ UI_NEXT_OUT := $(UI_NEXT_OUT_DIR)/BUILD_ID
 
 .PHONY: all clean nest ui
 
-all: nest ui
+all: express nest ui
+
+express: $(EXPRESS_OUT)
 
 nest: $(NEST_OUT)
 
 ui: $(UI_NEXT_OUT)
+
+$(EXPRESS)/.env: $(EXPRESS)/.env.sample
+	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/express --recursive \
+		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
+		> $@
+
+$(EXPRESS_OUT): node_modules $(EXPRESS)/.env $(EXPRESS_SRC)
+	@# Remove files from `EXPRESS_OUT` that don't correspond to source files
+	@rm -rf $(filter-out $(EXPRESS_OUT), $(wildcard $(EXPRESS_OUT_DIR)/*.* $(EXPRESS_OUT_DIR)/*/*.*))
+	yarn workspace @mines/express build
 
 $(NEST)/.env: $(NEST)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
@@ -66,6 +85,7 @@ node_modules: $(PACKAGE_JSON) yarn.lock
 
 clean:
 	rm -rf \
+		$(NEST_OUT_DIR) \
 		$(NEST_OUT_DIR) \
 		$(UI_NEXT_OUT_DIR)
 
