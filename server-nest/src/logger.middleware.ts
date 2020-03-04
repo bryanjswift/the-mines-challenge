@@ -13,7 +13,7 @@ export class LoggerMiddleware implements NestMiddleware {
    * @param next function called to pass control to the next middleware
    * function.
    */
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: Request, res: Response, next: NextFunction): void {
     const start = Date.now();
     next();
     Logger.debug(`Completed in ${Date.now() - start}ms`, req.path);
