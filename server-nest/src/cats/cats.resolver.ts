@@ -15,7 +15,7 @@ export class CatsResolver {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Query(returns => Cat, { nullable: true })
-  getCat(@Args('id') id: string) {
+  getCat(@Args('id') id: string): Cat {
     return this.catsService.findById(id);
   }
 }
