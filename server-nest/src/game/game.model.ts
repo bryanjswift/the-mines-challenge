@@ -22,6 +22,35 @@ function generateCells(cellCount: number): Cell[] {
   return cells;
 }
 
+function associateCells(props: Required<Props>): void {
+  const { cells, rows, columns } = props;
+  const cellCount = cells.length;
+  let row = -1;
+  for (let i = 0; i < cellCount; i++) {
+    const column = i % rows;
+    if (column === 0) {
+      row = row + 1;
+    }
+    const currentCell = cells[i];
+    const rightIndex = i + 1;
+    const topIndex = i - columns;
+    const topRightIndex = topIndex + 1;
+    const topLeftIndex = topIndex - 1;
+    if (rightIndex % columns > 0) {
+      currentCell.add('right', cells[rightIndex]);
+    }
+    if (row > 0) {
+      currentCell.add('top', cells[topIndex]);
+      if (topRightIndex % columns > 0) {
+        currentCell.add('topRight', cells[topRightIndex]);
+      }
+      if (column > 0) {
+        currentCell.add('topLeft', cells[topLeftIndex]);
+      }
+    }
+  }
+}
+
 export class Game {
   cells: Cell[];
   id: string;
@@ -36,6 +65,7 @@ export class Game {
     } else {
       this.cells = props.cells;
     }
+    associateCells({ rows, columns, cells: this.cells });
     this.id = uuid();
     this.moves = [];
   }
