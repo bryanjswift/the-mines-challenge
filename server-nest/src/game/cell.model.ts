@@ -75,7 +75,7 @@ export class Cell {
     );
   }
 
-  add(location: keyof CellLocations, cell: Cell): Cell {
+  add(location: CellLocation, cell: Cell): Cell {
     // set my neighbor
     this.setNeighbor(location, cell);
     // populate the neighbors
