@@ -53,14 +53,27 @@ describe('2x2', () => {
   const cell_0_1 = new Cell({ isMine: true });
   const cell_1_1 = new Cell({ isMine: true });
 
+  // | cell_0_0 | cell_0_1 |
+  // | cell_1_0 | cell_1_1 |
+
   beforeAll(() => {
+    // cell_0_0
     cell_0_0.add('right', cell_0_1);
     cell_0_0.add('bottomRight', cell_1_1);
     cell_0_0.add('bottom', cell_1_0);
+    // cell_0_1
+    cell_0_1.add('left', cell_0_0);
+    cell_0_1.add('bottomLeft', cell_1_0);
+    cell_0_1.add('bottom', cell_1_1);
+    // cell_1_0
+    cell_1_0.add('top', cell_0_0);
+    cell_1_0.add('topRight', cell_0_1);
+    cell_1_0.add('right', cell_1_1);
+    // cell_1_1
+    cell_1_1.add('top', cell_0_1);
+    cell_1_1.add('left', cell_1_0);
+    cell_1_1.add('topLeft', cell_0_0);
   });
-
-  // | cell_0_0 | cell_0_1 |
-  // | cell_1_0 | cell_1_1 |
 
   describe('cell_0_0', () => {
     it('counts three mines', () => {
@@ -97,4 +110,4 @@ describe('2x2', () => {
       expect(cell_1_0.getNeighbor('topRight')).toBe(cell_0_1);
     });
   });
-})
+});
