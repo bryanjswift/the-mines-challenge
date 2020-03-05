@@ -99,10 +99,6 @@ export class Cell {
     return this.neighbors[location];
   }
 
-  toString(): string {
-    return `Cell(${this.id})`;
-  }
-
   private setNeighbor(location: CellLocation, cell: Cell): Cell {
     if (this.neighbors[location] === undefined) {
       this.neighbors[location] = cell;
