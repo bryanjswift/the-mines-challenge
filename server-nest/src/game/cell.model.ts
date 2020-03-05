@@ -36,53 +36,6 @@ function getOppositeLocation(location: CellLocation): CellLocation {
   }
 }
 
-function getRelatedLocations(
-  location: CellLocation
-): Array<{ location: CellLocation; neighbor: CellLocation }> {
-  switch (location) {
-    case 'topLeft':
-      return [
-        { location: 'top', neighbor: 'left' },
-        { location: 'left', neighbor: 'top' },
-      ];
-    case 'top':
-      return [
-        { location: 'topLeft', neighbor: 'right' },
-        { location: 'topRight', neighbor: 'left' },
-      ];
-    case 'topRight':
-      return [
-        { location: 'top', neighbor: 'right' },
-        { location: 'right', neighbor: 'top' },
-      ];
-    case 'right':
-      return [
-        { location: 'topRight', neighbor: 'bottom' },
-        { location: 'bottomRight', neighbor: 'top' },
-      ];
-    case 'bottomRight':
-      return [
-        { location: 'bottom', neighbor: 'right' },
-        { location: 'right', neighbor: 'bottom' },
-      ];
-    case 'bottom':
-      return [
-        { location: 'bottomLeft', neighbor: 'right' },
-        { location: 'bottomRight', neighbor: 'left' },
-      ];
-    case 'bottomLeft':
-      return [
-        { location: 'bottom', neighbor: 'left' },
-        { location: 'left', neighbor: 'bottom' },
-      ];
-    case 'left':
-      return [
-        { location: 'topLeft', neighbor: 'bottom' },
-        { location: 'bottomLeft', neighbor: 'top' },
-      ];
-  }
-}
-
 export interface CellState {
   isFlagged?: boolean;
   isMine: boolean;
@@ -127,16 +80,6 @@ export class Cell {
     this.setNeighbor(location, cell);
     // populate the neighbors
     cell.setNeighbor(getOppositeLocation(location), this);
-    /*
-    const relatedLocations = getRelatedLocations(location);
-    relatedLocations.forEach(props => {
-      const { location, neighbor } = props;
-      const neighborCell = this.neighbors[location];
-      if (neighborCell !== undefined) {
-        neighborCell.add(neighbor, cell);
-      }
-    });
-    */
     return this;
   }
 
