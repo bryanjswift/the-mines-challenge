@@ -75,6 +75,18 @@ export class Cell {
     );
   }
 
+  get status(): string {
+    if (this.isFlagged) {
+      return 'F';
+    } else if (this.isOpen && this.isMine) {
+      return 'M';
+    } else if (this.isOpen) {
+      return `${this.mineCount}`;
+    } else {
+      return ' ';
+    }
+  }
+
   add(location: CellLocation, cell: Cell): Cell {
     // set my neighbor
     this.setNeighbor(location, cell);
