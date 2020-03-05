@@ -53,4 +53,8 @@ export class Game {
     // if all cells are mine or open game is won
     return this;
   }
+
+  get board(): string[] {
+    return this.cells.map(cell => cell.status);
+  }
 }
