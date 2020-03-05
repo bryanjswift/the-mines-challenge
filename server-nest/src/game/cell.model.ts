@@ -36,24 +36,50 @@ function getOppositeLocation(location: CellLocation): CellLocation {
   }
 }
 
-function getRelatedLocations(location: CellLocation): Array<{ location: CellLocation, neighbor: CellLocation }> {
+function getRelatedLocations(
+  location: CellLocation
+): Array<{ location: CellLocation; neighbor: CellLocation }> {
   switch (location) {
     case 'topLeft':
-      return [{location: 'top', neighbor: 'left'}, {location: 'left', neighbor: 'top'}];
+      return [
+        { location: 'top', neighbor: 'left' },
+        { location: 'left', neighbor: 'top' },
+      ];
     case 'top':
-      return [{location: 'topLeft', neighbor: 'right'}, {location: 'topRight', neighbor: 'left'}];
+      return [
+        { location: 'topLeft', neighbor: 'right' },
+        { location: 'topRight', neighbor: 'left' },
+      ];
     case 'topRight':
-      return [{location: 'top', neighbor: 'right'}, {location: 'right', neighbor: 'top'}];
+      return [
+        { location: 'top', neighbor: 'right' },
+        { location: 'right', neighbor: 'top' },
+      ];
     case 'right':
-      return [{location: 'topRight', neighbor: 'bottom'}, {location: 'bottomRight', neighbor: 'top'}];
+      return [
+        { location: 'topRight', neighbor: 'bottom' },
+        { location: 'bottomRight', neighbor: 'top' },
+      ];
     case 'bottomRight':
-      return [{location: 'bottom', neighbor: 'right'}, {location: 'right', neighbor: 'bottom'}];
+      return [
+        { location: 'bottom', neighbor: 'right' },
+        { location: 'right', neighbor: 'bottom' },
+      ];
     case 'bottom':
-      return [{location: 'bottomLeft', neighbor: 'right'}, {location: 'bottomRight', neighbor: 'left'}];
+      return [
+        { location: 'bottomLeft', neighbor: 'right' },
+        { location: 'bottomRight', neighbor: 'left' },
+      ];
     case 'bottomLeft':
-      return [{location: 'bottom', neighbor: 'left'}, {location: 'left', neighbor: 'bottom'}];
+      return [
+        { location: 'bottom', neighbor: 'left' },
+        { location: 'left', neighbor: 'bottom' },
+      ];
     case 'left':
-      return [{location: 'topLeft', neighbor: 'bottom'}, {location: 'bottomLeft', neighbor: 'top'}];
+      return [
+        { location: 'topLeft', neighbor: 'bottom' },
+        { location: 'bottomLeft', neighbor: 'top' },
+      ];
   }
 }
 
@@ -83,7 +109,10 @@ export class Cell {
   }
 
   get mineCount(): number {
-    return this.neighborCells.reduce((count, cell) => count + (cell.isMine ? 1 : 0), 0);
+    return this.neighborCells.reduce(
+      (count, cell) => count + (cell.isMine ? 1 : 0),
+      0
+    );
   }
 
   add(location: keyof CellLocations, cell: Cell): Cell {
