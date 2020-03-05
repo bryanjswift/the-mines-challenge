@@ -38,7 +38,7 @@ function getOppositeLocation(location: CellLocation): CellLocation {
 
 export interface CellState {
   isFlagged?: boolean;
-  isMine: boolean;
+  isMine?: boolean;
   isOpen?: boolean;
 }
 
