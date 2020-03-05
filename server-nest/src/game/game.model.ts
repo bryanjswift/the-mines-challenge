@@ -17,7 +17,7 @@ function generateCells(cellCount: number): Cell[] {
   const cells = new Array(cellCount);
   for (let i = 0; i < cellCount; i++) {
     const isMine = Math.random() > 0.5;
-    this.cells[i] = new Cell({ isMine });
+    cells[i] = new Cell({ isMine });
   }
   return cells;
 }
@@ -41,10 +41,7 @@ export class Game {
   }
 
   open(cellId: CellId): Game {
-    this.moves = [
-      cellId,
-      ...this.moves,
-    ];
+    this.moves = [cellId, ...this.moves];
     const openedCell = this.cells.find(cell => cell.id === cellId);
     if (openedCell === undefined) {
       throw new Error(`Cell with id ${cellId} does not exist`);

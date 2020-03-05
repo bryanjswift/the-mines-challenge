@@ -4,7 +4,7 @@ describe.only(Game, () => {
   describe('2x2', () => {
     let game: Game;
 
-    beforeEach(() => {
+    beforeAll(() => {
       game = new Game({ rows: 2, columns: 2 });
     });
 
