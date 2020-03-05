@@ -89,6 +89,12 @@ export interface CellState {
   isOpen?: boolean;
 }
 
+const DEFAULT_CELL_STATE: CellState = {
+  isFlagged: false,
+  isMine: false,
+  isOpen: false,
+};
+
 export class Cell {
   readonly id: CellId;
   isFlagged: boolean;
@@ -98,9 +104,10 @@ export class Cell {
 
   constructor(state?: CellState) {
     this.id = uuid();
-    this.isFlagged = state?.isFlagged || false;
-    this.isMine = state?.isMine || false;
-    this.isOpen = state?.isOpen || false;
+    const { isFlagged, isMine, isOpen } = { ...DEFAULT_CELL_STATE, ...state };
+    this.isFlagged = isFlagged;
+    this.isMine = isMine;
+    this.isOpen = isOpen;
     this.neighbors = {};
   }
 
