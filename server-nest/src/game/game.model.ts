@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import { Cell, CellId } from './cell.model';
 
-enum GameStatus {
+export enum GameStatus {
   OPEN,
-  WIN,
+  WON,
   LOST,
 }
 
@@ -55,7 +55,6 @@ export class Game {
   cells: Cell[];
   id: string;
   moves: CellId[];
-  gameStatus: GameStatus;
 
   constructor(props: Props) {
     const { rows, columns } = props;
@@ -77,14 +76,27 @@ export class Game {
       throw new Error(`Cell with id ${cellId} does not exist`);
     }
     openedCell.isOpen = true;
-    if (openedCell.isMine) {
-      this.gameStatus = GameStatus.LOST;
-    }
-    // if all cells are mine or open game is won
     return this;
   }
 
   get board(): string[] {
     return this.cells.map((cell) => cell.status);
+  }
+
+  get gameStatus(): GameStatus {
+    // if any open cells are a mine; game is lost
+    const hasLost = this.cells.some((cell) => cell.isOpen && cell.isMine);
+    // if all cells except mines are open; game is won
+    const hasWon = this.cells.every((cell) =>
+      cell.isOpen ? !cell.isMine : cell.isMine
+    );
+    // Get the correct result based on boolean reductions
+    if (hasLost) {
+      return GameStatus.LOST;
+    } else if (hasWon) {
+      return GameStatus.WON;
+    } else {
+      return GameStatus.OPEN;
+    }
   }
 }
