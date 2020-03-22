@@ -1,6 +1,40 @@
 import { Cell } from './cell.model';
 
 describe(Cell, () => {
+  describe('#add', () => {
+    let model: Cell;
+
+    beforeEach(() => {
+      model = new Cell();
+    });
+
+    it('returns itself when adding', () => {
+      const neighbor = new Cell();
+      expect(model.add('top', neighbor)).toBe(model);
+    });
+
+    it('adds the neighbor', () => {
+      expect(model.getNeighbor('top')).toBeUndefined();
+      const neighbor = new Cell();
+      model.add('top', neighbor);
+      expect(model.getNeighbor('top')).toBe(neighbor);
+    });
+
+    it('adds does nothing when adding same neighbor to same location', () => {
+      const neighbor = new Cell();
+      model.add('top', neighbor);
+      model.add('top', neighbor);
+      expect(model.getNeighbor('top')).toBe(neighbor);
+    });
+
+    it('throws when adding new neighbor to populated location', () => {
+      const neighbor = new Cell();
+      const viking = new Cell();
+      model.add('top', neighbor);
+      expect(() => model.add('top', viking)).toThrow();
+    });
+  });
+
   describe('not a mine', () => {
     const isMine = false;
 
