@@ -105,7 +105,10 @@ describe(Cell, () => {
 });
 
 // Generate a 2x2 game
-describe('2x2', () => {
+describe(`
+| ' ' | 'M' |
+| 'M' | 'M' |
+`, () => {
   const cell_0_0 = new Cell({ isMine: false });
   const cell_1_0 = new Cell({ isMine: true });
   const cell_0_1 = new Cell({ isMine: true });
