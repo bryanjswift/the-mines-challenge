@@ -2,7 +2,12 @@ import { Cell } from './cell.model';
 import { Game, GameStatus } from './game.model';
 
 describe.only(Game, () => {
-  describe('2x2', () => {
+  describe(`
+  +---+---+
+  | 3 | M |
+  | M | M |
+  +---+---+
+  `, () => {
     let game: Game;
 
     beforeAll(() => {
@@ -40,13 +45,16 @@ describe.only(Game, () => {
     });
   });
 
-  describe('3x3', () => {
+  describe(`
+  +---+---+---+
+  | 2 | M | M |
+  | M | 6 | 4 |
+  | M | M | M |
+  +---+---+---+
+  `, () => {
     let game: Game;
 
     beforeAll(() => {
-      // | 2 | M | M |
-      // | M | 6 | 4 |
-      // | M | M | M |
       game = new Game({
         rows: 3,
         columns: 3,
@@ -81,14 +89,17 @@ describe.only(Game, () => {
     });
   });
 
-  describe('4x4', () => {
+  describe(`
+  +---+---+---+---+
+  | 3 | M | M | M |
+  | M | M | 6 | 4 |
+  | M | 6 | M | M |
+  | M | 4 | M | M |
+  +---+---+---+---+
+  `, () => {
     let game: Game;
 
     beforeAll(() => {
-      // | 3 | M | M | M |
-      // | M | M | 6 | 4 |
-      // | M | 6 | M | M |
-      // | M | 4 | M | M |
       game = new Game({
         rows: 4,
         columns: 4,
