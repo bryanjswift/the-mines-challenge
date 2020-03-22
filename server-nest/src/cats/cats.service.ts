@@ -34,6 +34,6 @@ export class CatsService {
    * @returns the record if one is found or `undefined` if one is not.
    */
   findById(id: string): Cat {
-    return this.cats.find(cat => cat.id === id);
+    return this.cats.find((cat) => cat.id === id);
   }
 }

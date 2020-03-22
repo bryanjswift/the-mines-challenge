@@ -3,8 +3,8 @@ import { Errors, Type, ValidationError } from 'io-ts';
 
 function containsInvalidValues(errors: Errors): boolean {
   const invalidValues = errors
-    .map(error => error.value)
-    .filter(value => !!value);
+    .map((error) => error.value)
+    .filter((value) => !!value);
   return invalidValues.length > 0;
 }
 
@@ -13,8 +13,8 @@ function getErrorKey(error: ValidationError): string {
   // https://github.com/gcanti/io-ts/blob/master/README.md#error-reporters
   return error.context
     .map(({ key }) => key)
-    .filter(key => key.length > 0)
-    .join('.')
+    .filter((key) => key.length > 0)
+    .join('.');
 }
 
 function getErrorKeys(errors: Errors): string {

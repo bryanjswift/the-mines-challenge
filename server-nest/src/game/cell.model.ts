@@ -120,6 +120,6 @@ export class Cell {
       neighbors.bottomLeft,
       neighbors.left,
     ];
-    return result.filter(cell => cell !== undefined);
+    return result.filter((cell) => cell !== undefined);
   }
 }

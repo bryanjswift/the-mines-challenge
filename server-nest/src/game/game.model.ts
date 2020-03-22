@@ -72,7 +72,7 @@ export class Game {
 
   open(cellId: CellId): Game {
     this.moves = [cellId, ...this.moves];
-    const openedCell = this.cells.find(cell => cell.id === cellId);
+    const openedCell = this.cells.find((cell) => cell.id === cellId);
     if (openedCell === undefined) {
       throw new Error(`Cell with id ${cellId} does not exist`);
     }
@@ -85,6 +85,6 @@ export class Game {
   }
 
   get board(): string[] {
-    return this.cells.map(cell => cell.status);
+    return this.cells.map((cell) => cell.status);
   }
 }
