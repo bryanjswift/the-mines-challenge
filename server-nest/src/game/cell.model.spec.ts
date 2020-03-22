@@ -56,10 +56,6 @@ describe(Cell, () => {
       it('is a border', () => {
         expect(model.isBorder).toBe(true);
       });
-
-      it('indicates an unknown status', () => {
-        expect(model.status).toBe(' ');
-      });
     });
 
     describe('w/ right neighbor', () => {
@@ -82,10 +78,6 @@ describe(Cell, () => {
       it('is a border', () => {
         expect(model.isBorder).toBe(true);
       });
-
-      it('indicates an unknown status', () => {
-        expect(model.status).toBe(' ');
-      });
     });
 
     describe('open w/ right neighbor', () => {
@@ -107,38 +99,6 @@ describe(Cell, () => {
 
       it('is a border', () => {
         expect(model.isBorder).toBe(true);
-      });
-
-      it('indicates an known status matching mineCount', () => {
-        expect(model.status).toBe('1');
-      });
-    });
-  });
-
-  describe('is a mine', () => {
-    const isMine = true;
-
-    describe('not open', () => {
-      let model: Cell;
-
-      beforeAll(() => {
-        model = new Cell({ isMine, isOpen: false });
-      });
-
-      it('indicates an unknown status', () => {
-        expect(model.status).toBe(' ');
-      });
-    });
-
-    describe('open', () => {
-      let model: Cell;
-
-      beforeAll(() => {
-        model = new Cell({ isMine, isOpen: true });
-      });
-
-      it('indicates an mine status', () => {
-        expect(model.status).toBe('M');
       });
     });
   });

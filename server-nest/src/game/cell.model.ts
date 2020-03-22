@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-export interface CellLocations {
+export interface CellLocations extends Record<string, Cell> {
   topLeft?: Cell;
   top?: Cell;
   topRight?: Cell;
@@ -42,7 +42,7 @@ interface CellState {
   isOpen?: boolean;
 }
 
-const DEFAULT_CELL_STATE: CellState = {
+const DEFAULT_CELL_STATE: Required<CellState> = {
   isFlagged: false,
   isMine: false,
   isOpen: false,
@@ -50,17 +50,14 @@ const DEFAULT_CELL_STATE: CellState = {
 
 export class Cell {
   readonly id: CellId;
-  isFlagged: boolean;
+  readonly initialState: Required<CellState>;
   readonly isMine: boolean;
-  isOpen: boolean;
   readonly neighbors: CellLocations;
 
   constructor(state?: CellState) {
     this.id = uuid();
-    const { isFlagged, isMine, isOpen } = { ...DEFAULT_CELL_STATE, ...state };
-    this.isFlagged = isFlagged;
-    this.isMine = isMine;
-    this.isOpen = isOpen;
+    this.initialState = Object.freeze({ ...DEFAULT_CELL_STATE, ...state });
+    this.isMine = this.initialState.isMine;
     this.neighbors = {};
   }
 
@@ -73,18 +70,6 @@ export class Cell {
       (count, cell) => count + (cell.isMine ? 1 : 0),
       0
     );
-  }
-
-  get status(): string {
-    if (this.isFlagged) {
-      return 'F';
-    } else if (this.isOpen && this.isMine) {
-      return 'M';
-    } else if (this.isOpen) {
-      return `${this.mineCount}`;
-    } else {
-      return ' ';
-    }
   }
 
   add(location: CellLocation, cell: Cell): Cell {

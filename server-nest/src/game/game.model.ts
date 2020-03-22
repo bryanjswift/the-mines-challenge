@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { Cell, CellId } from './cell.model';
+import { CellView } from './cell.view';
 
 export enum GameStatus {
   OPEN,
@@ -52,42 +53,52 @@ function associateCells(props: Required<Props>): void {
 }
 
 export class Game {
-  cells: Cell[];
   id: string;
   moves: CellId[];
+  views: CellView[];
 
-  constructor(props: Props) {
+  constructor(props: Props, moves: CellId[] = []) {
     const { rows, columns } = props;
     const cellCount = rows * columns;
-    if (props.cells === undefined) {
-      this.cells = generateCells(cellCount);
-    } else {
-      this.cells = props.cells;
-    }
-    associateCells({ rows, columns, cells: this.cells });
+    const cells =
+      props.cells === undefined ? generateCells(cellCount) : props.cells;
+    const views = cells.map(
+      (cell) => new CellView(cell, { isOpen: cell.initialState.isOpen })
+    );
+    associateCells({ rows, columns, cells });
     this.id = uuid();
-    this.moves = [];
+    this.moves = moves;
+    this.views = views;
   }
 
   open(cellId: CellId): Game {
-    this.moves = [cellId, ...this.moves];
-    const openedCell = this.cells.find((cell) => cell.id === cellId);
-    if (openedCell === undefined) {
+    const moves = [...this.moves, cellId];
+    const openIndex = this.views.findIndex((cell) => cell.id === cellId);
+    if (openIndex === -1) {
       throw new Error(`Cell with id ${cellId} does not exist`);
     }
-    openedCell.isOpen = true;
+    const views = this.views.map((view) =>
+      view.id === cellId ? new CellView(view.cell, { isOpen: true }) : view
+    );
+    // open neighbors if appropriate
+    this.moves = moves;
+    this.views = views;
     return this;
   }
 
   get board(): string[] {
-    return this.cells.map((cell) => cell.status);
+    return this.views.map((cell) => cell.status);
+  }
+
+  get cells(): Cell[] {
+    return this.views.map((view) => view.cell);
   }
 
   get gameStatus(): GameStatus {
     // if any open cells are a mine; game is lost
-    const hasLost = this.cells.some((cell) => cell.isOpen && cell.isMine);
+    const hasLost = this.views.some((cell) => cell.isOpen && cell.isMine);
     // if all cells except mines are open; game is won
-    const hasWon = this.cells.every((cell) =>
+    const hasWon = this.views.every((cell) =>
       cell.isOpen ? !cell.isMine : cell.isMine
     );
     // Get the correct result based on boolean reductions
