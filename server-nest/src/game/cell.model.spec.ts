@@ -172,3 +172,188 @@ describe(`
     });
   });
 });
+
+describe('Cell.neighborsChain', () => {
+  // Generate a 2x2 game
+  describe(`
+  | ' ' | ' ' |
+  | ' ' | ' ' |
+  `, () => {
+    const cell_0_0 = new Cell({ isMine: false });
+    const cell_1_0 = new Cell({ isMine: false });
+    const cell_0_1 = new Cell({ isMine: false });
+    const cell_1_1 = new Cell({ isMine: false });
+
+    // | cell_0_0 | cell_0_1 |
+    // | cell_1_0 | cell_1_1 |
+
+    beforeAll(() => {
+      // cell_0_0
+      cell_0_0.add('right', cell_0_1);
+      cell_0_0.add('bottomRight', cell_1_1);
+      cell_0_0.add('bottom', cell_1_0);
+      // cell_0_1
+      cell_0_1.add('left', cell_0_0);
+      cell_0_1.add('bottomLeft', cell_1_0);
+      cell_0_1.add('bottom', cell_1_1);
+      // cell_1_0
+      cell_1_0.add('top', cell_0_0);
+      cell_1_0.add('topRight', cell_0_1);
+      cell_1_0.add('right', cell_1_1);
+      // cell_1_1
+      cell_1_1.add('top', cell_0_1);
+      cell_1_1.add('left', cell_1_0);
+      cell_1_1.add('topLeft', cell_0_0);
+    });
+
+    describe('cell_0_0', () => {
+      it('has three chained neighbors', () => {
+        expect(cell_0_0.neighborsChain).toHaveLength(3);
+      });
+    });
+
+    describe('cell_0_1', () => {
+      it('has three chained neighbors', () => {
+        expect(cell_0_1.neighborsChain).toHaveLength(3);
+      });
+    });
+
+    describe('cell_1_0', () => {
+      it('has three chained neighbors', () => {
+        expect(cell_1_0.neighborsChain).toHaveLength(3);
+      });
+    });
+
+    describe('cell_1_1', () => {
+      it('has three chained neighbors', () => {
+        expect(cell_1_1.neighborsChain).toHaveLength(3);
+      });
+    });
+  });
+
+  // Generate a 3x3 game
+  describe(`
+  | ' ' | '2' | 'M' |
+  | ' ' | '2' | 'M' |
+  | ' ' | '2' | 'M' |
+  `, () => {
+    const cell_0_0 = new Cell({ isMine: false });
+    const cell_1_0 = new Cell({ isMine: false });
+    const cell_2_0 = new Cell({ isMine: false });
+    const cell_0_1 = new Cell({ isMine: false });
+    const cell_1_1 = new Cell({ isMine: false });
+    const cell_2_1 = new Cell({ isMine: false });
+    const cell_0_2 = new Cell({ isMine: true });
+    const cell_1_2 = new Cell({ isMine: true });
+    const cell_2_2 = new Cell({ isMine: true });
+
+    // | cell_0_0 | cell_0_1 | cell_0_2 |
+    // | cell_1_0 | cell_1_1 | cell_1_2 |
+    // | cell_2_0 | cell_2_1 | cell_2_2 |
+
+    beforeAll(() => {
+      // cell_0_0
+      cell_0_0.add('right', cell_0_1);
+      cell_0_0.add('bottomRight', cell_1_1);
+      cell_0_0.add('bottom', cell_1_0);
+      // cell_0_1
+      cell_0_1.add('right', cell_0_2);
+      cell_0_1.add('bottomRight', cell_1_2);
+      cell_0_1.add('bottom', cell_1_1);
+      cell_0_1.add('bottomLeft', cell_1_0);
+      cell_0_1.add('left', cell_0_0);
+      // cell_0_2
+      cell_0_2.add('left', cell_0_1);
+      cell_0_2.add('bottom', cell_1_2);
+      cell_0_2.add('bottomLeft', cell_1_1);
+      // cell_1_0
+      cell_1_0.add('top', cell_0_0);
+      cell_1_0.add('topRight', cell_0_1);
+      cell_1_0.add('right', cell_1_1);
+      cell_1_0.add('bottomRight', cell_2_1);
+      cell_1_0.add('bottom', cell_2_0);
+      // cell_1_1
+      cell_1_1.add('topLeft', cell_0_0);
+      cell_1_1.add('top', cell_0_1);
+      cell_1_1.add('topRight', cell_0_2);
+      cell_1_1.add('right', cell_1_2);
+      cell_1_1.add('bottomRight', cell_2_2);
+      cell_1_1.add('bottom', cell_2_1);
+      cell_1_1.add('bottomLeft', cell_2_0);
+      cell_1_1.add('left', cell_1_0);
+      // cell_1_2
+      cell_1_2.add('topLeft', cell_0_1);
+      cell_1_2.add('top', cell_0_2);
+      cell_1_2.add('bottom', cell_2_2);
+      cell_1_2.add('bottomLeft', cell_2_1);
+      cell_1_2.add('left', cell_1_1);
+      // cell_2_0
+      cell_2_0.add('top', cell_1_0);
+      cell_2_0.add('topRight', cell_1_1);
+      cell_2_0.add('right', cell_2_1);
+      // cell_2_1
+      cell_2_1.add('topLeft', cell_1_0);
+      cell_2_1.add('top', cell_1_1);
+      cell_2_1.add('topRight', cell_1_2);
+      cell_2_1.add('right', cell_2_2);
+      // cell_2_2
+      cell_2_2.add('topLeft', cell_1_1);
+      cell_2_2.add('top', cell_1_2);
+      cell_2_2.add('left', cell_2_1);
+    });
+
+    describe('cell_0_0', () => {
+      it('has two chained neighbors', () => {
+        expect(cell_0_0.neighborsChain).toHaveLength(2);
+      });
+    });
+
+    describe('cell_0_1', () => {
+      it('has two chained neighbors', () => {
+        expect(cell_0_1.neighborsChain).toHaveLength(0);
+      });
+    });
+
+    describe('cell_0_2', () => {
+      it('has two chained neighbors', () => {
+        expect(cell_0_2.neighborsChain).toHaveLength(0);
+      });
+    });
+
+    describe('cell_1_0', () => {
+      it('has no chained neighbors', () => {
+        expect(cell_1_0.neighborsChain).toHaveLength(2);
+      });
+    });
+
+    describe('cell_1_1', () => {
+      it('has no chained neighbors', () => {
+        expect(cell_1_1.neighborsChain).toHaveLength(0);
+      });
+    });
+
+    describe('cell_1_2', () => {
+      it('has no chained neighbors', () => {
+        expect(cell_1_2.neighborsChain).toHaveLength(0);
+      });
+    });
+
+    describe('cell_2_0', () => {
+      it('has no chained neighbors', () => {
+        expect(cell_2_0.neighborsChain).toHaveLength(2);
+      });
+    });
+
+    describe('cell_2_1', () => {
+      it('has no chained neighbors', () => {
+        expect(cell_2_1.neighborsChain).toHaveLength(0);
+      });
+    });
+
+    describe('cell_2_2', () => {
+      it('has no chained neighbors', () => {
+        expect(cell_2_2.neighborsChain).toHaveLength(0);
+      });
+    });
+  });
+});

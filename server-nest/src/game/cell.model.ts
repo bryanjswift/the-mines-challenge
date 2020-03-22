@@ -87,6 +87,14 @@ export class Cell {
     return result.filter((cell) => cell !== undefined);
   }
 
+  get neighborsChain(): Cell[] {
+    if (this.isMine || this.mineCount > 0) {
+      return [];
+    } else {
+      return this.getNeighborChain([this.id]);
+    }
+  }
+
   add(location: CellLocation, cell: Cell): Cell {
     // set my neighbor
     this.setNeighbor(location, cell);
@@ -97,6 +105,21 @@ export class Cell {
 
   getNeighbor(location: CellLocation): Cell {
     return this.positionalNeighbors[location];
+  }
+
+  private get isEmpty(): boolean {
+    return !this.isMine && this.mineCount === 0;
+  }
+
+  private getNeighborChain(ignore: CellId[]): Cell[] {
+    const neighborIds = this.neighbors.map((cell) => cell.id);
+    const chainedNeighbors = this.neighbors.filter(
+      (cell) => !ignore.includes(cell.id) && cell.isEmpty
+    );
+    const chainsFromNeighbors = chainedNeighbors
+      .map((cell) => cell.getNeighborChain([...ignore, ...neighborIds]))
+      .flat();
+    return [...chainedNeighbors, ...chainsFromNeighbors];
   }
 
   private setNeighbor(location: CellLocation, cell: Cell): Cell {
