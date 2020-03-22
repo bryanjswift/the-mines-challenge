@@ -52,49 +52,28 @@ export class Cell {
   readonly id: CellId;
   readonly initialState: Required<CellState>;
   readonly isMine: boolean;
-  readonly neighbors: CellLocations;
+  private readonly positionalNeighbors: CellLocations;
 
   constructor(state?: CellState) {
     this.id = uuid();
     this.initialState = Object.freeze({ ...DEFAULT_CELL_STATE, ...state });
     this.isMine = this.initialState.isMine;
-    this.neighbors = {};
+    this.positionalNeighbors = {};
   }
 
   get isBorder(): boolean {
-    return this.neighborCells.length < 8;
+    return this.neighbors.length < 8;
   }
 
   get mineCount(): number {
-    return this.neighborCells.reduce(
+    return this.neighbors.reduce(
       (count, cell) => count + (cell.isMine ? 1 : 0),
       0
     );
   }
 
-  add(location: CellLocation, cell: Cell): Cell {
-    // set my neighbor
-    this.setNeighbor(location, cell);
-    // populate the neighbors
-    cell.setNeighbor(getOppositeLocation(location), this);
-    return this;
-  }
-
-  getNeighbor(location: CellLocation): Cell {
-    return this.neighbors[location];
-  }
-
-  private setNeighbor(location: CellLocation, cell: Cell): Cell {
-    if (this.neighbors[location] === undefined) {
-      this.neighbors[location] = cell;
-    } else if (this.neighbors[location] !== cell) {
-      throw new Error(`Neighbor(${location}) for ${this.id} already exists`);
-    }
-    return this;
-  }
-
-  private get neighborCells(): Cell[] {
-    const neighbors = this.neighbors;
+  get neighbors(): Cell[] {
+    const neighbors = this.positionalNeighbors;
     const result = [
       neighbors.topLeft,
       neighbors.top,
@@ -106,5 +85,26 @@ export class Cell {
       neighbors.left,
     ];
     return result.filter((cell) => cell !== undefined);
+  }
+
+  add(location: CellLocation, cell: Cell): Cell {
+    // set my neighbor
+    this.setNeighbor(location, cell);
+    // populate the neighbors
+    cell.setNeighbor(getOppositeLocation(location), this);
+    return this;
+  }
+
+  getNeighbor(location: CellLocation): Cell {
+    return this.positionalNeighbors[location];
+  }
+
+  private setNeighbor(location: CellLocation, cell: Cell): Cell {
+    if (this.positionalNeighbors[location] === undefined) {
+      this.positionalNeighbors[location] = cell;
+    } else if (this.positionalNeighbors[location] !== cell) {
+      throw new Error(`Neighbor(${location}) for ${this.id} already exists`);
+    }
+    return this;
   }
 }
