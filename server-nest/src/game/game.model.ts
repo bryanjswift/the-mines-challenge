@@ -55,7 +55,9 @@ function associateCells(props: Required<Props>): void {
 export class Game {
   id: string;
   moves: CellId[];
-  views: CellView[];
+  private _views: CellView[];
+  // `viewCache` is upated when `views` is assigned via the `views` setter.
+  private viewCache: Record<CellId, CellView>;
 
   constructor(props: Props, moves: CellId[] = []) {
     const { rows, columns } = props;
@@ -109,5 +111,20 @@ export class Game {
     } else {
       return GameStatus.OPEN;
     }
+  }
+
+  private get views(): CellView[] {
+    return this._views;
+  }
+
+  private set views(views: CellView[]) {
+    this._views = views;
+    this.viewCache = views.reduce(
+      (cache, view) => ({
+        ...cache,
+        [view.id]: view,
+      }),
+      {}
+    );
   }
 }
