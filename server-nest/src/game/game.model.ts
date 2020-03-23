@@ -8,11 +8,21 @@ export enum GameStatus {
   LOST,
 }
 
-interface Props {
+interface GridProps {
   columns: number;
   rows: number;
-  cells?: Cell[];
+  moves?: CellId[];
 }
+
+interface InitialCells extends GridProps {
+  cells: Cell[];
+}
+
+interface InitialViews extends GridProps {
+  views: CellView[];
+}
+
+type Props = GridProps | InitialCells | InitialViews;
 
 function generateCells(cellCount: number): Cell[] {
   const cells = new Array(cellCount);
@@ -23,7 +33,7 @@ function generateCells(cellCount: number): Cell[] {
   return cells;
 }
 
-function associateCells(props: Required<Props>): void {
+function associateCells(props: InitialCells): void {
   const { cells, rows, columns } = props;
   const cellCount = cells.length;
   let row = -1;
@@ -53,24 +63,38 @@ function associateCells(props: Required<Props>): void {
 }
 
 export class Game {
+  private readonly columns: number;
   id: string;
   moves: CellId[];
+  private readonly rows: number;
   private _views: CellView[];
   // `viewCache` is upated when `views` is assigned via the `views` setter.
   private viewCache: Record<CellId, CellView>;
 
-  constructor(props: Props, moves: CellId[] = []) {
-    const { rows, columns } = props;
-    const cellCount = rows * columns;
-    const cells =
-      props.cells === undefined ? generateCells(cellCount) : props.cells;
-    const views = cells.map(
-      (cell) => new CellView(cell, { isOpen: cell.initialState.isOpen })
-    );
-    associateCells({ rows, columns, cells });
+  constructor(props: Props) {
+    const { rows, columns, moves = [] } = props;
+    // Assign views based on the contents of props
+    if ('views' in props) {
+      // InitialViews
+      this.views = props.views;
+    } else if ('cells' in props) {
+      // InitialCells
+      const cells = props.cells;
+      associateCells({ rows, columns, cells });
+      this.views = cells.map(
+        (cell) => new CellView(cell, { isOpen: cell.initialState.isOpen })
+      );
+    } else {
+      // GridProps
+      const cellCount = rows * columns;
+      const cells = generateCells(cellCount);
+      associateCells({ rows, columns, cells });
+      this.views = cells.map((cell) => new CellView(cell));
+    }
+    this.columns = columns;
     this.id = uuid();
     this.moves = moves;
-    this.views = views;
+    this.rows = rows;
   }
 
   open(cellId: CellId): Game {
