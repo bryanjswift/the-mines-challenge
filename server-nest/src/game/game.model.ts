@@ -99,17 +99,27 @@ export class Game {
 
   open(cellId: CellId): Game {
     const moves = [...this.moves, cellId];
-    const openIndex = this.views.findIndex((cell) => cell.id === cellId);
-    if (openIndex === -1) {
+    const openedCell = this.viewCache[cellId];
+    if (typeof openedCell === 'undefined') {
       throw new Error(`Cell with id ${cellId} does not exist`);
     }
-    const views = this.views.map((view) =>
-      view.id === cellId ? new CellView(view.cell, { isOpen: true }) : view
+    // find cells to mark as opened, including neighbors
+    const openedCellIds = [
+      cellId,
+      ...openedCell.cell.neighborsChain.map((cell) => cell.id),
+    ];
+    const views = this.views.map(
+      (view) =>
+        new CellView(view.cell, {
+          isOpen: openedCellIds.includes(view.id) || view.isOpen,
+        })
     );
-    // open neighbors if appropriate
-    this.moves = moves;
-    this.views = views;
-    return this;
+    return new Game({
+      rows: this.rows,
+      columns: this.columns,
+      views,
+      moves,
+    });
   }
 
   get board(): string[] {

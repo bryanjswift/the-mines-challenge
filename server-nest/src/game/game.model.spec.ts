@@ -36,9 +36,9 @@ describe.only(Game, () => {
     });
 
     it('shows mine count when 0,0 is opened', () => {
-      game.open(game.cells[0].id);
+      const updatedGame = game.open(game.cells[0].id);
       // prettier-ignore
-      expect(game.board).toEqual([
+      expect(updatedGame.board).toEqual([
         '3', ' ',
         ' ', ' ',
       ]);
@@ -147,7 +147,75 @@ describe.only(Game, () => {
     });
   });
 
-  describe('Won 4x4', () => {
+  describe(`
+  +---+---+---+---+
+  | 3 | M | 2 | 0 |
+  | M | M | 2 | 0 |
+  | 2 | 2 | 1 | 0 |
+  | 0 | 0 | 0 | 0 |
+  +---+---+---+---+
+  `, () => {
+    let game: Game;
+    let cells: Cell[];
+    const rows = 4;
+    const columns = 4;
+
+    beforeAll(() => {
+      cells = [
+        // Row 1
+        new Cell({ isMine: false }),
+        new Cell({ isMine: true }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        // Row 2
+        new Cell({ isMine: true }),
+        new Cell({ isMine: true }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        // Row 3
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        // Row 4
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+      ];
+    });
+
+    beforeEach(() => {
+      game = new Game({ rows, columns, cells });
+    });
+
+    it('has a game with cells', () => {
+      expect(game.cells).toHaveLength(16);
+    });
+
+    it('has known initial game board', () => {
+      // prettier-ignore
+      expect(game.board).toEqual([
+        ' ', ' ', ' ', ' ',
+        ' ', ' ', ' ', ' ',
+        ' ', ' ', ' ', ' ',
+        ' ', ' ', ' ', ' ',
+      ]);
+    });
+
+    it('is an OPEN game', () => {
+      expect(game.gameStatus).toBe(GameStatus.OPEN);
+    });
+  });
+
+  describe(`
+  +---+---+---+---+
+  | 3 |   |   |   |
+  |   |   | 6 | 4 |
+  |   | 6 |   |   |
+  |   | 4 |   |   |
+  +---+---+---+---+
+  `, () => {
     let game: Game;
 
     beforeEach(() => {
@@ -202,58 +270,86 @@ describe.only(Game, () => {
     });
   });
 
-  describe('Open 4x4', () => {
+  describe('Game#open', () => {
+    let cells: Cell[];
     let game: Game;
 
+    beforeAll(() => {
+      // | 3 | M | 2 | 0 |
+      // | M | M | 2 | 0 |
+      // | 2 | 2 | 1 | 0 |
+      // | 0 | 0 | 0 | 0 |
+      cells = [
+        // Row 1
+        new Cell({ isMine: false }),
+        new Cell({ isMine: true }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        // Row 2
+        new Cell({ isMine: true }),
+        new Cell({ isMine: true }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        // Row 3
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        // Row 4
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+        new Cell({ isMine: false }),
+      ];
+    });
+
     beforeEach(() => {
-      // | 3 | M | M | M |
-      // | M | M | 6 | 4 |
-      // | M | 6 | M | M |
-      // | M | 4 | M | M |
       game = new Game({
         rows: 4,
         columns: 4,
-        cells: [
-          // Row 1
-          new Cell({ isMine: false }),
-          new Cell({ isMine: true }),
-          new Cell({ isMine: true }),
-          new Cell({ isMine: true }),
-          // Row 2
-          new Cell({ isMine: true }),
-          new Cell({ isMine: true }),
-          new Cell({ isMine: false }),
-          new Cell({ isMine: false }),
-          // Row 3
-          new Cell({ isMine: true }),
-          new Cell({ isMine: false }),
-          new Cell({ isMine: true }),
-          new Cell({ isMine: true }),
-          // Row 4
-          new Cell({ isMine: true }),
-          new Cell({ isMine: false }),
-          new Cell({ isMine: true }),
-          new Cell({ isMine: true }),
-        ],
+        cells,
       });
     });
 
-    it('has a game with cells', () => {
-      expect(game.cells).toHaveLength(16);
-    });
-
-    it('has known game board', () => {
+    it('opens only one cell when no chained cell', () => {
+      const subject = game.open(game.cells[0].id);
       // prettier-ignore
-      expect(game.board).toEqual([
-        ' ', ' ', ' ', ' ',
+      expect(subject.board).toEqual([
+        '3', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ',
       ]);
     });
 
-    it('is an OPEN game', () => {
-      expect(game.gameStatus).toBe(GameStatus.OPEN);
+    it('opens many cells when multiple adjacent empty', () => {
+      const { cells } = game;
+      const subject = game.open(cells[cells.length - 1].id);
+      // prettier-ignore
+      expect(subject.board).toEqual([
+        ' ', ' ', ' ', '0',
+        ' ', ' ', ' ', '0',
+        ' ', ' ', ' ', '0',
+        '0', '0', '0', '0',
+      ]);
+    });
+
+    it('loses game when opening mine', () => {
+      const { cells } = game;
+      const mineIndex = cells.findIndex((cell) => cell.isMine);
+      const subject = game.open(cells[mineIndex].id);
+      // prettier-ignore
+      expect(subject.board).toEqual([
+        ' ', 'M', ' ', ' ',
+        ' ', ' ', ' ', ' ',
+        ' ', ' ', ' ', ' ',
+        ' ', ' ', ' ', ' ',
+      ]);
+      expect(subject.gameStatus).toBe(GameStatus.LOST);
+    });
+
+    it('throws when cell id is invalid', () => {
+      expect(() => game.open('foo')).toThrow();
     });
   });
 });
