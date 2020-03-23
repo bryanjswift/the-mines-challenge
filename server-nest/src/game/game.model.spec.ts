@@ -10,7 +10,7 @@ describe.only(Game, () => {
   `, () => {
     let game: Game;
 
-    beforeAll(() => {
+    beforeEach(() => {
       game = new Game({
         rows: 2,
         columns: 2,
@@ -54,7 +54,7 @@ describe.only(Game, () => {
   `, () => {
     let game: Game;
 
-    beforeAll(() => {
+    beforeEach(() => {
       game = new Game({
         rows: 3,
         columns: 3,
@@ -99,7 +99,7 @@ describe.only(Game, () => {
   `, () => {
     let game: Game;
 
-    beforeAll(() => {
+    beforeEach(() => {
       game = new Game({
         rows: 4,
         columns: 4,
@@ -150,7 +150,7 @@ describe.only(Game, () => {
   describe('Won 4x4', () => {
     let game: Game;
 
-    beforeAll(() => {
+    beforeEach(() => {
       // | 3 | M | M | M |
       // | M | M | 6 | 4 |
       // | M | 6 | M | M |
@@ -205,7 +205,7 @@ describe.only(Game, () => {
   describe('Open 4x4', () => {
     let game: Game;
 
-    beforeAll(() => {
+    beforeEach(() => {
       // | 3 | M | M | M |
       // | M | M | 6 | 4 |
       // | M | 6 | M | M |
