@@ -131,20 +131,26 @@ export class Game {
   }
 
   get gameStatus(): GameStatus {
-    // if any open cells are a mine; game is lost
-    const hasLost = this.views.some((cell) => cell.isOpen && cell.isMine);
-    // if all cells except mines are open; game is won
-    const hasWon = this.views.every((cell) =>
-      cell.isOpen ? !cell.isMine : cell.isMine
-    );
     // Get the correct result based on boolean reductions
-    if (hasLost) {
+    if (this.isLost) {
       return GameStatus.LOST;
-    } else if (hasWon) {
+    } else if (this.isWon) {
       return GameStatus.WON;
     } else {
       return GameStatus.OPEN;
     }
+  }
+
+  private get isLost(): boolean {
+    // if any open cells are a mine; game is lost
+    return this.views.some((view) => view.isOpen && view.isMine);
+  }
+
+  private get isWon(): boolean {
+    // if all cells except mines are open; game is won
+    return this.views.every((view) =>
+      view.isOpen ? !view.isMine : view.isMine
+    );
   }
 
   private get views(): CellView[] {
