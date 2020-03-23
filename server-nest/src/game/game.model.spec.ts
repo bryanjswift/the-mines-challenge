@@ -215,25 +215,25 @@ describe.only(Game, () => {
         columns: 4,
         cells: [
           // Row 1
-          new Cell({ isOpen: false, isMine: false }),
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: true }),
+          new Cell({ isMine: false }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: true }),
           // Row 2
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: false }),
-          new Cell({ isOpen: false, isMine: false }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: false }),
+          new Cell({ isMine: false }),
           // Row 3
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: false }),
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: true }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: false }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: true }),
           // Row 4
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: false }),
-          new Cell({ isOpen: false, isMine: true }),
-          new Cell({ isOpen: false, isMine: true }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: false }),
+          new Cell({ isMine: true }),
+          new Cell({ isMine: true }),
         ],
       });
     });
