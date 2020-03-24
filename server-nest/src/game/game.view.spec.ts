@@ -21,7 +21,7 @@ describe(serializeGame, () => {
     });
 
     it('has an open status', () => {
-      expect(subject).toHaveProperty('status', 'open');
+      expect(subject).toHaveProperty('status', 'OPEN');
     });
   });
 
@@ -52,7 +52,7 @@ describe(serializeGame, () => {
     });
 
     it('has an open status', () => {
-      expect(subject).toHaveProperty('status', 'won');
+      expect(subject).toHaveProperty('status', 'WON');
     });
   });
 
@@ -85,7 +85,7 @@ describe(serializeGame, () => {
     });
 
     it('has an open status', () => {
-      expect(subject).toHaveProperty('status', 'lost');
+      expect(subject).toHaveProperty('status', 'LOST');
     });
   });
 });

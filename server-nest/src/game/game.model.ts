@@ -4,9 +4,9 @@ import { CellView } from './cell.view';
 import { OutOfBoundsException } from './out-of-bounds.exception';
 
 export enum GameStatus {
-  OPEN,
-  WON,
-  LOST,
+  OPEN = 'OPEN',
+  WON = 'WON',
+  LOST = 'LOST',
 }
 
 interface GridProps {
