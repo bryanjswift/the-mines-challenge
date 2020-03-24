@@ -1,0 +1,72 @@
+import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { GameController } from './game.controller';
+import { GameService } from './game.service';
+
+describe(GameController, () => {
+  let controller: GameController;
+  let service: GameService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [GameController],
+      providers: [GameService],
+    }).compile();
+
+    controller = module.get<GameController>(GameController);
+    service = module.get<GameService>(GameService);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('POST /', () => {
+    it('creates a game', () => {
+      const result = controller.create({ rows: 3, columns: 3 });
+      expect(result).toBeDefined();
+    });
+
+    it('returns an id', () => {
+      const result = controller.create({ rows: 3, columns: 3 });
+      expect(result.id).toBeDefined();
+    });
+
+    it('only returns an id', () => {
+      const result = controller.create({ rows: 3, columns: 3 });
+      expect(Object.keys(result)).toEqual(['id']);
+    });
+  });
+
+  describe('GET /', () => {
+    it('is an empty list', () => {
+      expect(controller.findAll()).toHaveLength(0);
+    });
+
+    it('lists one after create', () => {
+      controller.create({ rows: 3, columns: 3 });
+      expect(controller.findAll()).toHaveLength(1);
+    });
+
+    it('lists only ids', () => {
+      const game = controller.create({ rows: 3, columns: 3 });
+      const result = controller.findAll();
+      expect(result).toContain(game.id);
+    });
+  });
+
+  describe('GET /:id', () => {
+    it('throws NotFoundException for non-existing id', () => {
+      expect(() => controller.findOne('foo')).toThrowError(NotFoundException);
+    });
+
+    it('serializes a Game', () => {
+      const { id } = controller.create({ rows: 10, columns: 10 });
+      const game = service.findById(id);
+      const result = controller.findOne(id);
+      expect(result).toHaveProperty('id', id);
+      expect(result).toHaveProperty('board', game.board);
+      expect(result).toHaveProperty('status');
+    });
+  });
+});
