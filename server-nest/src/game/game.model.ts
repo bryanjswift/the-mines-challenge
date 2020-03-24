@@ -26,7 +26,7 @@ interface InitialViews extends GridProps {
 
 export type Props = GridProps | InitialCells | InitialViews;
 
-function generateCells(cellCount: number, mineProbability = 0.5): Cell[] {
+function generateCells(cellCount: number, mineProbability = 0.25): Cell[] {
   const cells = new Array(cellCount);
   for (let i = 0; i < cellCount; i++) {
     const isMine = Math.random() < mineProbability;
