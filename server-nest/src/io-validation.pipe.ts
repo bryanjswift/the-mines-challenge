@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common';
 import { Errors, Type, ValidationError } from 'io-ts';
 
 function containsInvalidValues(errors: Errors): boolean {
@@ -37,8 +42,8 @@ export class IoValidationPipe<T> implements PipeTransform {
    * @returns T instance decoded from the guard type associated with the pipe.
    * @throws BadRequestException if given value can not be transformed to a `T`.
    */
-  transform(value: unknown): T {
-    if (this.decoder.is(value)) {
+  transform(value: unknown, metadata: ArgumentMetadata): T {
+    if (this.decoder.is(value) || this.shouldSkipValidate(value, metadata)) {
       return value;
     } else {
       const result = this.decoder.decode(value);
@@ -59,5 +64,12 @@ export class IoValidationPipe<T> implements PipeTransform {
           return result.right;
       }
     }
+  }
+
+  private shouldSkipValidate(
+    _value: unknown,
+    meta: ArgumentMetadata
+  ): _value is T {
+    return meta.type !== 'body';
   }
 }
