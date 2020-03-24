@@ -1,7 +1,8 @@
 import { Cell } from './cell.model';
+import { CellView } from './cell.view';
 import { Game, GameStatus } from './game.model';
 
-describe.only(Game, () => {
+describe(Game, () => {
   describe(`
   +---+---+
   | 3 | M |
@@ -203,6 +204,21 @@ describe.only(Game, () => {
       ]);
     });
 
+    it('has known initial game board', () => {
+      game = new Game({
+        rows,
+        columns,
+        views: cells.map((cell) => new CellView(cell, { isOpen: true })),
+      });
+      // prettier-ignore
+      expect(game.board).toEqual([
+        '3', 'M', '2', '0',
+        'M', 'M', '2', '0',
+        '2', '2', '1', '0',
+        '0', '0', '0', '0',
+      ]);
+    });
+
     it('is an OPEN game', () => {
       expect(game.gameStatus).toBe(GameStatus.OPEN);
     });
@@ -269,87 +285,212 @@ describe.only(Game, () => {
       expect(game.gameStatus).toBe(GameStatus.WON);
     });
   });
+});
 
-  describe('Game#open', () => {
-    let cells: Cell[];
+describe('new Game', () => {
+  describe('2x2', () => {
     let game: Game;
 
-    beforeAll(() => {
-      // | 3 | M | 2 | 0 |
-      // | M | M | 2 | 0 |
-      // | 2 | 2 | 1 | 0 |
-      // | 0 | 0 | 0 | 0 |
-      cells = [
-        // Row 1
-        new Cell({ isMine: false }),
-        new Cell({ isMine: true }),
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        // Row 2
-        new Cell({ isMine: true }),
-        new Cell({ isMine: true }),
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        // Row 3
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        // Row 4
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-        new Cell({ isMine: false }),
-      ];
-    });
-
     beforeEach(() => {
-      game = new Game({
-        rows: 4,
-        columns: 4,
-        cells,
-      });
+      game = new Game({ rows: 2, columns: 2 });
     });
 
-    it('opens only one cell when no chained cell', () => {
-      const subject = game.open(game.cells[0].id);
-      // prettier-ignore
-      expect(subject.board).toEqual([
-        '3', ' ', ' ', ' ',
-        ' ', ' ', ' ', ' ',
-        ' ', ' ', ' ', ' ',
-        ' ', ' ', ' ', ' ',
-      ]);
+    it('generates four cells', () => {
+      expect(game.cells).toHaveLength(4);
     });
 
-    it('opens many cells when multiple adjacent empty', () => {
-      const { cells } = game;
-      const subject = game.open(cells[cells.length - 1].id);
-      // prettier-ignore
-      expect(subject.board).toEqual([
-        ' ', ' ', ' ', '0',
-        ' ', ' ', ' ', '0',
-        ' ', ' ', ' ', '0',
-        '0', '0', '0', '0',
-      ]);
+    it('generates four board values', () => {
+      expect(game.board).toHaveLength(4);
     });
 
-    it('loses game when opening mine', () => {
-      const { cells } = game;
-      const mineIndex = cells.findIndex((cell) => cell.isMine);
-      const subject = game.open(cells[mineIndex].id);
-      // prettier-ignore
-      expect(subject.board).toEqual([
-        ' ', 'M', ' ', ' ',
-        ' ', ' ', ' ', ' ',
-        ' ', ' ', ' ', ' ',
-        ' ', ' ', ' ', ' ',
-      ]);
-      expect(subject.gameStatus).toBe(GameStatus.LOST);
+    it('associates first cell with others', () => {
+      expect(game.cells[0].getNeighbor('right')).toBe(game.cells[1]);
+      expect(game.cells[0].getNeighbor('bottomRight')).toBe(game.cells[3]);
+      expect(game.cells[0].getNeighbor('bottom')).toBe(game.cells[2]);
     });
 
-    it('throws when cell id is invalid', () => {
-      expect(() => game.open('foo')).toThrow();
+    it('associates third cell with others', () => {
+      expect(game.cells[2].getNeighbor('top')).toBe(game.cells[0]);
+      expect(game.cells[2].getNeighbor('topRight')).toBe(game.cells[1]);
+      expect(game.cells[2].getNeighbor('right')).toBe(game.cells[3]);
     });
+  });
+});
+
+describe('Game#open', () => {
+  let cells: Cell[];
+  let game: Game;
+
+  beforeAll(() => {
+    // | 3 | M | 2 | 0 |
+    // | M | M | 2 | 0 |
+    // | 2 | 2 | 1 | 0 |
+    // | 0 | 0 | 0 | 0 |
+    cells = [
+      // Row 1
+      new Cell({ isMine: false }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 2
+      new Cell({ isMine: true }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 3
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 4
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+    ];
+  });
+
+  beforeEach(() => {
+    game = new Game({
+      rows: 4,
+      columns: 4,
+      cells,
+    });
+  });
+
+  it('opens only one cell when no chained cell', () => {
+    const subject = game.open(game.cells[0].id);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      '3', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('opens many cells when multiple adjacent empty', () => {
+    const { cells } = game;
+    const subject = game.open(cells[cells.length - 1].id);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', ' ', ' ', '0',
+      ' ', ' ', ' ', '0',
+      ' ', ' ', ' ', '0',
+      '0', '0', '0', '0',
+    ]);
+  });
+
+  it('loses game when opening mine', () => {
+    const { cells } = game;
+    const mineIndex = cells.findIndex((cell) => cell.isMine);
+    const subject = game.open(cells[mineIndex].id);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', 'M', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+    expect(subject.gameStatus).toBe(GameStatus.LOST);
+  });
+
+  it('throws when cell id is invalid', () => {
+    expect(() => game.open('foo')).toThrow();
+  });
+});
+
+describe('Game#openCoordinates', () => {
+  let cells: Cell[];
+  let game: Game;
+
+  beforeAll(() => {
+    // | 3 | M | 2 | 0 |
+    // | M | M | 2 | 0 |
+    // | 2 | 2 | 1 | 0 |
+    // | 0 | 0 | 0 | 0 |
+    cells = [
+      // Row 1
+      new Cell({ isMine: false }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 2
+      new Cell({ isMine: true }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 3
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 4
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+    ];
+  });
+
+  beforeEach(() => {
+    game = new Game({
+      rows: 4,
+      columns: 4,
+      cells,
+    });
+  });
+
+  it('opens only one cell when no chained cell', () => {
+    const subject = game.openCoordinates(0, 0);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      '3', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('opens many cells when multiple adjacent empty', () => {
+    const subject = game.openCoordinates(3, 3);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', ' ', ' ', '0',
+      ' ', ' ', ' ', '0',
+      ' ', ' ', ' ', '0',
+      '0', '0', '0', '0',
+    ]);
+  });
+
+  it('loses game when opening mine', () => {
+    const subject = game.openCoordinates(0, 1);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', 'M', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+    expect(subject.gameStatus).toBe(GameStatus.LOST);
+  });
+
+  it('opens cell at (2, 2)', () => {
+    const subject = game.openCoordinates(2, 2);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', '1', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('throws when row is out of bounds', () => {
+    expect(() => game.openCoordinates(4, 0)).toThrow();
+  });
+
+  it('throws when column is out of bounds', () => {
+    expect(() => game.openCoordinates(0, 4)).toThrow();
   });
 });

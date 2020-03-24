@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { Cell, CellId } from './cell.model';
 import { CellView } from './cell.view';
+import { OutOfBoundsException } from './out-of-bounds.exception';
 
 export enum GameStatus {
   OPEN,
@@ -122,6 +123,13 @@ export class Game {
     });
   }
 
+  openCoordinates(x: number, y: number): Game {
+    const gridProps = { rows: this.rows, columns: this.columns };
+    const cellIndex = Game.getIndex(gridProps, x, y);
+    const cellId = this.cells[cellIndex].id;
+    return this.open(cellId);
+  }
+
   get board(): string[] {
     return this.views.map((cell) => cell.status);
   }
@@ -139,6 +147,16 @@ export class Game {
     } else {
       return GameStatus.OPEN;
     }
+  }
+
+  private static getIndex(props: GridProps, x: number, y: number): number {
+    const { rows, columns } = props;
+    if (x >= rows) {
+      throw new OutOfBoundsException('rows', x);
+    } else if (y >= columns) {
+      throw new OutOfBoundsException('columns', y);
+    }
+    return columns * x + y;
   }
 
   private get isLost(): boolean {
