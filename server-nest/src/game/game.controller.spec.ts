@@ -1,4 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
@@ -66,6 +69,38 @@ describe(GameController, () => {
       const result = controller.findOne(id);
       expect(result).toHaveProperty('id', id);
       expect(result).toHaveProperty('board', game.board);
+      expect(result).toHaveProperty('status');
+    });
+  });
+
+  describe('PATCH /:id', () => {
+    const alpha = { x: 0, y: 0 };
+
+    it('throws NotFoundException for non-existing id', () => {
+      expect(() => controller.addMove('foo', alpha)).toThrowError(
+        NotFoundException
+      );
+    });
+
+    it('throws UnprocessableEntityException for out of bounds row', () => {
+      const { id } = controller.create({ rows: 10, columns: 10 });
+      expect(() => controller.addMove(id, { x: 11, y: 0 })).toThrowError(
+        UnprocessableEntityException
+      );
+    });
+
+    it('throws UnprocessableEntityException for out of bounds column', () => {
+      const { id } = controller.create({ rows: 10, columns: 10 });
+      expect(() => controller.addMove(id, { x: 0, y: 11 })).toThrowError(
+        UnprocessableEntityException
+      );
+    });
+
+    it('updates a Game', () => {
+      const { id } = controller.create({ rows: 10, columns: 10 });
+      const result = controller.addMove(id, alpha);
+      expect(result).toHaveProperty('id', id);
+      expect(result).toHaveProperty('board');
       expect(result).toHaveProperty('status');
     });
   });

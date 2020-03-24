@@ -10,3 +10,14 @@ export const CreateGameDto = io.type({
 });
 
 export type CreateGameDto = io.TypeOf<typeof CreateGameDto>;
+
+/**
+ * Represent the request body for opening a game cell as a runtime verifiable
+ * type.
+ */
+export const GameMoveDto = io.type({
+  x: io.number,
+  y: io.number,
+});
+
+export type GameMoveDto = io.TypeOf<typeof GameMoveDto>;
