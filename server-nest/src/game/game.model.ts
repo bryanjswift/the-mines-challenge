@@ -84,7 +84,10 @@ export class Game {
       const cells = props.cells;
       associateCells({ rows, columns, cells });
       this.views = cells.map(
-        (cell) => new CellView(cell, { isOpen: cell.initialState.isOpen })
+        (cell) =>
+          new CellView(cell, {
+            isOpen: cell.initialState.isOpen || moves.includes(cell.id),
+          })
       );
     } else {
       // GridProps
