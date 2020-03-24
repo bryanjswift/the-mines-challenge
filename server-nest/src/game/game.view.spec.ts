@@ -16,8 +16,20 @@ describe(serializeGame, () => {
       expect(subject).toHaveProperty('id', game.id);
     });
 
+    it('has a board', () => {
+      expect(subject).toHaveProperty('board');
+    });
+
+    it('has a board with appropriate row count', () => {
+      expect(subject.board).toHaveLength(game.rows);
+    });
+
+    it('has a board with appropriate column count', () => {
+      expect(subject.board.every((row) => row.length === game.columns)).toBe(true);
+    });
+
     it('has a matching board', () => {
-      expect(subject).toHaveProperty('board', game.board);
+      expect(subject.board.flat()).toEqual(game.board);
     });
 
     it('has an open status', () => {
@@ -47,8 +59,20 @@ describe(serializeGame, () => {
       expect(subject).toHaveProperty('id', game.id);
     });
 
+    it('has a board', () => {
+      expect(subject).toHaveProperty('board');
+    });
+
+    it('has a board with appropriate row count', () => {
+      expect(subject.board).toHaveLength(game.rows)
+    });
+
+    it('has a board with appropriate column count', () => {
+      expect(subject.board.every((row) => row.length === game.columns)).toBe(true);
+    });
+
     it('has a matching board', () => {
-      expect(subject).toHaveProperty('board', game.board);
+      expect(subject.board.flat()).toEqual(game.board);
     });
 
     it('has an open status', () => {
@@ -80,8 +104,20 @@ describe(serializeGame, () => {
       expect(subject).toHaveProperty('id', game.id);
     });
 
+    it('has a board', () => {
+      expect(subject).toHaveProperty('board');
+    });
+
+    it('has a board with appropriate row count', () => {
+      expect(subject.board).toHaveLength(game.rows)
+    });
+
+    it('has a board with appropriate column count', () => {
+      expect(subject.board.every((row) => row.length === game.columns)).toBe(true);
+    });
+
     it('has a matching board', () => {
-      expect(subject).toHaveProperty('board', game.board);
+      expect(subject.board.flat()).toEqual(game.board);
     });
 
     it('has an open status', () => {

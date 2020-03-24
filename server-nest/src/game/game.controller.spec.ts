@@ -68,7 +68,7 @@ describe(GameController, () => {
       const game = service.findById(id);
       const result = controller.findOne(id);
       expect(result).toHaveProperty('id', id);
-      expect(result).toHaveProperty('board', game.board);
+      expect(result.board.flat()).toEqual(game.board);
       expect(result).toHaveProperty('status');
     });
   });
