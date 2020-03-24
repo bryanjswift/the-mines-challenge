@@ -70,10 +70,10 @@ function associateCells(props: InitialCells): void {
 }
 
 export class Game {
-  private readonly columns: number;
+  readonly columns: number;
   readonly id: string;
   readonly moves: CellId[];
-  private readonly rows: number;
+  readonly rows: number;
   private _views: CellView[];
   // `viewCache` is upated when `views` is assigned via the `views` setter.
   private viewCache: Record<CellId, CellView>;
