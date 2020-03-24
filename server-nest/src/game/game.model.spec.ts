@@ -358,6 +358,11 @@ describe('Game#open', () => {
     });
   });
 
+  it('retains the id', () => {
+    const subject = game.open(game.cells[0].id);
+    expect(subject.id).toEqual(game.id);
+  });
+
   it('opens only one cell when no chained cell', () => {
     const subject = game.open(game.cells[0].id);
     // prettier-ignore
@@ -439,6 +444,11 @@ describe('Game#openCoordinates', () => {
       columns: 4,
       cells,
     });
+  });
+
+  it('retains the id', () => {
+    const subject = game.openCoordinates(0, 0);
+    expect(subject.id).toEqual(game.id);
   });
 
   it('opens only one cell when no chained cell', () => {

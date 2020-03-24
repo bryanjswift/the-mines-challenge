@@ -12,6 +12,7 @@ export enum GameStatus {
 interface GridProps {
   columns: number;
   rows: number;
+  id?: string;
   moves?: CellId[];
 }
 
@@ -23,7 +24,7 @@ interface InitialViews extends GridProps {
   views: CellView[];
 }
 
-type Props = GridProps | InitialCells | InitialViews;
+export type Props = GridProps | InitialCells | InitialViews;
 
 function generateCells(cellCount: number): Cell[] {
   const cells = new Array(cellCount);
@@ -65,8 +66,8 @@ function associateCells(props: InitialCells): void {
 
 export class Game {
   private readonly columns: number;
-  id: string;
-  moves: CellId[];
+  readonly id: string;
+  readonly moves: CellId[];
   private readonly rows: number;
   private _views: CellView[];
   // `viewCache` is upated when `views` is assigned via the `views` setter.
@@ -92,8 +93,12 @@ export class Game {
       associateCells({ rows, columns, cells });
       this.views = cells.map((cell) => new CellView(cell));
     }
+    if ('id' in props) {
+      this.id = props.id;
+    } else {
+      this.id = uuid();
+    }
     this.columns = columns;
-    this.id = uuid();
     this.moves = moves;
     this.rows = rows;
   }
@@ -118,6 +123,7 @@ export class Game {
     return new Game({
       rows: this.rows,
       columns: this.columns,
+      id: this.id,
       views,
       moves,
     });
