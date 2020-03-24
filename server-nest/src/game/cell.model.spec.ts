@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Cell } from './cell.model';
 
 describe(Cell, () => {
