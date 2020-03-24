@@ -26,13 +26,18 @@ interface InitialViews extends GridProps {
 
 export type Props = GridProps | InitialCells | InitialViews;
 
-function generateCells(cellCount: number): Cell[] {
+function generateCells(cellCount: number, mineProbability = 0.5): Cell[] {
   const cells = new Array(cellCount);
   for (let i = 0; i < cellCount; i++) {
-    const isMine = Math.random() > 0.5;
+    const isMine = Math.random() < mineProbability;
     cells[i] = new Cell({ isMine });
   }
-  return cells;
+  const hasMine = cells.some((cell) => cell.isMine);
+  if (!hasMine) {
+    return generateCells(cellCount, mineProbability);
+  } else {
+    return cells;
+  }
 }
 
 function associateCells(props: InitialCells): void {
