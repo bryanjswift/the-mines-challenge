@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CatsModule } from './cats';
+import { GameModule } from './game';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { CatsModule } from './cats';
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
     }),
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
