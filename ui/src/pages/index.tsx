@@ -1,16 +1,45 @@
+import unfetch from 'isomorphic-unfetch';
 import { NextPage } from 'next';
+import React from 'react';
+import { GameListResponse, GameId } from '../types';
+
+const fetch = unfetch;
 
 interface Props {
+  gameIds: GameListResponse;
   userAgent: string;
 }
 
-const Home: NextPage<Props> = ({ userAgent }) => (
-  <h1>Hello world! - user agent: {userAgent}</h1>
+interface GameLinkProps {
+  gameId: GameId;
+}
+
+function GameLink(props: GameLinkProps): JSX.Element {
+  const { gameId } = props;
+  return gameId;
+}
+
+const Home: NextPage<Props> = ({ gameIds }: Props) => (
+  <React.Fragment>
+    <h1>Let&apos;s Play Minesweeper</h1>
+    <ol>
+      {gameIds.map((gameId) => (
+        <li key={gameId}>
+          <GameLink gameId={gameId} />
+        </li>
+      ))}
+    </ol>
+  </React.Fragment>
 );
 
 Home.getInitialProps = async ({ req }): Promise<Props> => {
+  const response = await fetch('http://localhost:3000/game');
+  const result: GameListResponse = await response.json();
   const userAgent = req ? req.headers['user-agent'] || '' : navigator.userAgent;
-  return { userAgent };
+  return {
+    gameIds: result || [],
+    userAgent
+  };
 };
 
 export default Home;
