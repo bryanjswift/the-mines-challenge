@@ -11,7 +11,7 @@
   "scripts": {
     "build": "next build src",
     "start": "next start src",
-    "start:dev": "next src",
+    "start:dev": "next dev src --port=${PORT:-4000}",
     "test": "jest"
   },
   "dependencies": {
