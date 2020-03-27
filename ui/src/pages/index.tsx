@@ -1,5 +1,6 @@
 import unfetch from 'isomorphic-unfetch';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import React from 'react';
 import { GameListResponse, GameId } from '../types';
 
@@ -16,7 +17,11 @@ interface GameLinkProps {
 
 function GameLink(props: GameLinkProps): JSX.Element {
   const { gameId } = props;
-  return gameId;
+  return (
+    <Link href="/game/[gameId]" as={`/game/${gameId}`}>
+      {gameId}
+    </Link>
+  );
 }
 
 const Home: NextPage<Props> = ({ gameIds }: Props) => (
