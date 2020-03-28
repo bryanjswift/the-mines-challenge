@@ -42,6 +42,14 @@ The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
 `server-nest/.env.sample` file includes the names of environment variables the
 `@mines/nest` package expects.
 
+- _APM_SERVICE_ENABLED_ identifies if the application should attempt to connect
+  and send data to Elastic APM.
+- _APM_SERVICE_URL_ is used by the `elastic-apm-node` library to know where to
+  send application performance monitoring data.
+- _APM_SERVICE_NAME_ is used by the `elastic-apm-node` library to identify data
+  the service sends to Elastic APM.
+- _APM_SERVICE_TOKEN_ is used by the `elastic-apm-node` library to authenticate
+  against Elastic APM.
 - _JWT_SECRET_ is used by `LocalStrategy` and `JwtModule` (via
   `JwtConfigService`). It is the symmetric secret used to sign JWTs generated
   and verified by the API.
