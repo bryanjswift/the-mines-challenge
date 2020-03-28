@@ -30,6 +30,19 @@ services:
       - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
+  apm01:
+    image: docker.elastic.co/apm/apm-server:7.6.1
+    container_name: apm01
+    volumes:
+      - ./apm-server.docker.yml:/usr/share/apm-server/apm-server.yml
+    environment:
+      - kibana.host=kib01:5601
+      - output.elasticsearch.hosts=es01:9200
+    ports:
+      - 8200:8200
+    networks:
+      - elastic
+
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
     container_name: es01
