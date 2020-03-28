@@ -1,9 +1,9 @@
-import * as dotenv from 'dotenv';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ensureEnv } from './config';
 
-dotenv.config();
+ensureEnv();
 const port = process.env.PORT || 3000;
 
 async function bootstrap(): Promise<void> {
