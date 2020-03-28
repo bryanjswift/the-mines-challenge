@@ -29,7 +29,7 @@ describe('AppController', () => {
 
   describe('GET /profile', () => {
     it('should do the thing', () => {
-      const request = req as unknown as Request;
+      const request = (req as unknown) as Request;
       expect(appController.getProfile(request)).toEqual({ foo: 'bar' });
     });
   });

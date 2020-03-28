@@ -25,7 +25,9 @@ describe(serializeGame, () => {
     });
 
     it('has a board with appropriate column count', () => {
-      expect(subject.board.every((row) => row.length === game.columns)).toBe(true);
+      expect(subject.board.every((row) => row.length === game.columns)).toBe(
+        true
+      );
     });
 
     it('has a matching board', () => {
@@ -64,11 +66,13 @@ describe(serializeGame, () => {
     });
 
     it('has a board with appropriate row count', () => {
-      expect(subject.board).toHaveLength(game.rows)
+      expect(subject.board).toHaveLength(game.rows);
     });
 
     it('has a board with appropriate column count', () => {
-      expect(subject.board.every((row) => row.length === game.columns)).toBe(true);
+      expect(subject.board.every((row) => row.length === game.columns)).toBe(
+        true
+      );
     });
 
     it('has a matching board', () => {
@@ -109,11 +113,13 @@ describe(serializeGame, () => {
     });
 
     it('has a board with appropriate row count', () => {
-      expect(subject.board).toHaveLength(game.rows)
+      expect(subject.board).toHaveLength(game.rows);
     });
 
     it('has a board with appropriate column count', () => {
-      expect(subject.board.every((row) => row.length === game.columns)).toBe(true);
+      expect(subject.board.every((row) => row.length === game.columns)).toBe(
+        true
+      );
     });
 
     it('has a matching board', () => {

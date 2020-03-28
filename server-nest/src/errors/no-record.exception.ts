@@ -5,7 +5,10 @@ export class NoRecordError extends Error {
    * @param id of the record which could not be found.
    * @param recordType used to indicate the type of record.
    */
-  constructor(private readonly id: string, private readonly recordType: string) {
+  constructor(
+    private readonly id: string,
+    private readonly recordType: string
+  ) {
     super();
   }
 

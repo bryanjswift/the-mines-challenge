@@ -12,18 +12,9 @@ export function serializeGame(game: Game): GameView {
     (memo, view) => {
       const row = memo.slice(-1)[0];
       if (row.length >= game.columns) {
-        return [
-          ...memo,
-          [view],
-        ];
+        return [...memo, [view]];
       } else {
-        return [
-          ...memo.slice(0, -1),
-          [
-            ...row,
-            view,
-          ]
-        ];
+        return [...memo.slice(0, -1), [...row, view]];
       }
     },
     [[]]
@@ -49,7 +40,7 @@ export class GameViewModel implements GameView {
   @Field()
   id: GameId;
   /** Name for this cat. */
-  @Field(_type => [[String!]!])
+  @Field((_type) => [[String!]!])
   board: string[][];
   /** Breed of this cat. */
   @Field()
