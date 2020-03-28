@@ -10,7 +10,7 @@ export class GamesResolver {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Query((returns) => [GameViewModel])
-  async games(): Promise<GameViewModel[]> {
+  games(): GameViewModel[] {
     return this.gameService.list().map(serializeGame);
   }
 
@@ -29,11 +29,7 @@ export class GamesResolver {
   @Mutation((returns) => GameViewModel)
   createGame(@Args('data') data: CreateGameInput): GameViewModel {
     const model = this.gameService.create(data);
-    if (model) {
-      return serializeGame(model);
-    } else {
-      return undefined;
-    }
+    return serializeGame(model);
   }
 
   @Mutation((returns) => GameViewModel)
