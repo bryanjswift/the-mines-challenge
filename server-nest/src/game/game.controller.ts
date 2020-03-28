@@ -13,11 +13,9 @@ import {
 } from '@nestjs/common';
 import { IoValidationPipe } from '../io-validation.pipe';
 import { CreateGameDto, GameMoveDto } from './game.dto';
-import { Game } from './game.model';
+import { Game, GameId } from './game.model';
 import { GameService } from './game.service';
 import { GameView, serializeGame } from './game.view';
-
-type GameId = Game['id'];
 
 @Controller('game')
 export class GameController {
@@ -39,7 +37,7 @@ export class GameController {
 
   @Get(':id')
   @Header('Cache-Control', 'must-revalidate, max-age=60')
-  findOne(@Param('id') id: string): GameView {
+  findOne(@Param('id') id: GameId): GameView {
     const game = this.gameService.findById(id);
     if (typeof game === 'undefined' || game === null) {
       throw new NotFoundException();
@@ -49,7 +47,7 @@ export class GameController {
 
   @Patch(':id')
   @UsePipes(new IoValidationPipe(GameMoveDto))
-  addMove(@Param('id') id: string, @Body() move: GameMoveDto): GameView {
+  addMove(@Param('id') id: GameId, @Body() move: GameMoveDto): GameView {
     const current = this.gameService.findById(id);
     if (typeof current === 'undefined' || current === null) {
       throw new NotFoundException();

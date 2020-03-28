@@ -1,10 +1,10 @@
-import { Game } from './game.model';
+import { Game, GameId } from './game.model';
 
 type Status = 'WON' | 'LOST' | 'OPEN';
 
 export interface GameView {
   board: string[][];
-  id: Game['id'];
+  id: GameId;
   status: Status;
 }
 

@@ -24,6 +24,8 @@ interface InitialViews extends GridProps {
   views: CellView[];
 }
 
+export type GameId = string;
+
 export type Props = GridProps | InitialCells | InitialViews;
 
 function generateCells(cellCount: number, mineProbability = 0.25): Cell[] {
@@ -71,7 +73,7 @@ function associateCells(props: InitialCells): void {
 
 export class Game {
   readonly columns: number;
-  readonly id: string;
+  readonly id: GameId;
   readonly moves: CellId[];
   readonly rows: number;
   private _views: CellView[];

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Game, Props } from './game.model';
+import { Game, GameId, Props } from './game.model';
 
 @Injectable()
 export class GameService {
@@ -29,7 +29,7 @@ export class GameService {
    * @param id of the record to find.
    * @returns the record if one is found or `undefined` if one is not.
    */
-  findById(id: string): Game {
+  findById(id: GameId): Game {
     return this.games.find((game) => game.id === id);
   }
 
@@ -41,7 +41,7 @@ export class GameService {
    * @throws if `id` does not exist.
    * @throws if `id` does not match `game.id`.
    */
-  updateById(id: string, game: Game): Game {
+  updateById(id: GameId, game: Game): Game {
     const gameIndex = this.games.findIndex((game) => game.id === id);
     if (gameIndex === -1) {
       throw new Error(`No Game with ${id} has been created.`);
