@@ -496,11 +496,11 @@ describe('Game#openCoordinates', () => {
     ]);
   });
 
-  it('throws when row is out of bounds', () => {
-    expect(() => game.openCoordinates(4, 0)).toThrow();
+  it('throws when column is out of bounds', () => {
+    expect(() => game.openCoordinates(4, 0)).toThrowError(/columns/);
   });
 
-  it('throws when column is out of bounds', () => {
-    expect(() => game.openCoordinates(0, 4)).toThrow();
+  it('throws when row is out of bounds', () => {
+    expect(() => game.openCoordinates(0, 4)).toThrowError(/rows/);
   });
 });

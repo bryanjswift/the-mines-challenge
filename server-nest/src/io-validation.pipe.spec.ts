@@ -103,7 +103,10 @@ describe('Fail Pipe', () => {
   const FailString = new io.Type<string, string, unknown>(
     'string',
     (_input: unknown): _input is string => false,
-    (input, context) => typeof input === 'string' ? io.success(input) : io.failure(input, context),
+    (input, context) =>
+      typeof input === 'string'
+        ? io.success(input)
+        : io.failure(input, context),
     io.identity
   );
 

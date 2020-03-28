@@ -1,9 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { Game, Props } from './game.model';
+import { NoRecordError } from '../errors';
+import { Game, GameId, Props } from './game.model';
 
 @Injectable()
 export class GameService {
   private readonly games: Game[] = [];
+
+  /**
+   * Find the `Game` associated with `id`, add the move represented by the
+   * column and row to be opened, return the updated `Game`.
+   * @param id of the record to update.
+   * @param column of the `Cell` to open.
+   * @param row of the `Cell` to open.
+   * @returns a `Game` with the move applied.
+   * @throws if `id` does not exist.
+   * @throws if `(column, row)` can not be opened.
+   */
+  addMoveById(id: GameId, column: number, row: number): Game {
+    const current = this.findById(id);
+    if (typeof current === 'undefined' || current === null) {
+      throw new NoRecordError(id, 'Game');
+    }
+    const next = current.openCoordinates(column, row);
+    this.updateById(current.id, next);
+    return next;
+  }
 
   /**
    * Create a new record and store it.
@@ -29,7 +50,7 @@ export class GameService {
    * @param id of the record to find.
    * @returns the record if one is found or `undefined` if one is not.
    */
-  findById(id: string): Game {
+  findById(id: GameId): Game {
     return this.games.find((game) => game.id === id);
   }
 
@@ -41,10 +62,10 @@ export class GameService {
    * @throws if `id` does not exist.
    * @throws if `id` does not match `game.id`.
    */
-  updateById(id: string, game: Game): Game {
+  updateById(id: GameId, game: Game): Game {
     const gameIndex = this.games.findIndex((game) => game.id === id);
     if (gameIndex === -1) {
-      throw new Error(`No Game with ${id} has been created.`);
+      throw new NoRecordError(id, 'Game');
     } else if (id !== game.id) {
       throw new Error(
         'Can only update a Game with a new version of the same Game.'

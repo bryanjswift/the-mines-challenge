@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuid } from 'uuid';
+import { NoRecordError } from '../errors';
 import { Game } from './game.model';
 import { GameService } from './game.service';
 
@@ -85,7 +86,7 @@ describe('GameService', () => {
     });
 
     it('throws for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).toThrow();
+      expect(() => service.updateById(uuid(), null)).toThrow(NoRecordError);
     });
 
     it('throws if ids do not match', () => {
@@ -103,6 +104,41 @@ describe('GameService', () => {
       const v2 = game.openCoordinates(0, 0);
       service.updateById(game.id, v2);
       expect(service.findById(game.id)).toBe(v2);
+    });
+  });
+
+  describe('#addMoveById', () => {
+    let game: Game;
+
+    beforeEach(() => {
+      game = service.create({
+        rows: 2,
+        columns: 2,
+      });
+    });
+
+    it('throws for unknown id', () => {
+      expect(() => service.addMoveById(uuid(), 0, 0)).toThrow(NoRecordError);
+    });
+
+    it('returns a new game', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(result).not.toBe(game);
+    });
+
+    it('returns a game with a new board state', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(result.board).not.toEqual(game.board);
+    });
+
+    it('returns a game with same id', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(result).toHaveProperty('id', game.id);
+    });
+
+    it('replaces the old game', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(service.findById(game.id)).toBe(result);
     });
   });
 });

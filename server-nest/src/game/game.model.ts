@@ -24,6 +24,8 @@ interface InitialViews extends GridProps {
   views: CellView[];
 }
 
+export type GameId = string;
+
 export type Props = GridProps | InitialCells | InitialViews;
 
 function generateCells(cellCount: number, mineProbability = 0.25): Cell[] {
@@ -71,7 +73,7 @@ function associateCells(props: InitialCells): void {
 
 export class Game {
   readonly columns: number;
-  readonly id: string;
+  readonly id: GameId;
   readonly moves: CellId[];
   readonly rows: number;
   private _views: CellView[];
@@ -165,10 +167,10 @@ export class Game {
 
   private static getIndex(props: GridProps, x: number, y: number): number {
     const { rows, columns } = props;
-    if (x >= rows) {
-      throw new OutOfBoundsException('rows', x);
-    } else if (y >= columns) {
-      throw new OutOfBoundsException('columns', y);
+    if (x >= columns) {
+      throw new OutOfBoundsException('columns', x);
+    } else if (y >= rows) {
+      throw new OutOfBoundsException('rows', y);
     }
     return columns * x + y;
   }
