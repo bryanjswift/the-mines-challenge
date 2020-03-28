@@ -167,10 +167,10 @@ export class Game {
 
   private static getIndex(props: GridProps, x: number, y: number): number {
     const { rows, columns } = props;
-    if (x >= rows) {
-      throw new OutOfBoundsException('rows', x);
-    } else if (y >= columns) {
-      throw new OutOfBoundsException('columns', y);
+    if (x >= columns) {
+      throw new OutOfBoundsException('columns', x);
+    } else if (y >= rows) {
+      throw new OutOfBoundsException('rows', y);
     }
     return columns * x + y;
   }
