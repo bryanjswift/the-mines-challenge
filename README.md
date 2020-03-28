@@ -9,6 +9,16 @@ significantly fewer dependencies from the jump.
 
 [expressjs]: https://docs.nestjs.com/
 
+### Environment Variables
+
+The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
+`/mines/dev/express` path and place them into `server-express/.env`. The
+`server-express/.env.sample` file includes the names of environment variables
+the `@mines/express` package expects.
+
+- _JWT_SECRET_ is not used anywhere in `server-express` but is used to
+  demonstrate the SSM setup.
+
 ## @mines/nest
 
 The `@mines/nest` package in [`server-nest`](./server-nest) defines a server
@@ -54,7 +64,9 @@ To run the locally built Docker image:
 
 The [`docker-compose.yml`](./docker-compose.yml) defines a
 [localstack][localstack] and [event store][eventstore] container. These were
-meant to be starting points for different types of databases.
+meant to be starting points for different types of databases. As well as an
+[elasticsearch and kibana stack][elk] for experimentation.
 
 [localstack]: https://github.com/localstack/localstack
 [eventstore]: https://eventstore.com/
+[elk]: https://www.elastic.co/what-is/elk-stack
