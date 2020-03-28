@@ -7,6 +7,26 @@ export class GameService {
   private readonly games: Game[] = [];
 
   /**
+   * Find the `Game` associated with `id`, add the move represented by the
+   * column and row to be opened, return the updated `Game`.
+   * @param id of the record to update.
+   * @param column of the `Cell` to open.
+   * @param row of the `Cell` to open.
+   * @returns a `Game` with the move applied.
+   * @throws if `id` does not exist.
+   * @throws if `(column, row)` can not be opened.
+   */
+  addMoveById(id: GameId, column: number, row: number): Game {
+    const current = this.findById(id);
+    if (typeof current === 'undefined' || current === null) {
+      throw new NoRecordError(id, 'Game');
+    }
+    const next = current.openCoordinates(column, row);
+    this.updateById(current.id, next);
+    return next;
+  }
+
+  /**
    * Create a new record and store it.
    * @param data to be stored.
    * @returns the stored Game record.

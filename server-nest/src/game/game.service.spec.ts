@@ -106,4 +106,39 @@ describe('GameService', () => {
       expect(service.findById(game.id)).toBe(v2);
     });
   });
+
+  describe('#addMoveById', () => {
+    let game: Game;
+
+    beforeEach(() => {
+      game = service.create({
+        rows: 2,
+        columns: 2,
+      });
+    });
+
+    it('throws for unknown id', () => {
+      expect(() => service.addMoveById(uuid(), 0, 0)).toThrow(NoRecordError);
+    });
+
+    it('returns a new game', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(result).not.toBe(game);
+    });
+
+    it('returns a game with a new board state', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(result.board).not.toEqual(game.board);
+    });
+
+    it('returns a game with same id', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(result).toHaveProperty('id', game.id);
+    });
+
+    it('replaces the old game', () => {
+      const result = service.addMoveById(game.id, 0, 0);
+      expect(service.findById(game.id)).toBe(result);
+    });
+  });
 });
