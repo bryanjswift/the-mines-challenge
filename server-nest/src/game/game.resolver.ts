@@ -38,13 +38,7 @@ export class GamesResolver {
 
   @Mutation((returns) => GameViewModel)
   gameAddMove(@Args('data') data: CreateGameMoveInput): GameViewModel {
-    const current = this.gameService.findById(data.id);
-    if (typeof current === 'undefined' || current === null) {
-      return undefined;
-    }
-    const next = current.openCoordinates(data.column, data.row);
-    this.gameService.updateById(current.id, next);
+    const next = this.gameService.addMoveById(data.id, data.column, data.row);
     return serializeGame(next);
   }
 }
-

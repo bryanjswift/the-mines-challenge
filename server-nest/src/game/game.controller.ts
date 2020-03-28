@@ -11,6 +11,7 @@ import {
   UnprocessableEntityException,
   UsePipes,
 } from '@nestjs/common';
+import { NoRecordError } from '../errors';
 import { IoValidationPipe } from '../io-validation.pipe';
 import { CreateGameDto, GameMoveDto } from './game.dto';
 import { Game, GameId } from './game.model';
@@ -48,19 +49,18 @@ export class GameController {
   @Patch(':id')
   @UsePipes(new IoValidationPipe(GameMoveDto))
   addMove(@Param('id') id: GameId, @Body() move: GameMoveDto): GameView {
-    const current = this.gameService.findById(id);
-    if (typeof current === 'undefined' || current === null) {
-      throw new NotFoundException();
-    }
     try {
-      const next = current.openCoordinates(move.x, move.y);
-      this.gameService.updateById(current.id, next);
+      const next = this.gameService.addMoveById(id, move.x, move.y);
       return serializeGame(next);
-    } catch (e) {
-      throw new UnprocessableEntityException(
-        'Coordinates out of range.',
-        'invalid_coordinates'
-      );
+    } catch (error) {
+      if (error instanceof NoRecordError) {
+        throw new NotFoundException();
+      } else {
+        throw new UnprocessableEntityException(
+          'Coordinates out of range.',
+          'invalid_coordinates'
+        );
+      }
     }
   }
 }
