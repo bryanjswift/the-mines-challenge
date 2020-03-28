@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuid } from 'uuid';
+import { NoRecordError } from '../errors';
 import { Game } from './game.model';
 import { GameService } from './game.service';
 
@@ -85,7 +86,7 @@ describe('GameService', () => {
     });
 
     it('throws for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).toThrow();
+      expect(() => service.updateById(uuid(), null)).toThrow(NoRecordError);
     });
 
     it('throws if ids do not match', () => {

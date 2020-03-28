@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { NoRecordError } from '../errors';
 import { Game, GameId, Props } from './game.model';
 
 @Injectable()
@@ -44,7 +45,7 @@ export class GameService {
   updateById(id: GameId, game: Game): Game {
     const gameIndex = this.games.findIndex((game) => game.id === id);
     if (gameIndex === -1) {
-      throw new Error(`No Game with ${id} has been created.`);
+      throw new NoRecordError(id, 'Game');
     } else if (id !== game.id) {
       throw new Error(
         'Can only update a Game with a new version of the same Game.'
