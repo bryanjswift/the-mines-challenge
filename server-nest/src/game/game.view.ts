@@ -1,11 +1,9 @@
-import { Game, GameId } from './game.model';
-
-type Status = 'WON' | 'LOST' | 'OPEN';
+import { Game, GameId, GameStatus } from './game.model';
 
 export interface GameView {
   board: string[][];
   id: GameId;
-  status: Status;
+  status: GameStatus;
 }
 
 export function serializeGame(game: Game): GameView {
