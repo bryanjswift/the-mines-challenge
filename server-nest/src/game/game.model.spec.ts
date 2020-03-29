@@ -379,9 +379,9 @@ describe('Game#open', () => {
     const subject = game.open(cells[cells.length - 1].id);
     // prettier-ignore
     expect(subject.board).toEqual([
-      ' ', ' ', ' ', '0',
-      ' ', ' ', ' ', '0',
-      ' ', ' ', ' ', '0',
+      ' ', ' ', '2', '0',
+      ' ', ' ', '2', '0',
+      '2', '2', '1', '0',
       '0', '0', '0', '0',
     ]);
   });
@@ -466,9 +466,9 @@ describe('Game#openCoordinates', () => {
     const subject = game.openCoordinates(3, 3);
     // prettier-ignore
     expect(subject.board).toEqual([
-      ' ', ' ', ' ', '0',
-      ' ', ' ', ' ', '0',
-      ' ', ' ', ' ', '0',
+      ' ', ' ', '2', '0',
+      ' ', ' ', '2', '0',
+      '2', '2', '1', '0',
       '0', '0', '0', '0',
     ]);
   });

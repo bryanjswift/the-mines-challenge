@@ -60,7 +60,12 @@ function Board(props: BoardProps): JSX.Element {
         {board.map((row, rowNumber) => (
           <tr key={rowNumber}>
             {row.map((cell, colNumber) => (
-              <Cell column={colNumber} row={rowNumber} onCell={onCell}>
+              <Cell
+                key={`(${colNumber},${rowNumber})`}
+                column={colNumber}
+                row={rowNumber}
+                onCell={onCell}
+              >
                 {cell}
               </Cell>
             ))}
