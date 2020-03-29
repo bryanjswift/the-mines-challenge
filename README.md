@@ -68,6 +68,15 @@ To run the locally built Docker image:
 
     docker run --name=mines-ui --detach --publish=8080:80 mines-ui:<version>
 
+### Environment Variables
+
+The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
+`/mines/dev/ui` path and place them into `ui/.env`. The `ui/.env.sample` file
+includes the names of environment variables the `@mines/ui` package expects.
+
+- _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
+  server.
+
 ## docker-compose
 
 The [`docker-compose.yml`](./docker-compose.yml) defines a
