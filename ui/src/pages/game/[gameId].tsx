@@ -1,6 +1,6 @@
 import unfetch from 'isomorphic-unfetch';
 import { NextPageContext } from 'next';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, PropsWithChildren, useState } from 'react';
 import { GameBoard, GameId } from '../../types';
 
 const fetch = unfetch;
@@ -15,8 +15,33 @@ interface BoardProps extends Pick<Props, 'board'> {
   onCell: (col: number, row: number) => void;
 }
 
+interface CellProps {
+  column: number;
+  row: number;
+  onCell: (col: number, row: number) => void;
+}
+
 type Props = GameResponse;
 type State = GameResponse;
+
+function Cell(props: PropsWithChildren<CellProps>): JSX.Element {
+  const { column, row, children, onCell } = props;
+  return (
+    <td
+      key={`${row}:${column}`}
+      valign="middle"
+      align="center"
+      onClick={onCell.bind(null, column, row)}
+      style={{
+        height: '50px',
+        width: '50px',
+        border: '1px solid black',
+      }}
+    >
+      {children}
+    </td>
+  );
+}
 
 function Board(props: BoardProps): JSX.Element {
   const { board, onCell } = props;
@@ -26,19 +51,9 @@ function Board(props: BoardProps): JSX.Element {
         {board.map((row, rowNumber) => (
           <tr key={rowNumber}>
             {row.map((cell, colNumber) => (
-              <td
-                key={`${rowNumber}:${colNumber}`}
-                valign="middle"
-                align="center"
-                onClick={onCell.bind(null, colNumber, rowNumber)}
-                style={{
-                  height: '50px',
-                  width: '50px',
-                  border: '1px solid black',
-                }}
-              >
+              <Cell column={colNumber} row={rowNumber} onCell={onCell}>
                 {cell}
-              </td>
+              </Cell>
             ))}
           </tr>
         ))}
