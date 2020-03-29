@@ -5,7 +5,6 @@ on:
       - 'ui/**'
 jobs:
   build_ui_container:
-    name: ui
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ui

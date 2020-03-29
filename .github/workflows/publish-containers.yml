@@ -42,7 +42,6 @@ jobs:
           # Push the tagged image to package management
           docker push $IMAGE_ID:$VERSION
   publish_ui_container:
-    name: ui
     runs-on: ubuntu-latest
     # Only publish if triggered by a push event
     if: github.event_name == 'push'
