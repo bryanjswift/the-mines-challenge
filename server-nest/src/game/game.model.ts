@@ -13,11 +13,11 @@ interface GridProps {
   columns: number;
   rows: number;
   id?: string;
-  moves?: CellId[];
 }
 
 interface InitialCells extends GridProps {
   cells: Cell[];
+  moves?: CellId[];
 }
 
 interface InitialViews extends GridProps {
@@ -81,15 +81,18 @@ export class Game {
   private viewCache: Record<CellId, CellView>;
 
   constructor(props: Props) {
-    const { rows, columns, moves = [] } = props;
+    const { rows, columns } = props;
     // Assign views based on the contents of props
     if ('views' in props) {
       // InitialViews
+      this.moves = [];
       this.views = props.views;
     } else if ('cells' in props) {
       // InitialCells
       const cells = props.cells;
+      const moves = props.moves || [];
       associateCells({ rows, columns, cells });
+      this.moves = moves;
       this.views = cells.map(
         (cell) =>
           new CellView(cell, {
@@ -101,6 +104,7 @@ export class Game {
       const cellCount = rows * columns;
       const cells = generateCells(cellCount);
       associateCells({ rows, columns, cells });
+      this.moves = [];
       this.views = cells.map((cell) => new CellView(cell));
     }
     if ('id' in props) {
@@ -109,7 +113,6 @@ export class Game {
       this.id = uuid();
     }
     this.columns = columns;
-    this.moves = moves;
     this.rows = rows;
   }
 
