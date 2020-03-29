@@ -1,5 +1,7 @@
 # Stage to buid the model interfaces
 FROM node:12-alpine as builder
+# The API_BASE_URL to inject into the NextJS build
+ARG api_base_url
 # Work from this directory to build model
 WORKDIR /usr/src/
 # Move to latest OS packages and add openssl and certificates
@@ -10,6 +12,8 @@ COPY package.json yarn.lock ./
 COPY ui ./ui/
 # Install dependencies, don't let yarn change versions
 RUN yarn install --frozen-lockfile
+# Inject the API_BASE_URL into the NextJS build
+ENV API_BASE_URL $api_base_url
 # Create the built project
 RUN yarn workspace @mines/ui build
 
