@@ -1,6 +1,7 @@
 import unfetch from 'isomorphic-unfetch';
 import { GetServerSideProps } from 'next';
 import ErrorPage from 'next/error';
+import { useRouter } from 'next/router';
 import React, { Fragment, PropsWithChildren, useState } from 'react';
 import { GameBoard, GameId } from '../../types';
 
@@ -84,6 +85,7 @@ function GameStatus(props: Pick<GameProps, 'status'>): JSX.Element {
 
 function Game(props: GameProps): JSX.Element {
   const { id } = props;
+  const router = useRouter();
   const [state, setState] = useState<State>(props);
   async function openCell(col: number, row: number): Promise<void> {
     if (state.status !== 'OPEN') {
@@ -102,10 +104,14 @@ function Game(props: GameProps): JSX.Element {
       .then((response) => response.json())
       .then((result: GameResponse) => setState(result));
   }
+  function gotoList() {
+    router.push('/');
+  }
   return (
     <Fragment>
       <h1>Game: {id}</h1>
-      <Board {...props} onCell={openCell} />
+      <button onClick={gotoList}>Back to List</button>
+      <Board {...state} onCell={openCell} />
       <GameStatus status={state.status} />
     </Fragment>
   );
