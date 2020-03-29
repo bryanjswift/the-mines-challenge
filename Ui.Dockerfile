@@ -29,10 +29,18 @@ EXPOSE 3000
 ENV NODE_ENV production
 # Copy dependency information from `builder`, but only the workspace specific
 # `package.json`
-COPY --from=builder /usr/src/ui/package.json /usr/src/yarn.lock ./
+# Copy the healthcheck script
+COPY --from=builder \
+  /usr/src/ui/package.json \
+  /usr/src/ui/healthcheck.js \
+  /usr/src/yarn.lock \
+  ./
 # Copy the compiled result from `builder`
 COPY --from=builder /usr/src/ui/src/.next ./src/.next
 # Install production dependencies, don't let yarn change versions
 RUN yarn install --production --frozen-lockfile
+# Create a healthcheck for the container
+HEALTHCHECK --timeout=1s --interval=2s --retries=3 --start-period=3s \
+  CMD node healthcheck.js
 # Start the app
 ENTRYPOINT ["/bin/sh", "-c", "yarn run start"]
