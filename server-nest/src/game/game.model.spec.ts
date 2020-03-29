@@ -474,7 +474,7 @@ describe('Game#openCoordinates', () => {
   });
 
   it('loses game when opening mine', () => {
-    const subject = game.openCoordinates(0, 1);
+    const subject = game.openCoordinates(1, 0);
     // prettier-ignore
     expect(subject.board).toEqual([
       ' ', 'M', ' ', ' ',

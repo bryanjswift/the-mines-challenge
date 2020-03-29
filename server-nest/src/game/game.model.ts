@@ -139,9 +139,9 @@ export class Game {
     });
   }
 
-  openCoordinates(x: number, y: number): Game {
+  openCoordinates(column: number, row: number): Game {
     const gridProps = { rows: this.rows, columns: this.columns };
-    const cellIndex = Game.getIndex(gridProps, x, y);
+    const cellIndex = Game.getIndex(gridProps, column, row);
     const cellId = this.cells[cellIndex].id;
     return this.open(cellId);
   }
@@ -165,14 +165,18 @@ export class Game {
     }
   }
 
-  private static getIndex(props: GridProps, x: number, y: number): number {
+  private static getIndex(
+    props: GridProps,
+    column: number,
+    row: number
+  ): number {
     const { rows, columns } = props;
-    if (x >= columns) {
-      throw new OutOfBoundsException('columns', x);
-    } else if (y >= rows) {
-      throw new OutOfBoundsException('rows', y);
+    if (column >= columns) {
+      throw new OutOfBoundsException('columns', column);
+    } else if (row >= rows) {
+      throw new OutOfBoundsException('rows', row);
     }
-    return columns * x + y;
+    return columns * row + column;
   }
 
   private get isLost(): boolean {
