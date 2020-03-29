@@ -43,4 +43,4 @@ RUN yarn install --production --frozen-lockfile
 HEALTHCHECK --timeout=1s --interval=2s --retries=3 --start-period=3s \
   CMD node healthcheck.js
 # Start the app
-ENTRYPOINT ["/bin/sh", "-c", "yarn run start"]
+ENTRYPOINT ["/bin/sh", "-c", "$(npm bin)/next start src"]
