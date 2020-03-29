@@ -7,3 +7,13 @@ export interface ResponseError {
   message: string;
   statusCode: number;
 }
+
+export interface GameCreateResponse {
+  id: GameId;
+}
+
+export interface ApiErrorResponse {
+  status: number;
+  error?: string;
+  message?: string;
+}
