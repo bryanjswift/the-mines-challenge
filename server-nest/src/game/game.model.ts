@@ -125,6 +125,13 @@ export class Game {
     this.rows = rows;
   }
 
+  flagCoordinates(column: number, row: number): Game {
+    const gridProps = { rows: this.rows, columns: this.columns };
+    const cellIndex = Game.getIndex(gridProps, column, row);
+    const cellId = this.cells[cellIndex].id;
+    return this.copyWithFlaggedCell(cellId);
+  }
+
   open(cellId: CellId): Game {
     const moves = [...this.moves, { type: GameMoveType.OPEN, cellId }];
     const openedCell = this.viewCache[cellId];
@@ -139,6 +146,7 @@ export class Game {
     const views = this.views.map(
       (view) =>
         new CellView(view.cell, {
+          isFlagged: view.isFlagged,
           isOpen: openedCellIds.includes(view.id) || view.isOpen,
         })
     );
@@ -175,6 +183,28 @@ export class Game {
     } else {
       return GameStatus.OPEN;
     }
+  }
+
+  private copyWithFlaggedCell(cellId: CellId): Game {
+    const moves = [...this.moves, { type: GameMoveType.FLAG, cellId }];
+    const flaggedCell = this.viewCache[cellId];
+    if (typeof flaggedCell === 'undefined') {
+      throw new Error(`Cell with id ${cellId} does not exist`);
+    }
+    const views = this.views.map(
+      (view) =>
+        new CellView(view.cell, {
+          isFlagged: view.isFlagged || cellId === view.id,
+          isOpen: view.isOpen,
+        })
+    );
+    return new Game({
+      rows: this.rows,
+      columns: this.columns,
+      id: this.id,
+      views,
+      moves,
+    });
   }
 
   private static getIndex(
