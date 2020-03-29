@@ -1,5 +1,6 @@
 import unfetch from 'isomorphic-unfetch';
 import { GetServerSideProps } from 'next';
+import ErrorPage from 'next/error';
 import React, { Fragment, PropsWithChildren, useState } from 'react';
 import { GameBoard, GameId } from '../../types';
 
@@ -11,7 +12,14 @@ interface GameResponse {
   status: 'OPEN' | 'WON' | 'LOST';
 }
 
-interface BoardProps extends Pick<Props, 'board'> {
+interface ErrorResponse {
+  statusCode: number;
+  message: string;
+}
+
+type GameProps = GameResponse;
+
+interface BoardProps extends Pick<GameResponse, 'board'> {
   onCell: (col: number, row: number) => void;
 }
 
@@ -21,7 +29,7 @@ interface CellProps {
   onCell: (col: number, row: number) => void;
 }
 
-type Props = GameResponse;
+type Props = GameResponse | ErrorResponse;
 type State = GameResponse;
 
 function Cell(props: PropsWithChildren<CellProps>): JSX.Element {
@@ -62,7 +70,7 @@ function Board(props: BoardProps): JSX.Element {
   );
 }
 
-function GameStatus(props: Pick<Props, 'status'>): JSX.Element {
+function GameStatus(props: Pick<GameProps, 'status'>): JSX.Element {
   const { status } = props;
   switch (status) {
     case 'LOST':
@@ -74,7 +82,7 @@ function GameStatus(props: Pick<Props, 'status'>): JSX.Element {
   }
 }
 
-function ShowGame(props: Props): JSX.Element {
+function Game(props: GameProps): JSX.Element {
   const { id } = props;
   const [state, setState] = useState<State>(props);
   async function openCell(col: number, row: number): Promise<void> {
@@ -103,6 +111,14 @@ function ShowGame(props: Props): JSX.Element {
   );
 }
 
+function GamePage(props: Props): JSX.Element {
+  if ('id' in props) {
+    return <Game {...props} />;
+  } else {
+    return <ErrorPage statusCode={props.statusCode} />;
+  }
+}
+
 export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
@@ -111,11 +127,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   const props: GameResponse = response.ok
     ? await response.json()
     : {
-        board: [],
-        id: 'server_error',
-        status: 'LOST',
+        statusCode: response.status,
+        message: '',
       };
   return { props };
 };
 
-export default ShowGame;
+export default GamePage;
