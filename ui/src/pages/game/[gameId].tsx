@@ -1,5 +1,5 @@
 import unfetch from 'isomorphic-unfetch';
-import { NextPageContext } from 'next';
+import { GetServerSideProps } from 'next';
 import React, { Fragment, PropsWithChildren, useState } from 'react';
 import { GameBoard, GameId } from '../../types';
 
@@ -101,11 +101,19 @@ function ShowGame(props: Props): JSX.Element {
   );
 }
 
-ShowGame.getInitialProps = async (ctx: NextPageContext): Promise<Props> => {
-  const { query } = ctx;
-  const response = await fetch(`http://localhost:3000/game/${query.gameId}`);
-  const result: GameResponse = await response.json();
-  return result;
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  context
+) => {
+  const gameId = context.params?.gameId;
+  const response = await fetch(`http://localhost:3000/game/${gameId}`);
+  const props: GameResponse = response.ok
+    ? await response.json()
+    : {
+        board: [],
+        id: 'server_error',
+        status: 'LOST',
+      };
+  return { props };
 };
 
 export default ShowGame;
