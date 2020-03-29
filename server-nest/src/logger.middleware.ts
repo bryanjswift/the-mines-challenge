@@ -16,6 +16,9 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction): void {
     const start = Date.now();
     next();
-    Logger.debug(`Completed in ${Date.now() - start}ms`, req.path);
+    Logger.debug(
+      `Completed in ${Date.now() - start}ms`,
+      `${req.method} ${req.path}`
+    );
   }
 }
