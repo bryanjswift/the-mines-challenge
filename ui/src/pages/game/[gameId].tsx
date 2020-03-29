@@ -105,7 +105,7 @@ function Game(props: GameProps): JSX.Element {
   return (
     <Fragment>
       <h1>Game: {id}</h1>
-      <Board {...props} onCell={openCell} />
+      <Board {...state} onCell={openCell} />
       <GameStatus status={state.status} />
     </Fragment>
   );
