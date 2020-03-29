@@ -105,6 +105,55 @@ describe(Cell, () => {
   });
 });
 
+describe(`
+| 0 | 0 | 1 | M |
+`, () => {
+  const cell_0_0 = new Cell({ isMine: false });
+  const cell_1_0 = new Cell({ isMine: false });
+  const cell_2_0 = new Cell({ isMine: false });
+  const cell_3_0 = new Cell({ isMine: true });
+
+  beforeEach(() => {
+    cell_0_0.add('right', cell_1_0);
+    cell_1_0.add('right', cell_2_0);
+    cell_2_0.add('right', cell_3_0);
+  });
+
+  describe('cell_0_0.neighborsChain', () => {
+    it('has a neighbor chain of two', () => {
+      expect(cell_0_0.neighborsChain).toHaveLength(2);
+    });
+
+    it('includes cell_1_0', () => {
+      expect(cell_0_0.neighborsChain).toContain(cell_1_0);
+    });
+
+    it('includes cell_2_0', () => {
+      expect(cell_0_0.neighborsChain).toContain(cell_2_0);
+    });
+  });
+
+  describe('cell_1_0.neighborsChain', () => {
+    it('has a neighbor chain of two', () => {
+      expect(cell_1_0.neighborsChain).toHaveLength(2);
+    });
+
+    it('includes cell_0_0', () => {
+      expect(cell_1_0.neighborsChain).toContain(cell_0_0);
+    });
+
+    it('includes cell_2_0', () => {
+      expect(cell_1_0.neighborsChain).toContain(cell_2_0);
+    });
+  });
+
+  describe('cell_2_0.neighborsChain', () => {
+    it('has a neighbor chain of zero', () => {
+      expect(cell_2_0.neighborsChain).toHaveLength(0);
+    });
+  });
+});
+
 // Generate a 2x2 game
 describe(`
 | ' ' | 'M' |
@@ -305,7 +354,7 @@ describe('Cell.neighborsChain', () => {
 
     describe('cell_0_0', () => {
       it('has two chained neighbors', () => {
-        expect(cell_0_0.neighborsChain).toHaveLength(2);
+        expect(cell_0_0.neighborsChain).toHaveLength(5);
       });
     });
 
@@ -323,7 +372,7 @@ describe('Cell.neighborsChain', () => {
 
     describe('cell_1_0', () => {
       it('has no chained neighbors', () => {
-        expect(cell_1_0.neighborsChain).toHaveLength(2);
+        expect(cell_1_0.neighborsChain).toHaveLength(5);
       });
     });
 
@@ -341,7 +390,7 @@ describe('Cell.neighborsChain', () => {
 
     describe('cell_2_0', () => {
       it('has no chained neighbors', () => {
-        expect(cell_2_0.neighborsChain).toHaveLength(2);
+        expect(cell_2_0.neighborsChain).toHaveLength(5);
       });
     });
 

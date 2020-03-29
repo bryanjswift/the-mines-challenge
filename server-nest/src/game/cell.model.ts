@@ -113,9 +113,10 @@ export class Cell {
 
   private getNeighborChain(ignore: CellId[]): Cell[] {
     const neighborIds = this.neighbors.map((cell) => cell.id);
-    const chainedNeighbors = this.neighbors.filter(
-      (cell) => !ignore.includes(cell.id) && cell.isEmpty
-    );
+    const ignoredIds = (cell: Cell) => !ignore.includes(cell.id);
+    const chainedNeighbors = this.isEmpty
+      ? this.neighbors.filter(ignoredIds)
+      : [];
     const chainsFromNeighbors = chainedNeighbors
       .map((cell) => cell.getNeighborChain([...ignore, ...neighborIds]))
       .flat();
