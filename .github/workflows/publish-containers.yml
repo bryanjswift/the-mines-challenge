@@ -1,0 +1,72 @@
+name: Build and Publish Containers
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+    paths:
+      - 'server-nest/**'
+      - 'ui/**'
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+jobs:
+  # Publish image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  publish_api_container:
+    runs-on: ubuntu-latest
+    # Only publish if triggered by a push event
+    if: github.event_name == 'push'
+    env:
+      IMAGE_NAME: api
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: docker build . --file Api.Dockerfile --tag image
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      - name: Push image
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/${IMAGE_NAME}
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          # Print the id and version used
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          # Tag the perviously built image
+          docker tag image $IMAGE_ID:$VERSION
+          # Push the tagged image to package management
+          docker push $IMAGE_ID:$VERSION
+  publish_ui_container:
+    name: ui
+    runs-on: ubuntu-latest
+    # Only publish if triggered by a push event
+    if: github.event_name == 'push'
+    env:
+      IMAGE_NAME: ui
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: docker build . --file Ui.Dockerfile --tag image
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      - name: Push image
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/${IMAGE_NAME}
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          # Print the id and version used
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          # Tag the perviously built image
+          docker tag image $IMAGE_ID:$VERSION
+          # Push the tagged image to package management
+          docker push $IMAGE_ID:$VERSION
