@@ -2,7 +2,12 @@ import unfetch from 'isomorphic-unfetch';
 import { GetServerSideProps } from 'next';
 import ErrorPage from 'next/error';
 import { useRouter } from 'next/router';
-import React, { Fragment, PropsWithChildren, useState } from 'react';
+import React, {
+  Fragment,
+  MouseEvent,
+  PropsWithChildren,
+  useState,
+} from 'react';
 import { GameBoard, GameId } from '../../types';
 
 const fetch = unfetch;
@@ -20,27 +25,40 @@ interface ErrorResponse {
 
 type GameProps = GameResponse;
 
+interface CellInteractProps {
+  column: number;
+  row: number;
+  flag?: boolean;
+}
+
 interface BoardProps extends Pick<GameResponse, 'board'> {
-  onCell: (col: number, row: number) => void;
+  onCellInteract: (interactProps: CellInteractProps) => void;
 }
 
 interface CellProps {
   column: number;
   row: number;
-  onCell: (col: number, row: number) => void;
+  onCellInteract: (interactProps: CellInteractProps) => void;
 }
 
 type Props = GameResponse | ErrorResponse;
 type State = GameResponse;
 
 function Cell(props: PropsWithChildren<CellProps>): JSX.Element {
-  const { column, row, children, onCell } = props;
+  const { column, row, children, onCellInteract } = props;
+  function onCellClick(e: MouseEvent<HTMLElement>): void {
+    onCellInteract({
+      column,
+      row,
+      flag: e.getModifierState('Alt') || e.getModifierState('Control'),
+    });
+  }
   return (
     <td
       key={`${row}:${column}`}
       valign="middle"
       align="center"
-      onClick={onCell.bind(null, column, row)}
+      onClick={onCellClick}
       style={{
         height: '50px',
         width: '50px',
@@ -53,7 +71,7 @@ function Cell(props: PropsWithChildren<CellProps>): JSX.Element {
 }
 
 function Board(props: BoardProps): JSX.Element {
-  const { board, onCell } = props;
+  const { board, onCellInteract } = props;
   return (
     <table>
       <tbody>
@@ -64,7 +82,7 @@ function Board(props: BoardProps): JSX.Element {
                 key={`(${colNumber},${rowNumber})`}
                 column={colNumber}
                 row={rowNumber}
-                onCell={onCell}
+                onCellInteract={onCellInteract}
               >
                 {cell}
               </Cell>
@@ -92,10 +110,13 @@ function Game(props: GameProps): JSX.Element {
   const { id } = props;
   const router = useRouter();
   const [state, setState] = useState<State>(props);
-  async function openCell(col: number, row: number): Promise<void> {
+  async function onCellInteract(
+    interactProps: CellInteractProps
+  ): Promise<void> {
     if (state.status !== 'OPEN') {
       return;
     }
+    const { column: col, row } = interactProps;
     return fetch(`${process.env.API_BASE_URL}/game/${id}`, {
       method: 'PATCH',
       headers: {
@@ -116,7 +137,7 @@ function Game(props: GameProps): JSX.Element {
     <Fragment>
       <h1>Game: {id}</h1>
       <button onClick={gotoList}>Back to List</button>
-      <Board {...state} onCell={openCell} />
+      <Board {...state} onCellInteract={onCellInteract} />
       <GameStatus status={state.status} />
     </Fragment>
   );
