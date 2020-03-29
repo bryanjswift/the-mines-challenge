@@ -89,7 +89,7 @@ function Game(props: GameProps): JSX.Element {
     if (state.status !== 'OPEN') {
       return;
     }
-    return fetch(`http://localhost:3000/game/${id}`, {
+    return fetch(`${process.env.API_BASE_URL}/game/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   const gameId = context.params?.gameId;
-  const response = await fetch(`http://localhost:3000/game/${gameId}`);
+  const response = await fetch(`${process.env.API_BASE_URL}/game/${gameId}`);
   const props: GameResponse = response.ok
     ? await response.json()
     : {

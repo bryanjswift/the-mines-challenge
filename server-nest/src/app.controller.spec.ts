@@ -27,6 +27,12 @@ describe('AppController', () => {
     });
   });
 
+  describe('GET /ping', () => {
+    it('responds with PONG', () => {
+      expect(appController.getPing()).toBe('PONG');
+    });
+  });
+
   describe('GET /profile', () => {
     it('should do the thing', () => {
       const request = (req as unknown) as Request;

@@ -1,5 +1,29 @@
 version: '3'
 services:
+  api:
+    container_name: api
+    build:
+      dockerfile: Api.Dockerfile
+      context: .
+    ports:
+      - '3000:3000'
+    env_file: ./server-nest/.env
+    environment:
+      - PORT=3000
+
+  ui:
+    container_name: ui
+    build:
+      dockerfile: Ui.Dockerfile
+      context: .
+      args:
+        - api_base_url=http://api:3000
+    ports:
+      - '4000:3000'
+    env_file: ./ui/.env
+    depends_on:
+      - api
+
   eventstore.db:
     image: eventstore/eventstore
     environment:

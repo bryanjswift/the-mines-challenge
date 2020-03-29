@@ -1,0 +1,15 @@
+name: Build API Container Images
+on:
+  pull_request:
+    paths:
+      - 'server-nest/**'
+jobs:
+  build_api_container:
+    name: api
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: api
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build . --file Api.Dockerfile --tag ${{ github.repository }}/${IMAGE_NAME}:${{ github.sha }}

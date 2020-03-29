@@ -37,7 +37,7 @@ const HomePage: NextPage<Props> = ({ gameIds }) => (
 );
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const response = await fetch('http://localhost:3000/game');
+  const response = await fetch(`${process.env.API_BASE_URL}/game`);
   const gameIds: GameListResponse = await response.json();
   const props: Props = {
     gameIds: response.ok ? gameIds : [],

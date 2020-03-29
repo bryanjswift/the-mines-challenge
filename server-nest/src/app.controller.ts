@@ -13,6 +13,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('/ping')
+  getPing(): string {
+    return 'PONG';
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   getProfile(@Req() req: Request): JwtPayload {

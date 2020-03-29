@@ -1,0 +1,15 @@
+name: Build UI Container Image
+on:
+  pull_request:
+    paths:
+      - 'ui/**'
+jobs:
+  build_ui_container:
+    name: ui
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ui
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build . --file Ui.Dockerfile --tag ${{ github.repository }}/${IMAGE_NAME}:${{ github.sha }}
