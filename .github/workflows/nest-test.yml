@@ -1,7 +1,10 @@
-name: Node Test
-on: [push]
+name: Execute API Tests
+on:
+  push:
+    paths:
+      - 'server-nest/**'
 jobs:
-  build:
+  build_test_api:
     runs-on: ubuntu-latest
     strategy:
       matrix:
