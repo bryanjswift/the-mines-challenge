@@ -66,7 +66,7 @@ Yarn workspaces. To build the web ui container locally execute:
 
 To run the locally built Docker image:
 
-    docker run --name=mines-ui --detach --publish=8080:80 mines-ui:<version>
+    docker run --name=mines-ui --detach --publish=4000:3000 mines-ui:<version>
 
 ### Environment Variables
 
