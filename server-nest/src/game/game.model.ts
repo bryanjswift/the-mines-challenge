@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { Cell, CellId } from './cell.model';
 import { CellView } from './cell.view';
+import { GameMove, GameMoveType } from './game-move.model';
 import { OutOfBoundsException } from './out-of-bounds.exception';
 
 export enum GameStatus {
@@ -17,7 +18,7 @@ interface GridProps {
 
 interface InitialCells extends GridProps {
   cells: Cell[];
-  moves?: CellId[];
+  moves?: GameMove[];
 }
 
 interface InitialViews extends GridProps {
@@ -74,7 +75,7 @@ function associateCells(props: InitialCells): void {
 export class Game {
   readonly columns: number;
   readonly id: GameId;
-  readonly moves: CellId[];
+  readonly moves: GameMove[];
   readonly rows: number;
   private _views: CellView[];
   // `viewCache` is upated when `views` is assigned via the `views` setter.
@@ -91,12 +92,20 @@ export class Game {
       // InitialCells
       const cells = props.cells;
       const moves = props.moves || [];
+      const flaggedCellIds = moves
+        .filter((move) => move.type === GameMoveType.FLAG)
+        .map((move) => move.cellId);
+      const openedCellIds = moves
+        .filter((move) => move.type === GameMoveType.OPEN)
+        .map((move) => move.cellId);
       associateCells({ rows, columns, cells });
       this.moves = moves;
       this.views = cells.map(
         (cell) =>
           new CellView(cell, {
-            isOpen: cell.initialState.isOpen || moves.includes(cell.id),
+            isFlagged:
+              cell.initialState.isFlagged || flaggedCellIds.includes(cell.id),
+            isOpen: cell.initialState.isOpen || openedCellIds.includes(cell.id),
           })
       );
     } else {
@@ -117,7 +126,7 @@ export class Game {
   }
 
   open(cellId: CellId): Game {
-    const moves = [...this.moves, cellId];
+    const moves = [...this.moves, { type: GameMoveType.OPEN, cellId }];
     const openedCell = this.viewCache[cellId];
     if (typeof openedCell === 'undefined') {
       throw new Error(`Cell with id ${cellId} does not exist`);
