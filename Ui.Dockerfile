@@ -23,15 +23,16 @@ FROM node:12-alpine as app
 WORKDIR /usr/src/
 # Move to latest OS packages and add openssl and certificates
 RUN apk update && apk upgrade && apk add --no-cache openssl ca-certificates
-# Expose port 80
+# Expose port 3000, the NextJS default
 EXPOSE 3000
 # Set NODE_ENV for the server
 ENV NODE_ENV production
-# Copy dependency information from builder
+# Copy dependency information from `builder`, but only the workspace specific
+# `package.json`
 COPY --from=builder /usr/src/ui/package.json /usr/src/yarn.lock ./
-# Copy the built static files to the html folder
+# Copy the compiled result from `builder`
 COPY --from=builder /usr/src/ui/src/.next ./src/.next
-# Install dependencies, don't let yarn change versions
+# Install production dependencies, don't let yarn change versions
 RUN yarn install --production --frozen-lockfile
 # Start the app
 ENTRYPOINT ["/bin/sh", "-c", "yarn run start"]
