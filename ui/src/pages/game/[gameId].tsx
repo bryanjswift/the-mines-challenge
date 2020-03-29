@@ -66,9 +66,9 @@ function GameStatus(props: Pick<Props, 'status'>): JSX.Element {
   const { status } = props;
   switch (status) {
     case 'LOST':
-      return (<h2>BOOM 💥</h2>);
+      return <h2>BOOM 💥</h2>;
     case 'WON':
-      return (<h2>You did the thing! 🥳</h2>)
+      return <h2>You did the thing! 🥳</h2>;
     case 'OPEN':
       return <Fragment />;
   }
@@ -89,8 +89,10 @@ function ShowGame(props: Props): JSX.Element {
       body: JSON.stringify({
         x: col,
         y: row,
-      })
-    }).then((response) => response.json()).then((result: GameResponse) => setState(result))
+      }),
+    })
+      .then((response) => response.json())
+      .then((result: GameResponse) => setState(result));
   }
   return (
     <Fragment>

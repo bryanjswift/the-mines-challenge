@@ -43,7 +43,7 @@ Home.getInitialProps = async ({ req }): Promise<Props> => {
   const userAgent = req ? req.headers['user-agent'] || '' : navigator.userAgent;
   return {
     gameIds: result || [],
-    userAgent
+    userAgent,
   };
 };
 
