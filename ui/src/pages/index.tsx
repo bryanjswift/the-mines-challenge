@@ -62,7 +62,7 @@ function GameLink(props: GameLinkProps): JSX.Element {
   const { gameId } = props;
   return (
     <Link href="/game/[gameId]" as={`/game/${gameId}`}>
-      {gameId}
+      <a>{gameId}</a>
     </Link>
   );
 }
