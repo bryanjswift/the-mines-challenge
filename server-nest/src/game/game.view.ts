@@ -36,13 +36,13 @@ registerEnumType(GameStatus, {
  */
 @ObjectType()
 export class GameViewModel implements GameView {
-  /** Unique identifier for this cat. */
+  /** Unique identifier for this game. */
   @Field()
   id: GameId;
-  /** Name for this cat. */
+  /** Board state for this game. */
   @Field((_type) => [[String!]!])
   board: string[][];
-  /** Breed of this cat. */
+  /** Current status for this game. */
   @Field()
   status: GameStatus;
 }
