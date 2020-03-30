@@ -13,12 +13,12 @@ export enum GameStatus {
 interface GridProps {
   columns: number;
   rows: number;
+  moves?: GameMove[];
   id?: string;
 }
 
 interface InitialCells extends GridProps {
   cells: Cell[];
-  moves?: GameMove[];
 }
 
 interface InitialViews extends GridProps {
@@ -80,25 +80,22 @@ export class Game {
   private views: CellView[];
 
   constructor(props: Props) {
-    const { rows, columns } = props;
+    const { rows, columns, moves = [] } = props;
     // Assign views based on the contents of props
     if ('views' in props) {
       // InitialViews
-      this.moves = [];
+      // NOTE: If `moves.length > 0` maybe validate the `views` match?
       this.views = props.views;
     } else if ('cells' in props) {
       // InitialCells
       const cells = props.cells;
-      const moves = props.moves || [];
       associateCells({ rows, columns, cells });
-      this.moves = moves;
       this.views = Game.computeViews(moves, cells);
     } else {
       // GridProps
       const cellCount = rows * columns;
       const cells = generateCells(cellCount);
       associateCells({ rows, columns, cells });
-      this.moves = [];
       this.views = Game.computeViews([], cells);
     }
     if ('id' in props) {
@@ -107,6 +104,7 @@ export class Game {
       this.id = uuid();
     }
     this.columns = columns;
+    this.moves = moves;
     this.rows = rows;
   }
 
@@ -158,8 +156,8 @@ export class Game {
       rows: this.rows,
       columns: this.columns,
       id: this.id,
-      views,
       moves,
+      views,
     });
   }
 
