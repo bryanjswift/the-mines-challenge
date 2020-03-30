@@ -50,7 +50,7 @@ export class GameController {
   @UsePipes(new IoValidationPipe(GameMoveDto))
   addMove(@Param('id') id: GameId, @Body() move: GameMoveDto): GameView {
     try {
-      const next = this.gameService.addMoveById(id, move.x, move.y);
+      const next = this.gameService.addMoveById(id, move);
       return serializeGame(next);
     } catch (error) {
       if (error instanceof NoRecordError) {

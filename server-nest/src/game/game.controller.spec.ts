@@ -4,7 +4,9 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
+import { GameMoveDto } from './game.dto';
 import { GameService } from './game.service';
+import { GameMoveType } from './game-move.model';
 
 describe(GameController, () => {
   let controller: GameController;
@@ -74,7 +76,8 @@ describe(GameController, () => {
   });
 
   describe('PATCH /:id', () => {
-    const alpha = { x: 0, y: 0 };
+    const alpha: GameMoveDto = { column: 0, type: GameMoveType.OPEN, row: 0 };
+    const type = GameMoveType.OPEN;
 
     it('throws NotFoundException for non-existing id', () => {
       expect(() => controller.addMove('foo', alpha)).toThrowError(
@@ -84,16 +87,16 @@ describe(GameController, () => {
 
     it('throws UnprocessableEntityException for out of bounds row', () => {
       const { id } = controller.create({ rows: 10, columns: 10 });
-      expect(() => controller.addMove(id, { x: 11, y: 0 })).toThrowError(
-        UnprocessableEntityException
-      );
+      expect(() =>
+        controller.addMove(id, { column: 11, type, row: 0 })
+      ).toThrowError(UnprocessableEntityException);
     });
 
     it('throws UnprocessableEntityException for out of bounds column', () => {
       const { id } = controller.create({ rows: 10, columns: 10 });
-      expect(() => controller.addMove(id, { x: 0, y: 11 })).toThrowError(
-        UnprocessableEntityException
-      );
+      expect(() =>
+        controller.addMove(id, { column: 0, type, row: 11 })
+      ).toThrowError(UnprocessableEntityException);
     });
 
     it('updates a Game', () => {

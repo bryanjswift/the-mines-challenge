@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuid } from 'uuid';
 import { NoRecordError } from '../errors';
+import { GameMoveDto } from './game.dto';
 import { Game } from './game.model';
 import { GameService } from './game.service';
+import { GameMoveType } from './game-move.model';
 
 describe('GameService', () => {
   let service: GameService;
@@ -108,6 +110,7 @@ describe('GameService', () => {
   });
 
   describe('#addMoveById', () => {
+    const moveTypes = [GameMoveType.FLAG, GameMoveType.OPEN];
     let game: Game;
 
     beforeEach(() => {
@@ -117,28 +120,41 @@ describe('GameService', () => {
       });
     });
 
-    it('throws for unknown id', () => {
-      expect(() => service.addMoveById(uuid(), 0, 0)).toThrow(NoRecordError);
-    });
+    for (let i = 0; i < moveTypes.length; i++) {
+      const moveType = moveTypes[i];
+      describe(moveType, () => {
+        let move: GameMoveDto;
 
-    it('returns a new game', () => {
-      const result = service.addMoveById(game.id, 0, 0);
-      expect(result).not.toBe(game);
-    });
+        beforeEach(() => {
+          move = { column: 0, type: moveType, row: 0 };
+        });
 
-    it('returns a game with a new board state', () => {
-      const result = service.addMoveById(game.id, 0, 0);
-      expect(result.board).not.toEqual(game.board);
-    });
+        it('throws for unknown id', () => {
+          expect(() => service.addMoveById(uuid(), move)).toThrow(
+            NoRecordError
+          );
+        });
 
-    it('returns a game with same id', () => {
-      const result = service.addMoveById(game.id, 0, 0);
-      expect(result).toHaveProperty('id', game.id);
-    });
+        it('returns a new game', () => {
+          const result = service.addMoveById(game.id, move);
+          expect(result).not.toBe(game);
+        });
 
-    it('replaces the old game', () => {
-      const result = service.addMoveById(game.id, 0, 0);
-      expect(service.findById(game.id)).toBe(result);
-    });
+        it('returns a game with a new board state', () => {
+          const result = service.addMoveById(game.id, move);
+          expect(result.board).not.toEqual(game.board);
+        });
+
+        it('returns a game with same id', () => {
+          const result = service.addMoveById(game.id, move);
+          expect(result).toHaveProperty('id', game.id);
+        });
+
+        it('replaces the old game', () => {
+          const result = service.addMoveById(game.id, move);
+          expect(service.findById(game.id)).toBe(result);
+        });
+      });
+    }
   });
 });

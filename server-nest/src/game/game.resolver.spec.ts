@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NoRecordError } from '../errors';
 import { GamesResolver } from './game.resolver';
 import { GameService } from './game.service';
+import { GameMoveType } from './game-move.model';
 import { OutOfBoundsException } from './out-of-bounds.exception';
 
 describe(GamesResolver, () => {
@@ -72,7 +73,8 @@ describe(GamesResolver, () => {
   });
 
   describe('gameAddMove', () => {
-    const alpha = { column: 0, row: 0 };
+    const alpha = { column: 0, type: GameMoveType.OPEN, row: 0 };
+    const type = GameMoveType.OPEN;
 
     it('throws NoRecordError for non-existing id', () => {
       expect(() => resolver.gameAddMove({ id: 'foo', ...alpha })).toThrowError(
@@ -83,14 +85,14 @@ describe(GamesResolver, () => {
     it('throws OutOfBoundsException for out of bounds row', () => {
       const { id } = resolver.createGame({ rows: 10, columns: 10 });
       expect(() =>
-        resolver.gameAddMove({ id, column: 11, row: 0 })
+        resolver.gameAddMove({ id, column: 11, row: 0, type })
       ).toThrowError(OutOfBoundsException);
     });
 
     it('throws OutOfBoundsException for out of bounds column', () => {
       const { id } = resolver.createGame({ rows: 10, columns: 10 });
       expect(() =>
-        resolver.gameAddMove({ id, column: 0, row: 11 })
+        resolver.gameAddMove({ id, column: 0, row: 11, type })
       ).toThrowError(OutOfBoundsException);
     });
 

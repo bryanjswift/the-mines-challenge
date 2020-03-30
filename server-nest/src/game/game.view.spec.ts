@@ -1,5 +1,6 @@
 import { Cell } from './cell.model';
 import { Game } from './game.model';
+import { GameMoveType } from './game-move.model';
 import { GameView, serializeGame } from './game.view';
 
 describe(serializeGame, () => {
@@ -99,7 +100,7 @@ describe(serializeGame, () => {
         rows: 2,
         columns: 2,
         cells,
-        moves: [cells[0].id],
+        moves: [{ type: GameMoveType.OPEN, cellId: cells[0].id }],
       });
       subject = serializeGame(game);
     });

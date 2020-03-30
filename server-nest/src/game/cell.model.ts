@@ -48,6 +48,10 @@ const DEFAULT_CELL_STATE: Required<CellState> = {
   isOpen: false,
 };
 
+export function pickCellId(cell: Cell): CellId {
+  return cell.id;
+}
+
 export class Cell {
   readonly id: CellId;
   readonly initialState: Required<CellState>;

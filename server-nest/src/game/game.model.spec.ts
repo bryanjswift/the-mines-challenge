@@ -44,6 +44,15 @@ describe(Game, () => {
         ' ', ' ',
       ]);
     });
+
+    it('shows flag when 0,0 is flagged', () => {
+      const updatedGame = game.flagCoordinates(0, 0);
+      // prettier-ignore
+      expect(updatedGame.board).toEqual([
+        'F', ' ',
+        ' ', ' ',
+      ]);
+    });
   });
 
   describe(`
@@ -314,6 +323,95 @@ describe('new Game', () => {
       expect(game.cells[2].getNeighbor('topRight')).toBe(game.cells[1]);
       expect(game.cells[2].getNeighbor('right')).toBe(game.cells[3]);
     });
+  });
+});
+
+describe('Game#flagCoordinates', () => {
+  let cells: Cell[];
+  let game: Game;
+
+  beforeAll(() => {
+    // | 3 | M | 2 | 0 |
+    // | M | M | 2 | 0 |
+    // | 2 | 2 | 1 | 0 |
+    // | 0 | 0 | 0 | 0 |
+    cells = [
+      // Row 1
+      new Cell({ isMine: false }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 2
+      new Cell({ isMine: true }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 3
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 4
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+    ];
+  });
+
+  beforeEach(() => {
+    game = new Game({
+      rows: 4,
+      columns: 4,
+      cells,
+    });
+  });
+
+  it('retains the id', () => {
+    const subject = game.flagCoordinates(0, 0);
+    expect(subject.id).toEqual(game.id);
+  });
+
+  it('flags only one cell', () => {
+    const subject = game.flagCoordinates(0, 0);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      'F', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('does not lose game when flagging mine', () => {
+    const subject = game.flagCoordinates(1, 0);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', 'F', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+    expect(subject.gameStatus).toBe(GameStatus.OPEN);
+  });
+
+  it('flags cell at (2, 2)', () => {
+    const subject = game.flagCoordinates(2, 2);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', 'F', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('throws when column is out of bounds', () => {
+    expect(() => game.flagCoordinates(4, 0)).toThrowError(/columns/);
+  });
+
+  it('throws when row is out of bounds', () => {
+    expect(() => game.flagCoordinates(0, 4)).toThrowError(/rows/);
   });
 });
 
