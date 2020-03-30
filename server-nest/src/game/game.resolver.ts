@@ -34,7 +34,7 @@ export class GamesResolver {
 
   @Mutation((returns) => GameViewModel)
   gameAddMove(@Args('data') data: CreateGameMoveInput): GameViewModel {
-    const next = this.gameService.addMoveById(data.id, data.column, data.row);
+    const next = this.gameService.addMoveById(data.id, data);
     return serializeGame(next);
   }
 }

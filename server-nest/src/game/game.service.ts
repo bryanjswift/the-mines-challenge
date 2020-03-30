@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { NoRecordError } from '../errors';
+import { GameMoveDto } from './game.dto';
 import { Game, GameId, Props } from './game.model';
+import { GameMoveType } from './game-move.model';
 
 @Injectable()
 export class GameService {
@@ -16,12 +18,21 @@ export class GameService {
    * @throws if `id` does not exist.
    * @throws if `(column, row)` can not be opened.
    */
-  addMoveById(id: GameId, column: number, row: number): Game {
+  addMoveById(id: GameId, move: GameMoveDto): Game {
     const current = this.findById(id);
     if (typeof current === 'undefined' || current === null) {
       throw new NoRecordError(id, 'Game');
     }
-    const next = current.openCoordinates(column, row);
+    const { column, row } = move;
+    let next: Game;
+    switch (move.type) {
+      case GameMoveType.FLAG:
+        next = current.flagCoordinates(column, row);
+        break;
+      case GameMoveType.OPEN:
+        next = current.openCoordinates(column, row);
+        break;
+    }
     this.updateById(current.id, next);
     return next;
   }

@@ -1,6 +1,7 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import * as io from 'io-ts';
 import { GameId } from './game.model';
+import { GameMoveType } from './game-move.model';
 
 /**
  * Represent the request body for creating a game instance as a runtime
@@ -18,13 +19,18 @@ export type CreateGameDto = io.TypeOf<typeof CreateGameDto>;
  * type.
  */
 export const GameMoveDto = io.type({
-  x: io.number,
-  y: io.number,
+  column: io.number,
+  row: io.number,
+  type: io.keyof(GameMoveType),
 });
 
 export type GameMoveDto = io.TypeOf<typeof GameMoveDto>;
 
 // #region GraphQL
+registerEnumType(GameMoveType, {
+  name: 'GameMoveType',
+});
+
 /**
  * Represents the input data necessary to create a new `Game`.
  */
@@ -46,11 +52,14 @@ export class CreateGameMoveInput {
   /** Unique identifier for the `Game`. */
   @Field()
   id: GameId;
-  /** Column of the cell to open. */
+  /** Column of the cell to act upon. */
   @Field()
   column: number;
-  /** Row of the cell to open. */
+  /** Row of the cell to act upon. */
   @Field()
   row: number;
+  /** The type of move to create for the game with given id. */
+  @Field()
+  type: GameMoveType;
 }
 // #endregion GraphQL

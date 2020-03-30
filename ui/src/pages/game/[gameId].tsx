@@ -116,15 +116,16 @@ function Game(props: GameProps): JSX.Element {
     if (state.status !== 'OPEN') {
       return;
     }
-    const { column: col, row } = interactProps;
+    const { column: col, row, flag: isFlag } = interactProps;
     return fetch(`${process.env.API_BASE_URL}/game/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        x: col,
-        y: row,
+        column: col,
+        row: row,
+        type: isFlag ? 'FLAG' : 'OPEN',
       }),
     })
       .then((response) => response.json())
