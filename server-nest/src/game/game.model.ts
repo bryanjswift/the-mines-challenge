@@ -77,9 +77,7 @@ export class Game {
   readonly id: GameId;
   readonly moves: GameMove[];
   readonly rows: number;
-  private _views: CellView[];
-  // `viewCache` is upated when `views` is assigned via the `views` setter.
-  private viewCache: Record<CellId, CellView>;
+  private views: CellView[];
 
   constructor(props: Props) {
     const { rows, columns } = props;
@@ -262,12 +260,7 @@ export class Game {
     );
   }
 
-  private get views(): CellView[] {
-    return this._views;
-  }
-
-  private set views(views: CellView[]) {
-    this._views = views;
-    this.viewCache = Game.computeViewCache(this.views);
+  private get viewCache(): Record<CellId, CellView> {
+    return Game.computeViewCache(this.views);
   }
 }
