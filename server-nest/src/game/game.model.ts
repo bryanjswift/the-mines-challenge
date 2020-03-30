@@ -207,6 +207,21 @@ export class Game {
     });
   }
 
+  /**
+   * Create a lookup table of `CellId -> CellView` from the given list of `CellView`.
+   * @param views used to create a lookup table.
+   * @returns a lookup table of `CellId -> CellView`.
+   */
+  private static computeViewCache(views: CellView[]): Record<CellId, CellView> {
+    return views.reduce(
+      (cache, view) => ({
+        ...cache,
+        [view.id]: view,
+      }),
+      {}
+    );
+  }
+
   private static getIndex(
     props: GridProps,
     column: number,
@@ -239,12 +254,6 @@ export class Game {
 
   private set views(views: CellView[]) {
     this._views = views;
-    this.viewCache = views.reduce(
-      (cache, view) => ({
-        ...cache,
-        [view.id]: view,
-      }),
-      {}
-    );
+    this.viewCache = Game.computeViewCache(this.views);
   }
 }
