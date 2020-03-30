@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Cell, CellId } from './cell.model';
+import { Cell, CellId, pickCellId } from './cell.model';
 import { CellView } from './cell.view';
 import { GameMove, GameMoveType } from './game-move.model';
 import { OutOfBoundsException } from './out-of-bounds.exception';
@@ -92,29 +92,16 @@ export class Game {
       // InitialCells
       const cells = props.cells;
       const moves = props.moves || [];
-      const flaggedCellIds = moves
-        .filter((move) => move.type === GameMoveType.FLAG)
-        .map((move) => move.cellId);
-      const openedCellIds = moves
-        .filter((move) => move.type === GameMoveType.OPEN)
-        .map((move) => move.cellId);
       associateCells({ rows, columns, cells });
       this.moves = moves;
-      this.views = cells.map(
-        (cell) =>
-          new CellView(cell, {
-            isFlagged:
-              cell.initialState.isFlagged || flaggedCellIds.includes(cell.id),
-            isOpen: cell.initialState.isOpen || openedCellIds.includes(cell.id),
-          })
-      );
+      this.views = Game.computeViews(moves, cells);
     } else {
       // GridProps
       const cellCount = rows * columns;
       const cells = generateCells(cellCount);
       associateCells({ rows, columns, cells });
       this.moves = [];
-      this.views = cells.map((cell) => new CellView(cell));
+      this.views = Game.computeViews([], cells);
     }
     if ('id' in props) {
       this.id = props.id;
@@ -208,6 +195,38 @@ export class Game {
   }
 
   /**
+   * Given a list of `GameMove` and `Cell` instances create a corresponding
+   * list of `CellView` representing the state of play.
+   * @param moves used to determine the view of each `Cell`.
+   * @param cells to be wrapped in `CellView`
+   * @returns list of `CellView` instances representing the game state for the
+   * `moves` and `cells`.
+   */
+  private static computeViews(moves: GameMove[], cells: Cell[]): CellView[] {
+    const flaggedCellIds = cells
+      .filter((cell) => cell.initialState.isFlagged)
+      .map(pickCellId)
+      .concat(Game.getFlaggedCellIds(moves));
+    const openedCellIds = cells
+      .filter((cell) => cell.initialState.isOpen)
+      .map(pickCellId)
+      .concat(Game.getOpenedCellIds(moves));
+    const openedCells = cells
+      .map((cell) =>
+        openedCellIds.includes(cell.id) ? [...cell.neighborsChain, cell] : []
+      )
+      .flat();
+    const openCellIds = openedCells.map(pickCellId);
+    return cells.map(
+      (cell) =>
+        new CellView(cell, {
+          isFlagged: flaggedCellIds.includes(cell.id),
+          isOpen: openCellIds.includes(cell.id),
+        })
+    );
+  }
+
+  /**
    * Create a lookup table of `CellId -> CellView` from the given list of `CellView`.
    * @param views used to create a lookup table.
    * @returns a lookup table of `CellId -> CellView`.
@@ -222,6 +241,18 @@ export class Game {
     );
   }
 
+  /**
+   * Given a list of `GameMove` find the list of `CellId` which should have a
+   * flagged state.
+   * @param moves to analyze.
+   * @returns the list of `CellId` corresponding to flagged `Cell`.
+   */
+  private static getFlaggedCellIds(moves: GameMove[]): CellId[] {
+    return moves
+      .filter((move) => move.type === GameMoveType.FLAG)
+      .map((move) => move.cellId);
+  }
+
   private static getIndex(
     props: GridProps,
     column: number,
@@ -234,6 +265,18 @@ export class Game {
       throw new OutOfBoundsException('rows', row);
     }
     return columns * row + column;
+  }
+
+  /**
+   * Given a list of `GameMove` find the list of `CellId` which should have an
+   * open state.
+   * @param moves to analyze.
+   * @returns the list of `CellId` corresponding to open `Cell`.
+   */
+  private static getOpenedCellIds(moves: GameMove[]): CellId[] {
+    return moves
+      .filter((move) => move.type === GameMoveType.OPEN)
+      .map((move) => move.cellId);
   }
 
   private get isLost(): boolean {
