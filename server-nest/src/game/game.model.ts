@@ -116,41 +116,18 @@ export class Game {
     const gridProps = { rows: this.rows, columns: this.columns };
     const cellIndex = Game.getIndex(gridProps, column, row);
     const cellId = this.cells[cellIndex].id;
-    return this.copyWithFlaggedCell(cellId);
+    return this.copyWithGameMove({ type: GameMoveType.FLAG, cellId });
   }
 
   open(cellId: CellId): Game {
-    const moves = [...this.moves, { type: GameMoveType.OPEN, cellId }];
-    const openedCell = this.viewCache[cellId];
-    if (typeof openedCell === 'undefined') {
-      throw new Error(`Cell with id ${cellId} does not exist`);
-    }
-    // find cells to mark as opened, including neighbors
-    const openedCellIds = [
-      cellId,
-      ...openedCell.cell.neighborsChain.map((cell) => cell.id),
-    ];
-    const views = this.views.map(
-      (view) =>
-        new CellView(view.cell, {
-          isFlagged: view.isFlagged,
-          isOpen: openedCellIds.includes(view.id) || view.isOpen,
-        })
-    );
-    return new Game({
-      rows: this.rows,
-      columns: this.columns,
-      id: this.id,
-      views,
-      moves,
-    });
+    return this.copyWithGameMove({ type: GameMoveType.OPEN, cellId });
   }
 
   openCoordinates(column: number, row: number): Game {
     const gridProps = { rows: this.rows, columns: this.columns };
     const cellIndex = Game.getIndex(gridProps, column, row);
     const cellId = this.cells[cellIndex].id;
-    return this.open(cellId);
+    return this.copyWithGameMove({ type: GameMoveType.OPEN, cellId });
   }
 
   get board(): string[] {
@@ -172,19 +149,13 @@ export class Game {
     }
   }
 
-  private copyWithFlaggedCell(cellId: CellId): Game {
-    const moves = [...this.moves, { type: GameMoveType.FLAG, cellId }];
-    const flaggedCell = this.viewCache[cellId];
+  private copyWithGameMove(move: GameMove) {
+    const moves = [...this.moves, move];
+    const flaggedCell = this.viewCache[move.cellId];
     if (typeof flaggedCell === 'undefined') {
-      throw new Error(`Cell with id ${cellId} does not exist`);
+      throw new Error(`Cell with id ${move.cellId} does not exist`);
     }
-    const views = this.views.map(
-      (view) =>
-        new CellView(view.cell, {
-          isFlagged: view.isFlagged || cellId === view.id,
-          isOpen: view.isOpen,
-        })
-    );
+    const views = Game.computeViews(moves, this.cells);
     return new Game({
       rows: this.rows,
       columns: this.columns,
