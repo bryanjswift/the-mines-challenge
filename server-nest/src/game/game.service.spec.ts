@@ -165,5 +165,23 @@ describe('GameService', () => {
         });
       });
     }
+
+    it('flags a cell', () => {
+      const result = service.addMoveById(game.id, {
+        column: 0,
+        row: 0,
+        type: GameMoveType.FLAG,
+      });
+      expect(result.board[0]).toBe('F');
+    });
+
+    it('opens a cell', () => {
+      const result = service.addMoveById(game.id, {
+        column: 0,
+        row: 0,
+        type: GameMoveType.OPEN,
+      });
+      expect(result.board[0]).not.toBe(game.board[0]);
+    });
   });
 });
