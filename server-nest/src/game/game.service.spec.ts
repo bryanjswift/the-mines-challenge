@@ -91,9 +91,18 @@ describe('GameService', () => {
       expect(() => service.updateById(uuid(), null)).toThrow(NoRecordError);
     });
 
+    it('throws an error about Game for unknown id', () => {
+      expect(() => service.updateById(uuid(), null)).toThrow(/^Game/);
+    });
+
     it('throws if ids do not match', () => {
       const g2 = service.create({ rows: 2, columns: 2 });
       expect(() => service.updateById(g2.id, game)).toThrow();
+    });
+
+    it('throws error about same game if mismatched games', () => {
+      const g2 = service.create({ rows: 2, columns: 2 });
+      expect(() => service.updateById(g2.id, game)).toThrow(/same Game/);
     });
 
     it('returns the old game', () => {

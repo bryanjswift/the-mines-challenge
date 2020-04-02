@@ -58,8 +58,12 @@ describe(GamesResolver, () => {
   });
 
   describe('#getGame', () => {
-    it('returns undefined for non-existing id', () => {
-      expect(resolver.getGame('foo')).toBeUndefined();
+    it('throws NoRecordError for non-existing id', () => {
+      expect(() => resolver.getGame('foo')).toThrowError(NoRecordError);
+    });
+
+    it('throws an error about Game for unknown id', () => {
+      expect(() => resolver.getGame('foo')).toThrow(/^Game/);
     });
 
     it('serializes a Game', () => {
