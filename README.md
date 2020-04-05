@@ -55,6 +55,24 @@ The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
   and verified by the API.
 - _PORT_ is where the API will be served.
 
+### Testing
+
+Unit tests are written with [Jest][jest] and are complemented with
+[Stryker][stryker]. Test execution is done with the `test` or `test:*` scripts
+defined in [`server-nest/package.json`](./server-nest/package.json).
+
+- `yarn test` or `yarn workspace @mines/nest test` to execute tests once
+- `yarn test:watch` or `yarn workspace @mines/nest test:watch` to execute tests
+  related to recently changed files
+- `yarn test:e2e` or `yarn workspace @mines/nest test:e2e` to execute "end to
+  end" tests
+- `yarn workspace @mines/nest exec stryker run` will execute the unit tests
+  under the supervision of stryker in order to find places where changing the
+  code doesn't break the tests
+
+[jest]: https://jestjs.io
+[stryker]: https://stryker-mutator.io
+
 ## @mines/ui
 
 The `@mines/ui` package in [`ui`](./ui) defines the components for the web ui.
