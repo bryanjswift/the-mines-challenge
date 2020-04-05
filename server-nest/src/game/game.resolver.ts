@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { NoRecordError } from '../errors';
 import { GameViewModel, serializeGame } from './game.view';
 import { CreateGameInput, CreateGameMoveInput } from './game.dto';
 import { GameService } from './game.service';
@@ -21,7 +22,7 @@ export class GamesResolver {
     if (model) {
       return serializeGame(model);
     } else {
-      return undefined;
+      throw new NoRecordError(id, 'Game');
     }
   }
 
