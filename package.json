@@ -12,7 +12,8 @@
     "packages": [
       "server-express",
       "server-nest",
-      "ui"
+      "ui",
+      "ui-rs"
     ]
   },
   "scripts": {

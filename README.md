@@ -95,6 +95,15 @@ includes the names of environment variables the `@mines/ui` package expects.
 - _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
   server.
 
+## @mines/uirs
+
+The `@mines/uirs` package in [`ui-rs`](./ui-rs) defines a web UI with
+[yew-rs][yewrs]. This is an experiment in building UI with WebAssembly.
+
+http://www.sheshbabu.com/posts/rust-wasm-yew-single-page-application/
+
+[yewrs]: https://yew.rs
+
 ## docker-compose
 
 The [`docker-compose.yml`](./docker-compose.yml) defines a

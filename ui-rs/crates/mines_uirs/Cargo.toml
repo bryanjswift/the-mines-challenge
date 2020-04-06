@@ -1,0 +1,18 @@
+[package]
+name = "mines_uirs"
+version = "0.1.0"
+authors = ["Bryan Swift <bryan@bryanjswift.com>"]
+edition = "2018"
+description = "seed-rs based UI"
+repository = "https://github.com/bryanjswift/the-mines-challenge"
+license = "MIT"
+
+# See more keys and their definitions at
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+yew = "^0.17.0"
+wasm-bindgen = "^0.2.67"
