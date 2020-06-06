@@ -28,7 +28,7 @@
     "@nestjs/jwt": "7.0.0",
     "@nestjs/passport": "7.0.0",
     "@nestjs/platform-express": "7.0.6",
-    "apollo-server-express": "2.11.0",
+    "apollo-server-express": "2.14.2",
     "dotenv": "8.2.0",
     "elastic-apm-node": "3.5.0",
     "fp-ts": "2.5.3",
