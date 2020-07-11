@@ -1,8 +1,5 @@
 name: Generate Mutants
-on:
-  push:
-    paths:
-      - 'server-nest/**'
+on: # Keep the job but don't run it for anything
 jobs:
   generate_mutants_api:
     runs-on: ubuntu-latest
