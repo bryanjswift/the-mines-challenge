@@ -1,8 +1,8 @@
-import * as dotenv from 'dotenv';
-import * as express from 'express';
+import { config as dotenvConfig } from 'dotenv';
+import express from 'express';
 import { CatsRouter } from './routes';
 
-dotenv.config();
+dotenvConfig();
 
 const port = process.env.PORT || 3000;
 
