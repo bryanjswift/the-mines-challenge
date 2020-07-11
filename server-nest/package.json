@@ -30,7 +30,7 @@
     "@nestjs/platform-express": "7.3.2",
     "apollo-server-express": "2.15.1",
     "dotenv": "8.2.0",
-    "elastic-apm-node": "3.5.0",
+    "elastic-apm-node": "3.6.1",
     "fp-ts": "2.7.0",
     "graphql": "14.7.0",
     "graphql-tools": "6.0.12",
