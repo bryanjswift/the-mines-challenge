@@ -1,6 +1,7 @@
 name: Generate Mutants
 on:
-  push:
+  release:
+    types: [published]
     paths:
       - 'server-nest/**'
 jobs:
