@@ -7,8 +7,8 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { AuthUser } from '../users/user.model';
+import { Request } from '../vendor/request';
 import { AuthService, TokenizedUser } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 
