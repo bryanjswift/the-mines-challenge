@@ -9,7 +9,7 @@ dotenv.config();
  * in order to avoid warnings about importing but not using.
  * @see dotconfig
  */
-export function ensureEnv() {
+export function ensureEnv(): void {
   dotenv.config();
 }
 
