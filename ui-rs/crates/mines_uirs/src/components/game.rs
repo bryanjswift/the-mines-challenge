@@ -31,9 +31,9 @@ impl Component for GameList {
     fn view(&self) -> Html {
         html! {
             <>
-                <h2>{"Game List"}</h2>
+                <h2>{"Resume or View Existing Game"}</h2>
                 <ol>
-                    {for self.game_ids.iter().map(|id| self.view_game_id(id))}
+                    {for self.game_ids.iter().map(|id| self.view_game_link(id))}
                 </ol>
             </>
         }
@@ -41,10 +41,12 @@ impl Component for GameList {
 }
 
 impl GameList {
-    fn view_game_id(&self, id: &str) -> Html {
+    fn view_game_link(&self, id: &str) -> Html {
         html! {
             <li>
-                {&id}
+                <a href={format!("/game/{}", &id)}>
+                    {&id}
+                </a>
             </li>
         }
     }

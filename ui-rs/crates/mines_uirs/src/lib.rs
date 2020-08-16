@@ -1,29 +1,20 @@
-mod game;
+mod components;
+mod routes;
 
-use game::GameList;
+use routes::home_route::HomeRoute;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-struct Model {
-    link: ComponentLink<Self>,
-    value: i64,
-}
+struct Root {}
 
-enum Msg {
-    AddOne,
-}
-
-impl Component for Model {
-    type Message = Msg;
+impl Component for Root {
+    type Message = ();
     type Properties = ();
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, value: 0 }
+    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
+        Root {}
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            Msg::AddOne => self.value += 1,
-        }
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }
 
@@ -36,16 +27,12 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <GameList game_ids=vec![String::from("foo")] />
-                <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
-                <p>{ self.value }</p>
-            </div>
+            <HomeRoute initial_game_ids=vec![String::from("foo")] />
         }
     }
 }
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
-    App::<Model>::new().mount_to_body();
+    App::<Root>::new().mount_to_body();
 }
