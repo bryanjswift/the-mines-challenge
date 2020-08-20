@@ -2,7 +2,6 @@ import { execSync } from 'child_process';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import webpack from 'webpack';
-import WebpackBar from 'webpackbar';
 import WasmPackPlugin from '@wasm-tool/wasm-pack-plugin';
 
 const mode =
@@ -37,8 +36,6 @@ const config: webpack.Configuration = {
       outName: 'index',
       watchDirectories: [resolve(__dirname, 'crates/mines_uirs')],
     }),
-    // Show compilation progress bar in console.
-    new WebpackBar(),
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
