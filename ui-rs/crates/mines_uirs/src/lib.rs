@@ -6,18 +6,26 @@ mod util;
 use routes::home_route::HomeRoute;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
+use yew_router::prelude::*;
+use yew_router::router::Render;
 
-struct Root {}
+use crate::routes::Routes;
+
+struct Root {
+    render_routes: Render<Routes>,
+}
 
 impl Component for Root {
     type Message = ();
     type Properties = ();
-    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        Root {}
-    }
 
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
+    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+        let render_routes = Router::render(|switch: Routes| match switch {
+            Routes::Home => html! { <HomeRoute initial_game_ids=vec![] /> },
+        });
+        Self {
+            render_routes,
+        }
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
@@ -27,9 +35,13 @@ impl Component for Root {
         false
     }
 
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+        true
+    }
+
     fn view(&self) -> Html {
         html! {
-            <HomeRoute initial_game_ids=vec![String::from("foo")] />
+            <Router<Routes, ()> render=&self.render_routes />
         }
     }
 }
