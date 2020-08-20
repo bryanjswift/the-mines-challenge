@@ -5,7 +5,7 @@ use yew::services::fetch::FetchTask;
 
 use crate::api;
 use crate::api::GameId;
-use crate::components::GameList;
+use crate::components::{ErrorMessage, GameList};
 use crate::util::{RENDER, SKIP_RENDER};
 
 pub struct HomeRoute {
@@ -84,10 +84,14 @@ impl Component for HomeRoute {
     }
 
     fn view(&self) -> Html {
+        let error_message = self
+            .error
+            .as_ref()
+            .map(|_| String::from("Error loading games."));
         html! {
             <>
                 <h1>{"Let's Play Minesweeper"}</h1>
-                // <Error {...state} />
+                <ErrorMessage is_loading={self.task.is_some()} message={error_message} />
                 <button disabled={true}>
                     {"Start New Game"}
                 </button>
