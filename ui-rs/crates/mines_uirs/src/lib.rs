@@ -1,5 +1,6 @@
 mod components;
 mod routes;
+mod util;
 
 use routes::home_route::HomeRoute;
 use wasm_bindgen::prelude::*;
