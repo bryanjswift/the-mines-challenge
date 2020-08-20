@@ -1,3 +1,3 @@
-mod game;
+mod game_list;
 
-pub use game::GameList;
+pub use game_list::GameList;

@@ -14,7 +14,7 @@ impl Component for GameList {
     type Properties = Props;
 
     fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        GameList {
+        Self {
             game_ids: props.game_ids,
         }
     }
