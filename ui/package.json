@@ -10,7 +10,7 @@
   "homepage": "https://github.com/bryanjswift/the-mines-challenge#readme",
   "scripts": {
     "build": "next build src",
-    "start": "next start src",
+    "start": "next start src --port=${PORT:-4000}",
     "start:dev": "next dev src --port=${PORT:-4000}",
     "test": "jest"
   },
