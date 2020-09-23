@@ -4,7 +4,7 @@ use yew::prelude::*;
 use yew::services::fetch::FetchTask;
 
 use crate::api;
-use crate::api::GameId;
+use crate::api::{GameCreateResponse, GameId};
 use crate::components::{ErrorMessage, GameList};
 use crate::util::{RENDER, SKIP_RENDER};
 
@@ -20,6 +20,12 @@ pub struct HomeRoute {
 }
 
 pub enum HomeRouteMsg {
+    /// Start a request to create a new game
+    CreateGame,
+    /// Received a successful response from creating a new game
+    CreateGameSuccess(GameId),
+    /// Receive an error response from the request to create a new game
+    CreateGameError(Error),
     /// Start a request for games
     ListGames,
     /// Received a successful response containing game ids
@@ -35,12 +41,28 @@ pub struct Props {
 }
 
 /// Create `HomeRouteMsg` from the given `FetchResponse`. The `response` is broken into parts and
+/// use to read the id of the created game or to respond with an error.
+fn handle_create_response(response: api::FetchResponse<GameCreateResponse>) -> HomeRouteMsg {
+    let (_, Json(data)) = response.into_parts();
+    match data {
+        Ok(response) => HomeRouteMsg::CreateGameSuccess(response.id),
+        Err(err) => HomeRouteMsg::CreateGameError(err),
+    }
+}
+
+/// Create `HomeRouteMsg` from the given `FetchResponse`. The `response` is broken into parts and
 /// use to construct a list of game ids or to respond with an error.
 fn handle_list_response(response: api::FetchResponse<Vec<GameId>>) -> HomeRouteMsg {
     let (_, Json(data)) = response.into_parts();
     match data {
         Ok(game_ids) => HomeRouteMsg::ListGamesSuccess(game_ids),
         Err(err) => HomeRouteMsg::ListGamesError(err),
+    }
+}
+
+impl HomeRoute {
+    fn create_game(_: yew::MouseEvent) -> HomeRouteMsg {
+        HomeRouteMsg::CreateGame
     }
 }
 
@@ -64,6 +86,25 @@ impl Component for HomeRoute {
 
     fn update(&mut self, message: Self::Message) -> ShouldRender {
         match message {
+            HomeRouteMsg::CreateGame => {
+                if self.task.is_some() {
+                    return SKIP_RENDER;
+                }
+                let handler = self.link.callback(handle_create_response);
+                self.task = Some(api::create_new_game(handler));
+                RENDER
+            }
+            HomeRouteMsg::CreateGameSuccess(game_id) => {
+                self.error = None;
+                self.game_ids.push(game_id);
+                self.task = None;
+                RENDER
+            }
+            HomeRouteMsg::CreateGameError(error) => {
+                self.error = Some(error);
+                self.task = None;
+                RENDER
+            }
             HomeRouteMsg::ListGames => {
                 let handler = self.link.callback(handle_list_response);
                 self.task = Some(api::fetch_game_ids(handler));
@@ -92,7 +133,7 @@ impl Component for HomeRoute {
             <>
                 <h1>{"Let's Play Minesweeper"}</h1>
                 <ErrorMessage is_loading={self.task.is_some()} message={error_message} />
-                <button disabled={true}>
+                <button disabled={self.task.is_some()} onclick=self.link.callback(Self::create_game)>
                     {"Start New Game"}
                 </button>
                 <GameList game_ids={self.game_ids.clone()} />
