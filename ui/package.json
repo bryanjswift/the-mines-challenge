@@ -10,22 +10,22 @@
   "homepage": "https://github.com/bryanjswift/the-mines-challenge#readme",
   "scripts": {
     "build": "next build src",
-    "start": "next start src",
+    "start": "next start src --port=${PORT:-4000}",
     "start:dev": "next dev src --port=${PORT:-4000}",
     "test": "jest"
   },
   "dependencies": {
-    "@babel/helper-call-delegate": "7.10.4",
-    "fp-ts": "2.8.1",
+    "@babel/helper-call-delegate": "7.11.4",
+    "fp-ts": "2.8.3",
     "isomorphic-unfetch": "3.0.0",
-    "next": "9.5.2",
+    "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
   "devDependencies": {
-    "@types/node": "14.0.27",
-    "@types/react": "16.9.46",
-    "eslint-plugin-react": "7.20.6",
-    "typescript": "3.9.7"
+    "@types/node": "14.11.2",
+    "@types/react": "16.9.49",
+    "eslint-plugin-react": "7.21.2",
+    "typescript": "4.0.3"
   }
 }

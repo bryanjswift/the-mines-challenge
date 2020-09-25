@@ -79,7 +79,7 @@ async function createNewGame(
     },
   });
   if (response.ok) {
-    const result: { id: GameId } = await response.json();
+    const result: GameCreateResponse = await response.json();
     return right(result);
   } else {
     const result: ApiErrorResponse = await response.json();
