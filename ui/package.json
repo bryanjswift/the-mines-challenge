@@ -18,7 +18,7 @@
     "@babel/helper-call-delegate": "7.11.4",
     "fp-ts": "2.8.3",
     "isomorphic-unfetch": "3.0.0",
-    "next": "9.5.3",
+    "next": "9.5.4",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
