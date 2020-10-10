@@ -2,16 +2,15 @@
  * @type {import('@stryker-mutator/api/core').StrykerOptions}
  */
 module.exports = {
+  buildCommand: 'tsc -b',
   dashboard: {
     project: 'the-mines-challenge',
     module: 'server-nest',
   },
-  maxConcurrentTestRunners: 4,
-  mutator: 'typescript',
+  concurrency: 4,
   packageManager: 'yarn',
   reporters: ['clear-text', 'html', 'progress'],
   testRunner: 'jest',
-  transpilers: ['typescript'],
   timeoutFactor: 2,
   timeoutMS: 2000,
   coverageAnalysis: 'off',
