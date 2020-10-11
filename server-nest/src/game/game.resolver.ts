@@ -5,7 +5,7 @@ import { CreateGameInput, CreateGameMoveInput } from './game.dto';
 import { GameService } from './game.service';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-@Resolver((of) => GameViewModel)
+@Resolver((of: void) => GameViewModel)
 export class GamesResolver {
   constructor(private readonly gameService: GameService) {}
 
@@ -33,6 +33,7 @@ export class GamesResolver {
     return serializeGame(model);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Mutation((returns) => GameViewModel)
   gameAddMove(@Args('data') data: CreateGameMoveInput): GameViewModel {
     const next = this.gameService.addMoveById(data.id, data);
