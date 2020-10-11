@@ -1,4 +1,3 @@
-import { Field, InputType } from '@nestjs/graphql';
 import * as io from 'io-ts';
 import { DateTime } from '../contracts';
 
@@ -13,13 +12,3 @@ export const CreateCatDto = io.type({
 });
 
 export type CreateCatDto = io.TypeOf<typeof CreateCatDto>;
-
-@InputType()
-export class CreateCatInput {
-  @Field()
-  name: string;
-  @Field()
-  dateOfBirth: string;
-  @Field()
-  breed: string;
-}

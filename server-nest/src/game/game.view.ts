@@ -1,4 +1,3 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Game, GameId, GameStatus } from './game.model';
 
 export interface GameView {
@@ -25,25 +24,3 @@ export function serializeGame(game: Game): GameView {
     status: game.gameStatus,
   };
 }
-
-// #region GraphQL
-registerEnumType(GameStatus, {
-  name: 'GameStatus',
-});
-
-/**
- * Domain model reprsentation of a game board.
- */
-@ObjectType()
-export class GameViewModel implements GameView {
-  /** Unique identifier for this game. */
-  @Field()
-  id: GameId;
-  /** Board state for this game. */
-  @Field((_type) => [[String!]!])
-  board: string[][];
-  /** Current status for this game. */
-  @Field()
-  status: GameStatus;
-}
-// #endregion GraphQL

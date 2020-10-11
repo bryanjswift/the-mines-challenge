@@ -1,4 +1,3 @@
-import { Field, ObjectType } from '@nestjs/graphql';
 import * as io from 'io-ts';
 
 /**
@@ -15,11 +14,8 @@ export type AuthUser = io.TypeOf<typeof AuthUser>;
 /**
  * Domain model reprsentation of a user.
  */
-@ObjectType()
 export class User {
-  @Field()
   readonly id: string;
-  @Field()
   readonly username: string;
   readonly password: string;
 }
