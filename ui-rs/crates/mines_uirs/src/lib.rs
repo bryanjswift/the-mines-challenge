@@ -47,7 +47,7 @@ impl Root {
         yew::services::ConsoleService::info(&format!("Route: {:?}", switch));
         match switch {
             Routes::Home => html! { <routes::HomeRoute initial_game_ids=vec![] /> },
-            Routes::Game(game_id) => html! { <p>{"Foo"}</p> },
+            Routes::Game(game_id) => html! { <routes::GameRoute game_id=game_id /> },
         }
     }
 }
