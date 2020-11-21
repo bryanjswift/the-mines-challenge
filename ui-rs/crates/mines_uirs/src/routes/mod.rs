@@ -6,10 +6,10 @@ use yew_router::prelude::*;
 pub use game_route::GameRoute;
 pub use home_route::HomeRoute;
 
-#[derive(Switch, Debug, Clone)]
+#[derive(Clone, Debug, Switch)]
 pub enum Routes {
     #[to = "/game/{id}"]
-    Game(String),
+    Game(crate::api::GameId),
     #[to = "/"]
     Home,
 }

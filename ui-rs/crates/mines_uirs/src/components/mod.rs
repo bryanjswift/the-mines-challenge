@@ -1,4 +1,5 @@
 mod error_message;
+mod game_board;
 mod game_list;
 
 use yew::prelude::*;
