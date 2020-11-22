@@ -40,7 +40,6 @@ export class AuthService {
       sub: user.id,
     };
     return {
-      // eslint-disable-next-line @typescript-eslint/camelcase
       access_token: this.jwtService.sign(payload),
     };
   }

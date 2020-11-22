@@ -4,3 +4,9 @@ node_modules
 dist
 # don't lint nyc coverage output
 coverage
+# ignore config files
+.eslintrc.js
+server-nest/stryker.conf.js
+ui/next.config.js
+# ignore "raw" files
+ui/healthcheck.js
