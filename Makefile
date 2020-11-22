@@ -51,7 +51,7 @@ UI_NEXT_OUT := $(UI_NEXT_OUT_DIR)/BUILD_ID
 ## Use the index file as the only mapped result of the webassembly SPA
 UI_RS_OUT := $(UI_RS_OUT_DIR)/index.html
 
-.PHONY: all clean nest ui uirs
+.PHONY: all clean express nest ui uirs
 
 all: express nest ui uirs
 
