@@ -28,7 +28,7 @@
     "@nestjs/passport": "7.1.0",
     "@nestjs/platform-express": "7.4.4",
     "dotenv": "8.2.0",
-    "elastic-apm-node": "3.7.0",
+    "elastic-apm-node": "3.8.0",
     "fp-ts": "2.9.0",
     "io-ts": "2.2.13",
     "passport": "0.4.1",
