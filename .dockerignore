@@ -1,5 +1,8 @@
 .github
+.vscode
 node_modules
+server-express
 ui/build
 ui/dist
 ui/node_modules
+ui-rs

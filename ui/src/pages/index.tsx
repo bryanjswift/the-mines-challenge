@@ -116,7 +116,7 @@ function GameList(props: Props): JSX.Element {
   }
 }
 
-const HomePage: NextPage<Props> = ({ gameIds }) => {
+const HomePage: NextPage<Props> = ({ gameIds }: Props) => {
   const router = useRouter();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   async function startNewGame() {
