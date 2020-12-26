@@ -3,7 +3,7 @@ name = "mines_uirs"
 version = "0.1.0"
 authors = ["Bryan Swift <bryan@bryanjswift.com>"]
 edition = "2018"
-description = "seed-rs based UI"
+description = "yew-rs based UI"
 repository = "https://github.com/bryanjswift/the-mines-challenge"
 license = "MIT"
 
