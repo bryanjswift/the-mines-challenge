@@ -2,68 +2,23 @@ use anyhow::Error;
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::fetch::FetchTask;
+use yew_router::agent::{RouteAgentDispatcher, RouteRequest};
 
 use crate::api;
-use crate::api::{GameCreateResponse, GameId};
 use crate::components::{ErrorMessage, GameList};
 use crate::util::{RENDER, SKIP_RENDER};
 
 pub struct HomeRoute {
+    /// Send navigation updates
+    dispatch: RouteAgentDispatcher,
     /// Error representing a non-200 status response from the server
     error: Option<Error>,
     /// List of Game identifiers to render
-    game_ids: Vec<GameId>,
+    game_ids: Vec<api::GameId>,
     /// Pathway to send messages to self
     link: ComponentLink<Self>,
     /// In flight HTTP request
     task: Option<FetchTask>,
-}
-
-pub enum HomeRouteMsg {
-    /// Start a request to create a new game
-    CreateGame,
-    /// Received a successful response from creating a new game
-    CreateGameSuccess(GameId),
-    /// Receive an error response from the request to create a new game
-    CreateGameError(Error),
-    /// Start a request for games
-    ListGames,
-    /// Received a successful response containing game ids
-    ListGamesSuccess(Vec<GameId>),
-    /// Received an error response from the request for game ids
-    ListGamesError(Error),
-}
-
-#[derive(Clone, Properties)]
-pub struct Props {
-    /// The initial list of identifiers for games
-    pub initial_game_ids: Vec<GameId>,
-}
-
-/// Create `HomeRouteMsg` from the given `FetchResponse`. The `response` is broken into parts and
-/// use to read the id of the created game or to respond with an error.
-fn handle_create_response(response: api::FetchResponse<GameCreateResponse>) -> HomeRouteMsg {
-    let (_, Json(data)) = response.into_parts();
-    match data {
-        Ok(response) => HomeRouteMsg::CreateGameSuccess(response.id),
-        Err(err) => HomeRouteMsg::CreateGameError(err),
-    }
-}
-
-/// Create `HomeRouteMsg` from the given `FetchResponse`. The `response` is broken into parts and
-/// use to construct a list of game ids or to respond with an error.
-fn handle_list_response(response: api::FetchResponse<Vec<GameId>>) -> HomeRouteMsg {
-    let (_, Json(data)) = response.into_parts();
-    match data {
-        Ok(game_ids) => HomeRouteMsg::ListGamesSuccess(game_ids),
-        Err(err) => HomeRouteMsg::ListGamesError(err),
-    }
-}
-
-impl HomeRoute {
-    fn create_game(_: yew::MouseEvent) -> HomeRouteMsg {
-        HomeRouteMsg::CreateGame
-    }
 }
 
 impl Component for HomeRoute {
@@ -73,6 +28,7 @@ impl Component for HomeRoute {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         link.send_message(HomeRouteMsg::ListGames);
         HomeRoute {
+            dispatch: RouteAgentDispatcher::new(),
             error: None,
             game_ids: props.initial_game_ids,
             link,
@@ -96,9 +52,11 @@ impl Component for HomeRoute {
             }
             HomeRouteMsg::CreateGameSuccess(game_id) => {
                 self.error = None;
-                self.game_ids.push(game_id);
                 self.task = None;
-                RENDER
+                self.dispatch.send(RouteRequest::ChangeRoute(
+                    crate::routes::Routes::Game(game_id).into(),
+                ));
+                SKIP_RENDER
             }
             HomeRouteMsg::CreateGameError(error) => {
                 self.error = Some(error);
@@ -139,5 +97,52 @@ impl Component for HomeRoute {
                 <GameList game_ids={self.game_ids.clone()} />
             </>
         }
+    }
+}
+
+impl HomeRoute {
+    fn create_game(_: yew::MouseEvent) -> HomeRouteMsg {
+        HomeRouteMsg::CreateGame
+    }
+}
+
+pub enum HomeRouteMsg {
+    /// Start a request to create a new game
+    CreateGame,
+    /// Received a successful response from creating a new game
+    CreateGameSuccess(api::GameId),
+    /// Receive an error response from the request to create a new game
+    CreateGameError(Error),
+    /// Start a request for games
+    ListGames,
+    /// Received a successful response containing game ids
+    ListGamesSuccess(Vec<api::GameId>),
+    /// Received an error response from the request for game ids
+    ListGamesError(Error),
+}
+
+#[derive(Clone, Properties)]
+pub struct Props {
+    /// The initial list of identifiers for games
+    pub initial_game_ids: Vec<api::GameId>,
+}
+
+/// Create `HomeRouteMsg` from the given `FetchResponse`. The `response` is broken into parts and
+/// use to read the id of the created game or to respond with an error.
+fn handle_create_response(response: api::FetchResponse<api::GameCreateResponse>) -> HomeRouteMsg {
+    let (_, Json(data)) = response.into_parts();
+    match data {
+        Ok(response) => HomeRouteMsg::CreateGameSuccess(response.id),
+        Err(err) => HomeRouteMsg::CreateGameError(err),
+    }
+}
+
+/// Create `HomeRouteMsg` from the given `FetchResponse`. The `response` is broken into parts and
+/// use to construct a list of game ids or to respond with an error.
+fn handle_list_response(response: api::FetchResponse<Vec<api::GameId>>) -> HomeRouteMsg {
+    let (_, Json(data)) = response.into_parts();
+    match data {
+        Ok(game_ids) => HomeRouteMsg::ListGamesSuccess(game_ids),
+        Err(err) => HomeRouteMsg::ListGamesError(err),
     }
 }

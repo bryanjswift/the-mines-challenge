@@ -3,13 +3,13 @@ mod components;
 mod routes;
 mod util;
 
-use routes::home_route::HomeRoute;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yew_router::router::Render;
 
 use crate::routes::Routes;
+use crate::util::{RENDER, SKIP_RENDER};
 
 struct Root {
     render_routes: Render<Routes>,
@@ -20,28 +20,34 @@ impl Component for Root {
     type Properties = ();
 
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        let render_routes = Router::render(|switch: Routes| match switch {
-            Routes::Home => html! { <HomeRoute initial_game_ids=vec![] /> },
-        });
-        Self {
-            render_routes,
-        }
+        let render_routes = Router::render(Root::switch);
+        Self { render_routes }
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         // Should only return "true" if new properties are different to
         // previously received properties.
         // This component has no properties so we will always return "false".
-        false
+        SKIP_RENDER
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
-        true
+        RENDER
     }
 
     fn view(&self) -> Html {
         html! {
             <Router<Routes, ()> render=&self.render_routes />
+        }
+    }
+}
+
+impl Root {
+    fn switch(switch: Routes) -> Html {
+        yew::services::ConsoleService::info(&format!("Route: {:?}", switch));
+        match switch {
+            Routes::Home => html! { <routes::HomeRoute initial_game_ids=vec![] /> },
+            Routes::Game(game_id) => html! { <routes::GameRoute game_id=game_id /> },
         }
     }
 }
