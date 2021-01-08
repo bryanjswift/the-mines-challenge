@@ -1,24 +1,5 @@
 # Coding Challenge (Minesweeper)
 
-## @mines/express
-
-The `@mines/express` package in [`server-express`](./server-express) defines a
-server using [ExpressJS][expressjs] to act as an API server. The Express API
-server is not as well defined as the NestJS API server but it uses
-significantly fewer dependencies from the jump.
-
-[expressjs]: https://docs.nestjs.com/
-
-### Environment Variables
-
-The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
-`/mines/dev/express` path and place them into `server-express/.env`. The
-`server-express/.env.sample` file includes the names of environment variables
-the `@mines/express` package expects.
-
-- _JWT_SECRET_ is not used anywhere in `server-express` but is used to
-  demonstrate the SSM setup.
-
 ## @mines/nest
 
 The `@mines/nest` package in [`server-nest`](./server-nest) defines a server
