@@ -34,6 +34,6 @@
     }
   },
   "resolutions": {
-    "@types/express-serve-static-core": "4.17.13"
+    "@types/express-serve-static-core": "4.17.17"
   }
 }
