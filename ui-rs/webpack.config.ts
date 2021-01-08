@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import webpack from 'webpack';
+import webpack, { WebpackPluginInstance } from 'webpack';
 import WasmPackPlugin from '@wasm-tool/wasm-pack-plugin';
 
 const mode =
@@ -30,19 +30,22 @@ const config: webpack.Configuration = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.VERSION': JSON.stringify(gitVersion),
     }),
-    new WasmPackPlugin({
+    (new WasmPackPlugin({
       crateDirectory: resolve(__dirname, 'crates/mines_uirs'),
       outDir: resolve(__dirname, 'src/crate/mines_uirs'),
       outName: 'index',
       watchDirectories: [resolve(__dirname, 'crates/mines_uirs')],
-    }),
+    }) as unknown) as WebpackPluginInstance,
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
   },
+  experiments: {
+    asyncWebAssembly: true,
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[hash].bundle.js',
+    filename: '[name].[chunkhash].bundle.js',
   },
 };
 
