@@ -32,8 +32,5 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
-  },
-  "resolutions": {
-    "@types/express-serve-static-core": "4.17.17"
   }
 }
