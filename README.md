@@ -79,11 +79,13 @@ includes the names of environment variables the `@mines/ui` package expects.
 ## @mines/uirs
 
 The `@mines/uirs` package in [`ui-rs`](./ui-rs) defines a web UI with
-[yew-rs][yewrs]. This is an experiment in building UI with WebAssembly.
+[yew-rs][yewrs] and [mogwai][mogwai]. This is an experiment in building UI with
+WebAssembly.
 
 http://www.sheshbabu.com/posts/rust-wasm-yew-single-page-application/
 
 [yewrs]: https://yew.rs
+[mogwai]: https://github.com/schell/mogwai
 
 ## docker-compose
 
