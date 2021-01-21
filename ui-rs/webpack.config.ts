@@ -36,6 +36,12 @@ const config: webpack.Configuration = {
       outName: 'index',
       watchDirectories: [resolve(__dirname, 'crates/mines_uirs')],
     }) as unknown) as WebpackPluginInstance,
+    (new WasmPackPlugin({
+      crateDirectory: resolve(__dirname, 'crates/mines_mogwai'),
+      outDir: resolve(__dirname, 'src/crate/mines_mogwai'),
+      outName: 'index',
+      watchDirectories: [resolve(__dirname, 'crates/mines_mogwai')],
+    }) as unknown) as WebpackPluginInstance,
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
