@@ -10,7 +10,7 @@ UI_RS=./ui-rs
 NEST_SRC_DIR=$(NEST)/src
 UI_SRC_DIR=$(UI)/src
 UI_RS_SRC_DIR=$(UI_RS)/src
-UI_RS_CRATE_SRC_DIR=$(UI_RS)/crates/mines_uirs/src
+UI_RS_CRATE_SRC_DIR=$(UI_RS)/crates
 
 # Output directories
 NEST_OUT_DIR=$(NEST)/dist
