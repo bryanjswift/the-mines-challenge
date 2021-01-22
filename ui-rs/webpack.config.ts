@@ -30,19 +30,19 @@ const config: webpack.Configuration = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.VERSION': JSON.stringify(gitVersion),
     }),
-    (new WasmPackPlugin({
+    new WasmPackPlugin({
       crateDirectory: resolve(__dirname, 'crates/mines_uirs'),
       outDir: resolve(__dirname, 'src/crate/mines_uirs'),
       outName: 'index',
       watchDirectories: [resolve(__dirname, 'crates/mines_uirs')],
-    }) as unknown) as WebpackPluginInstance,
-    (new WasmPackPlugin({
+    }),
+    new WasmPackPlugin({
       crateDirectory: resolve(__dirname, 'crates/mines_mogwai'),
       outDir: resolve(__dirname, 'src/crate/mines_mogwai'),
       outName: 'index',
       watchDirectories: [resolve(__dirname, 'crates/mines_mogwai')],
-    }) as unknown) as WebpackPluginInstance,
-  ],
+    }),
+  ] as WebpackPluginInstance[],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
   },
