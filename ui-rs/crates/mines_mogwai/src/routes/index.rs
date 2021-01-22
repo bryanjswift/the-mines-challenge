@@ -1,4 +1,62 @@
+use crate::api;
 use mogwai::prelude::*;
+
+pub struct Main {}
+
+#[derive(Clone, Copy, Debug)]
+pub enum MainModel {
+    Create { rows: usize, cols: usize },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MainView {
+    Creating,
+    CreateGameSuccess(api::GameId),
+    CreateGameError(api::model::FetchError),
+}
+
+impl Component for Main {
+    type ModelMsg = MainModel;
+    type ViewMsg = MainView;
+    type DomNode = HtmlElement;
+
+    fn update(
+        &mut self,
+        msg: &Self::ModelMsg,
+        tx: &Transmitter<Self::ViewMsg>,
+        _sub: &Subscriber<Self::ModelMsg>,
+    ) {
+        let api_tx = tx.contra_map(|r: &Result<api::GameCreated, api::FetchError>| match r {
+            Ok(response) => MainView::CreateGameSuccess(response.id),
+            Err(err) => MainView::CreateGameError(*err),
+        });
+        match msg {
+            MainModel::Create { rows, cols } => {
+                tx.send(&MainView::Creating);
+                api_tx.send_async(api::create_game(api::model::GameCreateInput {
+                    rows: *rows,
+                    columns: *cols,
+                }));
+            }
+        }
+    }
+
+    #[allow(unused_braces)]
+    fn view(
+        &self,
+        tx: &Transmitter<Self::ModelMsg>,
+        rx: &Receiver<Self::ViewMsg>,
+    ) -> ViewBuilder<Self::DomNode> {
+        builder! {
+            <main class="">
+                <h1>"Letʼs Play Minesweeper"</h1>
+                <button on:click=tx.contra_map(|_| MainModel::Create { rows: 10, cols: 10 }) boolean:disabled={rx.branch_map(|msg| msg == &MainView::Creating)}>
+                    "Start New Game"
+                </button>
+            </main>
+        }
+    }
+}
 
 /// Defines how to build the view for the home screen.
 #[allow(unused_braces)]
@@ -6,6 +64,7 @@ pub fn home() -> ViewBuilder<HtmlElement> {
     // Create a transmitter to send button clicks into.
     let tx_click = Transmitter::new();
     let rx_org = Receiver::new();
+    let main_component = Gizmo::from(Main {});
     builder! {
         <main class="container">
             <div class="overlay">
@@ -15,6 +74,7 @@ pub fn home() -> ViewBuilder<HtmlElement> {
                 <div class="section-block">
                     {star_title(rx_org)}
                     {new_button_view(tx_click)}
+                    {main_component.view_builder()}
                 </div>
             </div>
         </main>
