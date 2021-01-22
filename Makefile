@@ -72,7 +72,7 @@ $(UI)/.env: $(UI)/.env.sample
 $(UI_NEXT_OUT): node_modules $(UI)/.env $(UI_SRC)
 	yarn workspace @mines/ui build
 
-$(UI_RS)/.env: $(UI)/.env.sample
+$(UI_RS)/.env: $(UI_RS)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/ui --recursive \
 		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
