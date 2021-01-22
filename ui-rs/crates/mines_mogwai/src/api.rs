@@ -17,6 +17,12 @@ pub mod model {
         pub move_type: GameMoveType,
     }
 
+    #[derive(Clone, Debug, Serialize)]
+    pub struct GameCreateInput {
+        pub columns: usize,
+        pub rows: usize,
+    }
+
     #[derive(Clone, Copy, Debug, Serialize)]
     pub enum GameMoveType {
         FLAG,
@@ -30,7 +36,7 @@ pub mod model {
         LOST,
     }
 
-    #[derive(Clone, Copy, Debug)]
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub enum FetchError {
         FetchError,
         ParseError,
@@ -49,6 +55,12 @@ pub mod model {
         pub board: Vec<Vec<String>>,
         pub status: GameStatus,
     }
+
+    /// A struct to hold data from the Game API after game creation.
+    #[derive(Clone, Debug, Deserialize)]
+    pub struct GameCreated {
+        pub id: GameId,
+    }
 }
 
 pub use model::*;
@@ -65,6 +77,11 @@ pub async fn get_game_list() -> Result<Vec<model::GameId>, FetchError> {
 pub async fn patch_game(input: GameMoveInput) -> Result<GameState, FetchError> {
     let url = format!("{}/game/{}", API_BASE_URL, input.game_id);
     fetch(url, Some("PATCH"), Some(&input)).await
+}
+
+pub async fn create_game(input: GameCreateInput) -> Result<GameCreated, FetchError> {
+    let url = format!("{}/game", API_BASE_URL);
+    fetch(url, Some("POST"), Some(&input)).await
 }
 
 async fn get<T>(url: String) -> Result<T, FetchError>
