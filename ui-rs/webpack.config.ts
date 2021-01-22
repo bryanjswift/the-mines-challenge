@@ -10,6 +10,7 @@ const gitVersion = execSync('git rev-parse HEAD').toString().trim();
 
 const config: webpack.Configuration = {
   mode,
+  devtool: dev ? 'eval-source-map' : undefined,
   entry: './src/index.ts',
   module: {
     rules: [
