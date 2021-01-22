@@ -87,6 +87,33 @@ http://www.sheshbabu.com/posts/rust-wasm-yew-single-page-application/
 [yewrs]: https://yew.rs
 [mogwai]: https://github.com/schell/mogwai
 
+The rust based UI is being built with `make` in order to have more direct
+control over how `wasm-pack` is invoked. This can increase the feedback loop
+while developing the rust user interface. An alternative would be to use the
+[`@wasm-tool/wasm-pack-plugin`][@wasm-tool] with webpack, though this works the
+plugin is shelling out to `wasm-pack` under the hood. By invoking `wasm-pack`
+directly as needed it is possible to avoid _lots_ of CPU intensive rust
+compilation cycles.
+
+    # Build the packaged distribution
+    make ui-rs/dist/index.html
+    # Build only the wasm files
+    make wasm
+    # Start the development server
+    yarn workspace @mines/uirs start
+
+[@wasm-tool]: https://github.com/wasm-tool/wasm-pack-plugin#readme
+
+### Environment Variables
+
+The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
+`/mines/dev/ui` path and place them into `ui-rs/.env`. The `ui-rs/.env.sample`
+file includes the names of environment variables the `@mines/uirs` package
+expects.
+
+- _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
+  server.
+
 ## docker-compose
 
 The [`docker-compose.yml`](./docker-compose.yml) defines a
