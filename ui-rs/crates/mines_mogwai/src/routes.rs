@@ -29,8 +29,7 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     });
     let tx =
         tx_game.contra_filter_map(|r: &Result<api::GameState, api::FetchError>| r.clone().ok());
-    let game_state = api::get_game(game_id.clone());
-    tx.send_async(game_state);
+    tx.send_async(api::get_game(game_id));
     // Set up to receive later board states
     tx_cells.spawn_recv().respond(move |interaction| {
         let input = api::GameMoveInput {
