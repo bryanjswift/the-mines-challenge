@@ -2,13 +2,11 @@ import { execSync } from 'child_process';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import webpack, { WebpackPluginInstance } from 'webpack';
-import WasmPackPlugin from '@wasm-tool/wasm-pack-plugin';
 
 const mode =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
 const dev = mode === 'development';
 const gitVersion = execSync('git rev-parse HEAD').toString().trim();
-const { resolve } = path;
 
 const config: webpack.Configuration = {
   mode,
@@ -29,18 +27,6 @@ const config: webpack.Configuration = {
       'process.browser': true,
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.VERSION': JSON.stringify(gitVersion),
-    }),
-    new WasmPackPlugin({
-      crateDirectory: resolve(__dirname, 'crates/mines_uirs'),
-      outDir: resolve(__dirname, 'src/crate/mines_uirs'),
-      outName: 'index',
-      watchDirectories: [resolve(__dirname, 'crates/mines_uirs')],
-    }),
-    new WasmPackPlugin({
-      crateDirectory: resolve(__dirname, 'crates/mines_mogwai'),
-      outDir: resolve(__dirname, 'src/crate/mines_mogwai'),
-      outName: 'index',
-      watchDirectories: [resolve(__dirname, 'crates/mines_mogwai')],
     }),
   ] as WebpackPluginInstance[],
   resolve: {
