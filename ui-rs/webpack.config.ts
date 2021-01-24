@@ -23,7 +23,9 @@ const config: webpack.Configuration = {
   },
   plugins: [
     ...(dev ? [new webpack.HotModuleReplacementPlugin()] : []),
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'src/index.ejs',
+    }),
     new webpack.DefinePlugin({
       'process.browser': true,
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
