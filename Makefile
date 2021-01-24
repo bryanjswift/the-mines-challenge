@@ -88,7 +88,7 @@ $(UI_RS)/.env: $(UI_RS)/.env.sample
 		> $@
 
 $(UI_RS)/Cargo.lock: $(CARGO_TOML)
-	cargo check --manifest-path=$(UI_RS)/Cargo.toml --workspace
+	cargo check --release --manifest-path=$(UI_RS)/Cargo.toml --workspace
 
 $(UI_RS_MOGWAI_OUT): $(UI_RS)/.env $(UI_RS_MOGWAI_SRC) $(UI_RS)/Cargo.lock
 	wasm-pack build \
