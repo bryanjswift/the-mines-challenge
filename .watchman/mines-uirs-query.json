@@ -1,0 +1,18 @@
+[
+  "query",
+  ".",
+  {
+    "expression": [
+      "allof",
+      ["pcre", "^ui-rs/.*", "wholename"],
+      ["not", ["pcre", "^ui-rs/target/.*", "wholename"]],
+      [
+        "anyof",
+        ["name", "Cargo.toml"],
+        ["name", "Cargo.lock"],
+        ["match", "*.rs"]
+      ]
+    ],
+    "fields": ["name"]
+  }
+]

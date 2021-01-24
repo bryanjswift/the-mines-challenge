@@ -114,6 +114,29 @@ expects.
 - _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
   server.
 
+### Running in Development
+
+The [`.watchman`](.watchman) directory contains configuration files for
+compiling the WASM files when Rust or Cargo files change in the `@mines/uirs`
+project. To use these files [watchman][watchman] needs to be installed. From
+the project root directory:
+
+    # Watch files in the project
+    watchman watch .
+    # Start rebuilding on changes
+    watchman -j < .watchman/mines-uirs-crates.json
+    # To tail the watchman log (which will include results of builds)
+    tail -f $(watchman get-sockname | jq --raw-output '.sockname' | sed 's/sock$/log/' | tr -d '\n')
+
+The watchman configuration, paired with `yarn workspace @mines/uirs start`,
+will approximate the functionality of the `@wasm-tool/wasm-pack-plugin` but
+using the build defined in the [`Makefile`](./Makefile).
+
+The `.watchman/mines-uirs-query.json` contains the watchman query command to
+list the files watchman is tracking.
+
+[watchman]: https://facebook.github.io/watchman/
+
 ## docker-compose
 
 The [`docker-compose.yml`](./docker-compose.yml) defines a
