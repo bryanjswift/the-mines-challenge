@@ -278,7 +278,7 @@ fn star_title(rx_org: Receiver<String>) -> ViewBuilder<HtmlElement> {
         <div class="title-component uppercase">
             {stars()}
             <div class="title-component__description">
-                <span class="strike-preamble">"Did contributions come"</span>
+                <span class="strike-preamble">"Did contributions come "</span>
                 <span class="strike-out">{("from you?", org_name)}</span>
             </div>
         </div>
