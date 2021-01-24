@@ -13,16 +13,9 @@ pub fn home(dispatch: Transmitter<Route>) -> ViewBuilder<HtmlElement> {
     });
     builder! {
         <main class="container">
-            <div class="overlay">
-                "This site is only supported in portrait mode."
-            </div>
-            <div class="page-one">
-                <div class="section-block">
-                    {star_title(rx_org)}
-                    {new_button_view(tx_click)}
-                    {main_component.view_builder()}
-                </div>
-            </div>
+            {star_title(rx_org)}
+            {new_button_view(tx_click)}
+            {main_component.view_builder()}
         </main>
     }
 }
