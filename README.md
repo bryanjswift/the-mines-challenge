@@ -79,11 +79,63 @@ includes the names of environment variables the `@mines/ui` package expects.
 ## @mines/uirs
 
 The `@mines/uirs` package in [`ui-rs`](./ui-rs) defines a web UI with
-[yew-rs][yewrs]. This is an experiment in building UI with WebAssembly.
+[yew-rs][yewrs] and [mogwai][mogwai]. This is an experiment in building UI with
+WebAssembly.
 
 http://www.sheshbabu.com/posts/rust-wasm-yew-single-page-application/
 
 [yewrs]: https://yew.rs
+[mogwai]: https://github.com/schell/mogwai
+
+The rust based UI is being built with `make` in order to have more direct
+control over how `wasm-pack` is invoked. This can increase the feedback loop
+while developing the rust user interface. An alternative would be to use the
+[`@wasm-tool/wasm-pack-plugin`][@wasm-tool] with webpack, though this works the
+plugin is shelling out to `wasm-pack` under the hood. By invoking `wasm-pack`
+directly as needed it is possible to avoid _lots_ of CPU intensive rust
+compilation cycles.
+
+    # Build the packaged distribution
+    make ui-rs/dist/index.html
+    # Build only the wasm files
+    make wasm
+    # Start the development server
+    yarn workspace @mines/uirs start
+
+[@wasm-tool]: https://github.com/wasm-tool/wasm-pack-plugin#readme
+
+### Environment Variables
+
+The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
+`/mines/dev/ui` path and place them into `ui-rs/.env`. The `ui-rs/.env.sample`
+file includes the names of environment variables the `@mines/uirs` package
+expects.
+
+- _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
+  server.
+
+### Running in Development
+
+The [`.watchman`](.watchman) directory contains configuration files for
+compiling the WASM files when Rust or Cargo files change in the `@mines/uirs`
+project. To use these files [watchman][watchman] needs to be installed. From
+the project root directory:
+
+    # Watch files in the project
+    watchman watch .
+    # Start rebuilding on changes
+    watchman -j < .watchman/mines-uirs-crates.json
+    # To tail the watchman log (which will include results of builds)
+    tail -f $(watchman get-sockname | jq --raw-output '.sockname' | sed 's/sock$/log/' | tr -d '\n')
+
+The watchman configuration, paired with `yarn workspace @mines/uirs start`,
+will approximate the functionality of the `@wasm-tool/wasm-pack-plugin` but
+using the build defined in the [`Makefile`](./Makefile).
+
+The `.watchman/mines-uirs-query.json` contains the watchman query command to
+list the files watchman is tracking.
+
+[watchman]: https://facebook.github.io/watchman/
 
 ## docker-compose
 

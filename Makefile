@@ -1,6 +1,8 @@
 # AWS
 AWS_PROFILE ?= default
 
+PWD = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
 # Packages
 NEST=./server-nest
 UI=./ui
@@ -10,16 +12,18 @@ UI_RS=./ui-rs
 NEST_SRC_DIR=$(NEST)/src
 UI_SRC_DIR=$(UI)/src
 UI_RS_SRC_DIR=$(UI_RS)/src
-UI_RS_CRATE_SRC_DIR=$(UI_RS)/crates/mines_uirs/src
+UI_RS_CRATE_SRC_DIR=$(UI_RS)/crates
 
 # Output directories
 NEST_OUT_DIR=$(NEST)/dist
 UI_OUT_DIR=$(UI)/dist
 UI_NEXT_OUT_DIR=$(UI)/src/.next
 UI_RS_OUT_DIR=$(UI_RS)/dist
+UI_RS_WASM_OUT_DIR=$(UI_RS)/src/crate
 
 # Source files
 ## Find `package.json` files everywhere except `node_modules`
+CARGO_TOML := $(shell find . -name 'Cargo.toml')
 PACKAGE_JSON := $(shell find . -maxdepth 2 -name 'package.json' -and -not -path './node_modules/*')
 ## Find .ts files for nest server
 NEST_SRC := $(shell find -E $(NEST_SRC_DIR) -regex '.*\.ts' -not -name '*.d.ts' -not -name '*.spec.ts')
@@ -28,7 +32,9 @@ UI_TS_SRC := $(shell find -E $(UI_SRC_DIR) -not -path '$(UI_SRC_DIR)/.next/*' -r
 UI_TSX_SRC := $(shell find -E $(UI_SRC_DIR) -not -path '$(UI_SRC_DIR)/.next/*' -regex '.*\.tsx' -not -name '*.d.ts')
 UI_SRC := $(UI_TS_SRC) $(UI_TSX_SRC)
 ## Find .rs and .ts files separately
-UI_RS_RUST_SRC := $(shell find -E $(UI_RS_CRATE_SRC_DIR) -regex '.*\.rs')
+UI_RS_MOGWAI_SRC := $(shell find -E $(UI_RS_CRATE_SRC_DIR)/mines_mogwai -regex '.*\.rs')
+UI_RS_YEW_SRC := $(shell find -E $(UI_RS_CRATE_SRC_DIR)/mines_uirs -regex '.*\.rs')
+UI_RS_RUST_SRC := $(UI_RS_MOGWAI_SRC) $(UI_RS_YEW_SRC)
 UI_RS_TS_SRC := $(shell find -E $(UI_RS_SRC_DIR) -regex '.*\.ts' -not -name '*.d.ts' -not -name '*.spec.ts')
 UI_RS_SRC := $(UI_RS_RUST_SRC) $(UI_RS_TS_SRC) $(UI_RS_SRC_DIR)/index.ejs
 
@@ -42,9 +48,11 @@ UI_OUT := $(subst $(UI_SRC_DIR), $(UI_OUT_DIR), $(UI_SRC_OUT))
 ## Use the build id as the only mapped result of a NextJS build
 UI_NEXT_OUT := $(UI_NEXT_OUT_DIR)/BUILD_ID
 ## Use the index file as the only mapped result of the webassembly SPA
+UI_RS_MOGWAI_OUT := $(UI_RS_WASM_OUT_DIR)/mines_mogwai/index_bg.wasm
+UI_RS_YEW_OUT := $(UI_RS_WASM_OUT_DIR)/mines_uirs/index_bg.wasm
 UI_RS_OUT := $(UI_RS_OUT_DIR)/index.html
 
-.PHONY: all clean express nest ui uirs
+.PHONY: all clean express nest ui uirs wasm
 
 all: express nest ui uirs
 
@@ -53,6 +61,8 @@ nest: $(NEST_OUT)
 ui: $(UI_NEXT_OUT)
 
 uirs: $(UI_RS_OUT)
+
+wasm: $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
 
 $(NEST)/.env: $(NEST)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
@@ -72,12 +82,29 @@ $(UI)/.env: $(UI)/.env.sample
 $(UI_NEXT_OUT): node_modules $(UI)/.env $(UI_SRC)
 	yarn workspace @mines/ui build
 
-$(UI_RS)/.env: $(UI)/.env.sample
+$(UI_RS)/.env: $(UI_RS)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/ui --recursive \
 		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
 
-$(UI_RS_OUT): node_modules $(UI_RS)/.env $(UI_RS_SRC) $(UI_RS)/Cargo.lock
+$(UI_RS)/Cargo.lock: $(CARGO_TOML)
+	cargo check --release --manifest-path=$(UI_RS)/Cargo.toml --workspace
+
+$(UI_RS_MOGWAI_OUT): $(UI_RS)/.env $(UI_RS_MOGWAI_SRC) $(UI_RS)/Cargo.lock
+	wasm-pack build \
+		--release \
+		--out-name=index \
+		--out-dir=$(PWD)/$(UI_RS_WASM_OUT_DIR)/mines_mogwai/ \
+		$(UI_RS_CRATE_SRC_DIR)/mines_mogwai
+
+$(UI_RS_YEW_OUT): $(UI_RS)/.env $(UI_RS_YEW_SRC) $(UI_RS)/Cargo.lock
+	wasm-pack build \
+		--release \
+		--out-name=index \
+		--out-dir=$(PWD)/$(UI_RS_WASM_OUT_DIR)/mines_uirs/ \
+		$(UI_RS_CRATE_SRC_DIR)/mines_uirs
+
+$(UI_RS_OUT): node_modules $(UI_RS)/.env $(UI_RS_SRC) $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
 	yarn workspace @mines/uirs build
 
 node_modules: $(PACKAGE_JSON) yarn.lock
@@ -88,6 +115,8 @@ clean:
 	rm -rf \
 		$(NEST_OUT_DIR) \
 		$(NEST_OUT_DIR) \
+		$(UI_RS_OUT_DIR) \
+		$(UI_RS_WASM_OUT_DIR) \
 		$(UI_NEXT_OUT_DIR)
 
 print-%:

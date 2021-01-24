@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crates/mines_uirs",
+    "crates/mines_mogwai",
 ]
 
 [profile.release]
