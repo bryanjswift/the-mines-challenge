@@ -72,7 +72,7 @@ mod route_dispatch {
                 let component = routes::GameList::new(tx, vec![]);
                 Gizmo::from(component).view_builder()
             }
-            Route::Home => routes::home(),
+            Route::Home => routes::home(tx),
             Route::NotFound => routes::not_found(),
         }
     }

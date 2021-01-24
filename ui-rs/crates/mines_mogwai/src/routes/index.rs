@@ -3,12 +3,13 @@ use mogwai::prelude::*;
 
 /// Defines how to build the view for the home screen.
 #[allow(unused_braces)]
-pub fn home() -> ViewBuilder<HtmlElement> {
+pub fn home(dispatch: Transmitter<Route>) -> ViewBuilder<HtmlElement> {
     // Create a transmitter to send button clicks into.
     let tx_click = Transmitter::new();
     let rx_org = Receiver::new();
     let main_component = Gizmo::from(Main {
         difficulty: Difficulty::Medium,
+        dispatch,
     });
     builder! {
         <main class="container">
@@ -29,6 +30,7 @@ pub fn home() -> ViewBuilder<HtmlElement> {
 /// Holds the state for showing a "Create New Game" button with the button generating a game with
 /// variable size (i.e. difficulty).
 struct Main {
+    dispatch: Transmitter<Route>,
     difficulty: Difficulty,
 }
 
@@ -43,15 +45,19 @@ impl Component for Main {
         tx: &Transmitter<Self::ViewMsg>,
         _sub: &Subscriber<Self::ModelMsg>,
     ) {
-        let api_tx = tx.contra_map(|r: &Result<api::GameCreated, api::FetchError>| match r {
-            Ok(response) => MainView::CreateGameSuccess(response.id),
-            Err(err) => MainView::CreateGameError(*err),
-        });
         use MainModel::*;
         match msg {
             Create => {
                 tx.send(&MainView::Creating);
+                let api_tx = tx.contra_map(|r: &Result<api::GameCreated, api::FetchError>| match r {
+                    Ok(response) => MainView::CreateGameSuccess(response.id),
+                    Err(err) => MainView::CreateGameError(*err),
+                });
                 api_tx.send_async(api::create_game(self.difficulty.into()));
+                let dispatch = self.dispatch.clone();
+                api_tx.spawn_recv().branch_filter_map(|r| r.ok()).respond(move |response| 
+                    dispatch.send(&Route::Game { game_id: response.id })
+                );
             }
             SetDifficulty(difficulty) if *difficulty != self.difficulty => {
                 self.difficulty = *difficulty;

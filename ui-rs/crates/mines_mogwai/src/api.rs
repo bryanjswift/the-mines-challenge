@@ -57,7 +57,7 @@ pub mod model {
     }
 
     /// A struct to hold data from the Game API after game creation.
-    #[derive(Clone, Debug, Deserialize)]
+    #[derive(Clone, Copy, Debug, Deserialize)]
     pub struct GameCreated {
         pub id: GameId,
     }
