@@ -40,7 +40,7 @@ const config: webpack.Configuration = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[chunkhash].bundle.js',
+    filename: '[name].[chunkhash].js',
   },
 };
 
