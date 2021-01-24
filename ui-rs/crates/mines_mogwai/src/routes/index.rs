@@ -1,6 +1,31 @@
 use crate::{api, Route};
 use mogwai::prelude::*;
 
+/// Defines how to build the view for the home screen.
+#[allow(unused_braces)]
+pub fn home() -> ViewBuilder<HtmlElement> {
+    // Create a transmitter to send button clicks into.
+    let tx_click = Transmitter::new();
+    let rx_org = Receiver::new();
+    let main_component = Gizmo::from(Main {
+        difficulty: Difficulty::Medium,
+    });
+    builder! {
+        <main class="container">
+            <div class="overlay">
+                "This site is only supported in portrait mode."
+            </div>
+            <div class="page-one">
+                <div class="section-block">
+                    {star_title(rx_org)}
+                    {new_button_view(tx_click)}
+                    {main_component.view_builder()}
+                </div>
+            </div>
+        </main>
+    }
+}
+
 /// Holds the state for showing a "Create New Game" button with the button generating a game with
 /// variable size (i.e. difficulty).
 struct Main {
@@ -186,31 +211,6 @@ impl Main {
                 {difficulty.to_string()}
             </li>
         }
-    }
-}
-
-/// Defines how to build the view for the home screen.
-#[allow(unused_braces)]
-pub fn home() -> ViewBuilder<HtmlElement> {
-    // Create a transmitter to send button clicks into.
-    let tx_click = Transmitter::new();
-    let rx_org = Receiver::new();
-    let main_component = Gizmo::from(Main {
-        difficulty: Difficulty::Medium,
-    });
-    builder! {
-        <main class="container">
-            <div class="overlay">
-                "This site is only supported in portrait mode."
-            </div>
-            <div class="page-one">
-                <div class="section-block">
-                    {star_title(rx_org)}
-                    {new_button_view(tx_click)}
-                    {main_component.view_builder()}
-                </div>
-            </div>
-        </main>
     }
 }
 
