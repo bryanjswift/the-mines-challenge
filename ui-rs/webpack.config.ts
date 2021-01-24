@@ -1,5 +1,7 @@
 import { execSync } from 'child_process';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+// @ts-expect-error types for mini-css-extract-plugin not available
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 import webpack from 'webpack';
 
@@ -15,6 +17,17 @@ const config: webpack.Configuration = {
   module: {
     rules: [
       {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+        },
+      },
+      {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
@@ -23,6 +36,7 @@ const config: webpack.Configuration = {
   },
   plugins: [
     ...(dev ? [new webpack.HotModuleReplacementPlugin()] : []),
+    new MiniCssExtractPlugin({ filename: '[name].[chunkhash].css' }),
     new HtmlWebpackPlugin({
       template: 'src/index.ejs',
     }),
