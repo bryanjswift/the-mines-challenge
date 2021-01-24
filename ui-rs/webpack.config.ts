@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import webpack, { WebpackPluginInstance } from 'webpack';
+import webpack from 'webpack';
 
 const mode =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
@@ -29,7 +29,7 @@ const config: webpack.Configuration = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.VERSION': JSON.stringify(gitVersion),
     }),
-  ] as WebpackPluginInstance[],
+  ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
   },
