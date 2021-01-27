@@ -18,18 +18,18 @@ const config: webpack.Configuration = {
     rules: [
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, require.resolve('css-loader')],
       },
       {
         test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
-        loader: 'url-loader',
+        loader: require.resolve('url-loader'),
         options: {
           limit: 8192,
         },
       },
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: require.resolve('ts-loader'),
         exclude: /node_modules/,
       },
     ],
