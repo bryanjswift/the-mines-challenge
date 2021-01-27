@@ -11,6 +11,12 @@ ui-rs/crates/mines_uirs/target/
 
 # dependencies
 node_modules/
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 
 # testing
 coverage/
