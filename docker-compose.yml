@@ -1,5 +1,17 @@
 version: '3'
 services:
+  db:
+    image: postgres:13.1
+    container_name: db01
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mines_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+
   api:
     container_name: api
     build:
@@ -163,6 +175,7 @@ volumes:
     driver: local
   eventstore-volume-data:
   eventstore-volume-logs:
+  pg_data:
 
 networks:
   elastic:
