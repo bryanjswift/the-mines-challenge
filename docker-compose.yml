@@ -25,18 +25,27 @@ services:
       - api
 
   eventstore.db:
-    image: eventstore/eventstore
+    image: eventstore/eventstore:20.10.0-buster-slim
+    container_name: eventstore01
     environment:
       - EVENTSTORE_CLUSTER_SIZE=1
-      - EVENTSTORE_INT_TCP_PORT=1112
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
       - EVENTSTORE_EXT_TCP_PORT=1113
-      - EVENTSTORE_INT_HTTP_PORT=2112
       - EVENTSTORE_EXT_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
     ports:
-      - '1112:1112'
       - '1113:1113'
-      - '2112:2112'
       - '2113:2113'
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
 
   localstack:
     image: localstack/localstack
@@ -152,6 +161,8 @@ volumes:
     driver: local
   data03:
     driver: local
+  eventstore-volume-data:
+  eventstore-volume-logs:
 
 networks:
   elastic:
