@@ -27,48 +27,52 @@ describe(GameController, () => {
   });
 
   describe('POST /', () => {
-    it('creates a game', () => {
-      const result = controller.create({ rows: 3, columns: 3 });
+    it('creates a game', async () => {
+      const result = await controller.create({ rows: 3, columns: 3 });
       expect(result).toBeDefined();
     });
 
-    it('returns an id', () => {
-      const result = controller.create({ rows: 3, columns: 3 });
+    it('returns an id', async () => {
+      const result = await controller.create({ rows: 3, columns: 3 });
       expect(result.id).toBeDefined();
     });
 
-    it('only returns an id', () => {
-      const result = controller.create({ rows: 3, columns: 3 });
+    it('only returns an id', async () => {
+      const result = await controller.create({ rows: 3, columns: 3 });
       expect(Object.keys(result)).toEqual(['id']);
     });
   });
 
   describe('GET /', () => {
-    it('is an empty list', () => {
-      expect(controller.findAll()).toHaveLength(0);
+    it('is an empty list', async () => {
+      const result = await controller.findAll();
+      expect(result).toHaveLength(0);
     });
 
-    it('lists one after create', () => {
-      controller.create({ rows: 3, columns: 3 });
-      expect(controller.findAll()).toHaveLength(1);
+    it('lists one after create', async () => {
+      await controller.create({ rows: 3, columns: 3 });
+      const result = await controller.findAll();
+      expect(result).toHaveLength(1);
     });
 
-    it('lists only ids', () => {
-      const game = controller.create({ rows: 3, columns: 3 });
-      const result = controller.findAll();
+    it('lists only ids', async () => {
+      const game = await controller.create({ rows: 3, columns: 3 });
+      const result = await controller.findAll();
       expect(result).toContain(game.id);
     });
   });
 
   describe('GET /:id', () => {
     it('throws NotFoundException for non-existing id', () => {
-      expect(() => controller.findOne('foo')).toThrowError(NotFoundException);
+      expect(() => controller.findOne('foo')).rejects.toThrowError(
+        NotFoundException
+      );
     });
 
-    it('serializes a Game', () => {
-      const { id } = controller.create({ rows: 10, columns: 10 });
+    it('serializes a Game', async () => {
+      const { id } = await controller.create({ rows: 10, columns: 10 });
       const game = service.findById(id);
-      const result = controller.findOne(id);
+      const result = await controller.findOne(id);
       expect(result).toHaveProperty('id', id);
       expect(result.board.flat()).toEqual(game.board);
       expect(result).toHaveProperty('status');
@@ -80,28 +84,28 @@ describe(GameController, () => {
     const type = GameMoveType.OPEN;
 
     it('throws NotFoundException for non-existing id', () => {
-      expect(() => controller.addMove('foo', alpha)).toThrowError(
+      expect(() => controller.addMove('foo', alpha)).rejects.toThrowError(
         NotFoundException
       );
     });
 
-    it('throws UnprocessableEntityException for out of bounds row', () => {
-      const { id } = controller.create({ rows: 10, columns: 10 });
+    it('throws UnprocessableEntityException for out of bounds row', async () => {
+      const { id } = await controller.create({ rows: 10, columns: 10 });
       expect(() =>
         controller.addMove(id, { column: 11, type, row: 0 })
-      ).toThrowError(UnprocessableEntityException);
+      ).rejects.toThrowError(UnprocessableEntityException);
     });
 
-    it('throws UnprocessableEntityException for out of bounds column', () => {
-      const { id } = controller.create({ rows: 10, columns: 10 });
+    it('throws UnprocessableEntityException for out of bounds column', async () => {
+      const { id } = await controller.create({ rows: 10, columns: 10 });
       expect(() =>
         controller.addMove(id, { column: 0, type, row: 11 })
-      ).toThrowError(UnprocessableEntityException);
+      ).rejects.toThrowError(UnprocessableEntityException);
     });
 
-    it('updates a Game', () => {
-      const { id } = controller.create({ rows: 10, columns: 10 });
-      const result = controller.addMove(id, alpha);
+    it('updates a Game', async () => {
+      const { id } = await controller.create({ rows: 10, columns: 10 });
+      const result = await controller.addMove(id, alpha);
       expect(result).toHaveProperty('id', id);
       expect(result).toHaveProperty('board');
       expect(result).toHaveProperty('status');

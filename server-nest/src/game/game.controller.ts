@@ -25,20 +25,20 @@ export class GameController {
   @Post()
   @HttpCode(201)
   @UsePipes(new IoValidationPipe(CreateGameDto))
-  create(@Body() data: CreateGameDto): Pick<Game, 'id'> {
+  async create(@Body() data: CreateGameDto): Promise<Pick<Game, 'id'>> {
     const game = this.gameService.create(data);
     return { id: game.id };
   }
 
   @Get()
   @Header('Cache-Control', 'max-age=60')
-  findAll(): GameId[] {
+  async findAll(): Promise<GameId[]> {
     return this.gameService.list().map((game) => game.id);
   }
 
   @Get(':id')
   @Header('Cache-Control', 'must-revalidate, max-age=60')
-  findOne(@Param('id') id: GameId): GameView {
+  async findOne(@Param('id') id: GameId): Promise<GameView> {
     const game = this.gameService.findById(id);
     if (typeof game === 'undefined' || game === null) {
       throw new NotFoundException();
@@ -48,7 +48,10 @@ export class GameController {
 
   @Patch(':id')
   @UsePipes(new IoValidationPipe(GameMoveDto))
-  addMove(@Param('id') id: GameId, @Body() move: GameMoveDto): GameView {
+  async addMove(
+    @Param('id') id: GameId,
+    @Body() move: GameMoveDto
+  ): Promise<GameView> {
     try {
       const next = this.gameService.addMoveById(id, move);
       return serializeGame(next);
