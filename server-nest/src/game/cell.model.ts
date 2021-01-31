@@ -58,8 +58,8 @@ export class Cell {
   readonly isMine: boolean;
   private readonly positionalNeighbors: CellLocations;
 
-  constructor(state?: CellState) {
-    this.id = uuid();
+  constructor(state?: CellState & { id?: CellId }) {
+    this.id = state?.id ?? uuid();
     this.initialState = Object.freeze({ ...DEFAULT_CELL_STATE, ...state });
     this.isMine = this.initialState.isMine;
     this.positionalNeighbors = {};
