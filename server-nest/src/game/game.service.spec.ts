@@ -22,16 +22,16 @@ describe('GameService', () => {
   });
 
   describe('#create', () => {
-    it('creates a game instance', () => {
-      const result = service.create({
+    it('creates a game instance', async () => {
+      const result = await service.create({
         rows: 2,
         columns: 2,
       });
       expect(result).toBeInstanceOf(Game);
     });
 
-    it('creates a game instance with expected cells', () => {
-      const result = service.create({
+    it('creates a game instance with expected cells', async () => {
+      const result = await service.create({
         rows: 2,
         columns: 2,
       });
@@ -40,17 +40,17 @@ describe('GameService', () => {
   });
 
   describe('#list', () => {
-    it('is empty', () => {
-      const result = service.list();
+    it('is empty', async () => {
+      const result = await service.list();
       expect(result).toHaveLength(0);
     });
 
-    it('has contents after create', () => {
-      const game = service.create({
+    it('has contents after create', async () => {
+      const game = await service.create({
         rows: 2,
         columns: 2,
       });
-      const result = service.list();
+      const result = await service.list();
       expect(result).toHaveLength(1);
       expect(result).toContain(game);
     });
@@ -59,20 +59,20 @@ describe('GameService', () => {
   describe('#findById', () => {
     let game: Game;
 
-    beforeEach(() => {
-      game = service.create({
+    beforeEach(async () => {
+      game = await service.create({
         rows: 2,
         columns: 2,
       });
     });
 
-    it('is undefined for unknown id', () => {
-      const result = service.findById(uuid());
+    it('is undefined for unknown id', async () => {
+      const result = await service.findById(uuid());
       expect(result).toBeUndefined();
     });
 
-    it('finds the an existing game', () => {
-      const result = service.findById(game.id);
+    it('finds the an existing game', async () => {
+      const result = await service.findById(game.id);
       expect(result).toBe(game);
     });
   });
@@ -80,41 +80,45 @@ describe('GameService', () => {
   describe('#updateById', () => {
     let game: Game;
 
-    beforeEach(() => {
-      game = service.create({
+    beforeEach(async () => {
+      game = await service.create({
         rows: 2,
         columns: 2,
       });
     });
 
     it('throws for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).toThrow(NoRecordError);
+      expect(() => service.updateById(uuid(), null)).rejects.toThrow(
+        NoRecordError
+      );
     });
 
     it('throws an error about Game for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).toThrow(/^Game/);
+      expect(() => service.updateById(uuid(), null)).rejects.toThrow(/^Game/);
     });
 
-    it('throws if ids do not match', () => {
-      const g2 = service.create({ rows: 2, columns: 2 });
-      expect(() => service.updateById(g2.id, game)).toThrow();
+    it('throws if ids do not match', async () => {
+      const g2 = await service.create({ rows: 2, columns: 2 });
+      expect(() => service.updateById(g2.id, game)).rejects.toThrow();
     });
 
-    it('throws error about same game if mismatched games', () => {
-      const g2 = service.create({ rows: 2, columns: 2 });
-      expect(() => service.updateById(g2.id, game)).toThrow(/same Game/);
+    it('throws error about same game if mismatched games', async () => {
+      const g2 = await service.create({ rows: 2, columns: 2 });
+      expect(() => service.updateById(g2.id, game)).rejects.toThrow(
+        /same Game/
+      );
     });
 
-    it('returns the old game', () => {
+    it('returns the old game', async () => {
       const v2 = game.openCoordinates(0, 0);
-      const result = service.updateById(game.id, v2);
+      const result = await service.updateById(game.id, v2);
       expect(result).toBe(game);
     });
 
-    it('replaces the old game', () => {
+    it('replaces the old game', async () => {
       const v2 = game.openCoordinates(0, 0);
-      service.updateById(game.id, v2);
-      expect(service.findById(game.id)).toBe(v2);
+      await service.updateById(game.id, v2);
+      expect(await service.findById(game.id)).toBe(v2);
     });
   });
 
@@ -122,8 +126,8 @@ describe('GameService', () => {
     const moveTypes = [GameMoveType.FLAG, GameMoveType.OPEN];
     let game: Game;
 
-    beforeEach(() => {
-      game = service.create({
+    beforeEach(async () => {
+      game = await service.create({
         rows: 2,
         columns: 2,
       });
@@ -139,35 +143,35 @@ describe('GameService', () => {
         });
 
         it('throws for unknown id', () => {
-          expect(() => service.addMoveById(uuid(), move)).toThrow(
-            NoRecordError
-          );
+          expect(
+            async () => await service.addMoveById(uuid(), move)
+          ).rejects.toThrow(NoRecordError);
         });
 
-        it('returns a new game', () => {
-          const result = service.addMoveById(game.id, move);
+        it('returns a new game', async () => {
+          const result = await service.addMoveById(game.id, move);
           expect(result).not.toBe(game);
         });
 
-        it('returns a game with a new board state', () => {
-          const result = service.addMoveById(game.id, move);
+        it('returns a game with a new board state', async () => {
+          const result = await service.addMoveById(game.id, move);
           expect(result.board).not.toEqual(game.board);
         });
 
-        it('returns a game with same id', () => {
-          const result = service.addMoveById(game.id, move);
+        it('returns a game with same id', async () => {
+          const result = await service.addMoveById(game.id, move);
           expect(result).toHaveProperty('id', game.id);
         });
 
-        it('replaces the old game', () => {
-          const result = service.addMoveById(game.id, move);
-          expect(service.findById(game.id)).toBe(result);
+        it('replaces the old game', async () => {
+          const result = await service.addMoveById(game.id, move);
+          expect(await service.findById(game.id)).toBe(result);
         });
       });
     }
 
-    it('flags a cell', () => {
-      const result = service.addMoveById(game.id, {
+    it('flags a cell', async () => {
+      const result = await service.addMoveById(game.id, {
         column: 0,
         row: 0,
         type: GameMoveType.FLAG,
@@ -175,8 +179,8 @@ describe('GameService', () => {
       expect(result.board[0]).toBe('F');
     });
 
-    it('opens a cell', () => {
-      const result = service.addMoveById(game.id, {
+    it('opens a cell', async () => {
+      const result = await service.addMoveById(game.id, {
         column: 0,
         row: 0,
         type: GameMoveType.OPEN,

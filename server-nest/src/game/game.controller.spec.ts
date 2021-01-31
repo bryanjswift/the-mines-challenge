@@ -71,7 +71,7 @@ describe(GameController, () => {
 
     it('serializes a Game', async () => {
       const { id } = await controller.create({ rows: 10, columns: 10 });
-      const game = service.findById(id);
+      const game = await service.findById(id);
       const result = await controller.findOne(id);
       expect(result).toHaveProperty('id', id);
       expect(result.board.flat()).toEqual(game.board);
