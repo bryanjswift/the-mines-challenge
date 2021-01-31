@@ -942,6 +942,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mines/nest@workspace:server-nest"
   dependencies:
+    "@nearform/sql": 1.5.0
     "@nestjs/cli": 7.5.4
     "@nestjs/common": 7.6.6
     "@nestjs/core": 7.6.6
@@ -1019,6 +1020,13 @@ __metadata:
     webpack-dev-server: 3.11.2
   languageName: unknown
   linkType: soft
+
+"@nearform/sql@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@nearform/sql@npm:1.5.0"
+  checksum: 1411a4fb36c2c079607ff402daf593a7273d30bf3c072217c9583508eb4d66d6b308b4a2334b94668cd1d570a253e0716503f38e3ba5010f18a0d34a66fa0198
+  languageName: node
+  linkType: hard
 
 "@nestjs/cli@npm:7.5.4":
   version: 7.5.4
