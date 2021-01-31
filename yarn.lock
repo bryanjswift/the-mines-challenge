@@ -2831,6 +2831,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"astring@npm:^1.4.3":
+  version: 1.6.0
+  resolution: "astring@npm:1.6.0"
+  bin:
+    astring: bin/astring
+  checksum: 049492e115d1fd3ab54c04986ac7d64e7b38312cef83ef8e6c3d3c0e131e0379014733b8ac70acc2b56be01d52fd70dff2f081c4f4ce26c948507222fb84e045
+  languageName: node
+  linkType: hard
+
 "async-cache@npm:^1.1.0":
   version: 1.1.0
   resolution: "async-cache@npm:1.1.0"
@@ -5397,6 +5406,21 @@ __metadata:
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7
   checksum: 34927cb4880984e3a3e413ef57ebedbc4c4bf8e26f3cf561986e240c621d0873765fc5eef2be22171625deab2f77d0ec7013b422987ae5296fbdee0c682c6cc5
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-sql@npm:1.2.0":
+  version: 1.2.0
+  resolution: "eslint-plugin-sql@npm:1.2.0"
+  dependencies:
+    astring: ^1.4.3
+    debug: ^4.1.1
+    lodash: ^4.17.20
+    pg-formatter: ^1.1.2
+    sql-parse: ^0.1.5
+  peerDependencies:
+    eslint: ">=7.9.0"
+  checksum: 009c69308b8a54e27a9a223622d98d2b59cde15cd9c488c959ecf4301cfbae0a08806d65456bec8d7d368c014fc7a642d64b6f281aa839975c8c07da04f8f593
   languageName: node
   linkType: hard
 
@@ -10432,6 +10456,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"pg-formatter@npm:^1.1.2":
+  version: 1.2.0
+  resolution: "pg-formatter@npm:1.2.0"
+  dependencies:
+    shell-quote: ^1.7.2
+  checksum: d811f1165f24275cc1e863218eebe1bb088b08bf909cab52c6a74115b273bfd20bfdfcff494f7da00b34e9fb5ded5c948db559a6de0e3b5f1be21e76c367af51
+  languageName: node
+  linkType: hard
+
 "pg-int8@npm:1.0.1":
   version: 1.0.1
   resolution: "pg-int8@npm:1.0.1"
@@ -12097,7 +12130,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:1.7.2":
+"shell-quote@npm:1.7.2, shell-quote@npm:^1.7.2":
   version: 1.7.2
   resolution: "shell-quote@npm:1.7.2"
   checksum: 3b3d06814ca464cde8594c27bdd57a1f4c06b26ad2988b08b5819f97ac1edfd7cb7313fda1c909da33211972c72c5a7906b7da2b62078109f9d3274d3f404fa9
@@ -12431,6 +12464,13 @@ fsevents@^1.2.7:
   version: 1.0.3
   resolution: "sprintf-js@npm:1.0.3"
   checksum: 51df1bce9e577287f56822d79ac5bd94f6c634fccf193895f2a1d2db2e975b6aa7bc97afae9cf11d49b7c37fe4afc188ff5c4878be91f2c86eabd11c5df8b62c
+  languageName: node
+  linkType: hard
+
+"sql-parse@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "sql-parse@npm:0.1.5"
+  checksum: aa95a8d27356389310fedd540c2c69b26352a97e5cddd1cda3683113178436693d31205db36abe9e59ed8ae2295139fe418aaf3aa6ebb679a9816b40d4ad3b53
   languageName: node
   linkType: hard
 
@@ -13117,6 +13157,7 @@ fsevents@^1.2.7:
     "@typescript-eslint/parser": 4.14.1
     eslint: 7.18.0
     eslint-config-prettier: 7.2.0
+    eslint-plugin-sql: 1.2.0
     husky: 4.3.8
     prettier: 2.2.1
     pretty-quick: 3.1.0
