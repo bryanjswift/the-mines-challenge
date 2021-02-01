@@ -22,11 +22,11 @@
   },
   "dependencies": {
     "@nearform/sql": "1.5.0",
-    "@nestjs/common": "7.6.6",
-    "@nestjs/core": "7.6.6",
+    "@nestjs/common": "7.6.7",
+    "@nestjs/core": "7.6.7",
     "@nestjs/jwt": "7.2.0",
     "@nestjs/passport": "7.1.5",
-    "@nestjs/platform-express": "7.6.6",
+    "@nestjs/platform-express": "7.6.7",
     "dotenv": "8.2.0",
     "elastic-apm-node": "3.10.0",
     "express": "4.17.1",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@nestjs/cli": "7.5.4",
     "@nestjs/schematics": "7.2.7",
-    "@nestjs/testing": "7.6.6",
+    "@nestjs/testing": "7.6.7",
     "@stryker-mutator/core": "4.4.0",
     "@stryker-mutator/jest-runner": "4.4.0",
     "@types/faker": "5.1.5",
