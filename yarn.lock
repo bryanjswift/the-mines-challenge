@@ -951,8 +951,8 @@ __metadata:
     "@nestjs/platform-express": 7.6.7
     "@nestjs/schematics": 7.2.7
     "@nestjs/testing": 7.6.7
-    "@stryker-mutator/core": 4.4.0
-    "@stryker-mutator/jest-runner": 4.4.0
+    "@stryker-mutator/core": 4.4.1
+    "@stryker-mutator/jest-runner": 4.4.1
     "@types/faker": 5.1.5
     "@types/jest": 26.0.20
     "@types/node": 14.14.22
@@ -1317,24 +1317,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stryker-mutator/api@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@stryker-mutator/api@npm:4.4.0"
+"@stryker-mutator/api@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@stryker-mutator/api@npm:4.4.1"
   dependencies:
     mutation-testing-report-schema: ~1.5.2
     surrial: ~2.0.2
     tslib: ~2.1.0
-  checksum: 84f4d977c63fa1c8a8f01cb603d671f90d9f4c07664b222b87b8dfee46c648c31e860c2c1ebcc0fae475b8c3dbaec6add116774b7cffb1842c9d18493ef04e8e
+  checksum: 7e71e32d57f87f6ce827aa2f38004ef5f66cb2321065e6906dcfc0325a23443a1c81a020c7220e027d998e59a1dbe53796afdc93b635ff4eb876d8ff46541e74
   languageName: node
   linkType: hard
 
-"@stryker-mutator/core@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@stryker-mutator/core@npm:4.4.0"
+"@stryker-mutator/core@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@stryker-mutator/core@npm:4.4.1"
   dependencies:
-    "@stryker-mutator/api": 4.4.0
-    "@stryker-mutator/instrumenter": 4.4.0
-    "@stryker-mutator/util": 4.4.0
+    "@stryker-mutator/api": 4.4.1
+    "@stryker-mutator/instrumenter": 4.4.1
+    "@stryker-mutator/util": 4.4.1
     ajv: ~7.0.2
     chalk: ~4.1.0
     commander: ~7.0.0
@@ -1362,13 +1362,13 @@ __metadata:
     typed-rest-client: ~1.8.0
   bin:
     stryker: bin/stryker
-  checksum: f1e677117384037d34981795c2ff6dbefd52305bb8c86830a31aa2b8b5c72d7352e3ae035b824ccd174d22081d929268244825cbfa38868cd43ee94efa7c7ab8
+  checksum: 966516255f143ed2a7bdbedac826e3371f1d9e2f4895e36c9366300a91465d9440ebbd4a6ce028e434c7decd1b1b4911b5ef580fa25484827d87f3288a67edf6
   languageName: node
   linkType: hard
 
-"@stryker-mutator/instrumenter@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@stryker-mutator/instrumenter@npm:4.4.0"
+"@stryker-mutator/instrumenter@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@stryker-mutator/instrumenter@npm:4.4.1"
   dependencies:
     "@babel/core": ~7.12.3
     "@babel/generator": ~7.12.1
@@ -1377,35 +1377,35 @@ __metadata:
     "@babel/plugin-proposal-decorators": "~7.12.1 "
     "@babel/plugin-proposal-private-methods": ^7.12.1
     "@babel/preset-typescript": "~7.12.1 "
-    "@stryker-mutator/api": 4.4.0
-    "@stryker-mutator/util": 4.4.0
+    "@stryker-mutator/api": 4.4.1
+    "@stryker-mutator/util": 4.4.1
     angular-html-parser: ~1.7.0
     weapon-regex: ~0.3.0
-  checksum: f575c63712eec36b15ac601768e4df1520d95f0957eb06af6cc6ce4a6a76662494450177885b642fe815c0e03dbdfa19942268473f21bf243b68dc053cd76939
+  checksum: 88aa58f1795edde5e0eb2c876d44b371d8feb7ab626b05fcf94b3d06b769ca4b3996798cc8df1a4900a1fcaa82caee008a6b795e5888c3dbdd9213e9d4facfbc
   languageName: node
   linkType: hard
 
-"@stryker-mutator/jest-runner@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@stryker-mutator/jest-runner@npm:4.4.0"
+"@stryker-mutator/jest-runner@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@stryker-mutator/jest-runner@npm:4.4.1"
   dependencies:
-    "@stryker-mutator/api": 4.4.0
-    "@stryker-mutator/util": 4.4.0
+    "@stryker-mutator/api": 4.4.1
+    "@stryker-mutator/util": 4.4.1
     semver: ~6.3.0
     tslib: ~2.1.0
   peerDependencies:
     "@stryker-mutator/core": ~4.4.0
     jest: ">= 22.0.0"
-  checksum: b341d89544888a221afe4eb5d9adb203464e1723a020901a1c7e8ea3737ba966815e4b59932283b7e625e71f20ac0cb6813d5d86d17f3288732cd447f529eb31
+  checksum: 77601dcc790db46a278dfd478ea38bc8573592c61bdccbb2dbc4798ca830f0984664e261becef0569a8bd4ad80cbdf5d64f5dbf50e38bcfd16503dc0a121ce46
   languageName: node
   linkType: hard
 
-"@stryker-mutator/util@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@stryker-mutator/util@npm:4.4.0"
+"@stryker-mutator/util@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@stryker-mutator/util@npm:4.4.1"
   dependencies:
     lodash.flatmap: ~4.5.0
-  checksum: eee7dee71395a2e99d733139e26574749eded3823b11e90a4da9a8a8a3c22768acd5261c91a8e75197a6e825c40eeb35f979cbd16c4c12a64c57551fccbe9403
+  checksum: 6bbf9dfab209ad7a5daea66dde9904551b7c6792a5d5481beafded634c5ebd8e1102c85dec3e2ad180d17c30aa0d350f231e22a5e3e308020f3334481db1503d
   languageName: node
   linkType: hard
 
