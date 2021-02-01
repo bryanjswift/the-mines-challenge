@@ -1,7 +1,7 @@
+import { Pool } from 'pg';
 import SQL from '@nearform/sql';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NoRecordError } from '../errors';
-import { getClient } from '../vendor/db';
 import { Cell } from './cell.model';
 import { GameMoveDto } from './game.dto';
 import { Game, GameId, Props } from './game.model';
@@ -42,6 +42,8 @@ export interface BaseGameService {
 
 @Injectable()
 export class GameService implements BaseGameService {
+  constructor(@Inject('DB_POOL') private readonly pool: Pool) {}
+
   /**
    * Find the `Game` associated with `id`, add the move represented by the
    * column and row to be opened, return the updated `Game`.
@@ -58,9 +60,8 @@ export class GameService implements BaseGameService {
     }
     const { column, row } = move;
     const cell = current.findCell(column, row);
-    const client = getClient();
+    const client = await this.pool.connect();
     try {
-      await client.connect();
       await client.query(SQL`BEGIN`);
       const moveIds = await client.query<{ move_id: string }>(SQL`
         INSERT
@@ -79,7 +80,7 @@ export class GameService implements BaseGameService {
       // Rethrow whatever error caused the rollback
       throw error;
     } finally {
-      await client.end();
+      client.release();
     }
     let next: Game;
     switch (move.type) {
@@ -100,9 +101,8 @@ export class GameService implements BaseGameService {
    */
   async create(data: Omit<Props, 'id'>): Promise<Game> {
     const game: Game = new Game(data);
-    const client = getClient();
+    const client = await this.pool.connect();
     try {
-      await client.connect();
       await client.query(SQL`BEGIN`);
       const gameIds = await client.query<Pick<GameRecord, 'id'>>(SQL`
         INSERT
@@ -150,7 +150,7 @@ export class GameService implements BaseGameService {
       // Rethrow whatever error caused the rollback
       throw error;
     } finally {
-      await client.end();
+      client.release();
     }
     return game;
   }
@@ -160,9 +160,8 @@ export class GameService implements BaseGameService {
    * @returns all records.
    */
   async list(): Promise<Game[]> {
-    const client = getClient();
+    const client = await this.pool.connect();
     try {
-      await client.connect();
       const gameData = await client.query<GameRecord>(SQL`
         SELECT
           game.game_id AS id,
@@ -192,7 +191,7 @@ export class GameService implements BaseGameService {
     } catch (error) {
       throw error;
     } finally {
-      await client.end();
+      client.release();
     }
   }
 
@@ -202,9 +201,8 @@ export class GameService implements BaseGameService {
    * @returns the record if one is found or `undefined` if one is not.
    */
   async findById(id: GameId): Promise<Game | undefined> {
-    const client = getClient();
+    const client = await this.pool.connect();
     try {
-      await client.connect();
       const gameData = await client.query<GameRecord>(SQL`
         SELECT
           game.game_id AS id,
@@ -243,12 +241,12 @@ export class GameService implements BaseGameService {
       // TODO: Log the error
       return undefined;
     } finally {
-      await client.end();
+      client.release();
     }
   }
 }
 
-type GameRecord = {
+export type GameRecord = {
   id: string;
   columns: number;
   rows: number;
@@ -256,12 +254,12 @@ type GameRecord = {
   moves: GameMoveRecord[];
 };
 
-type GameCellRecord = {
+export type GameCellRecord = {
   is_mine: boolean;
   id: string;
 };
 
-type GameMoveRecord = {
+export type GameMoveRecord = {
   cell_id: string;
   move_type: GameMoveType;
 };

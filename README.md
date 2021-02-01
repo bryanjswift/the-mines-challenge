@@ -38,9 +38,6 @@ The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
 
 ### Database
 
-**WARNING** The tests for `GameService` currently `TRUNCATE` database tables
-before and after test execution.
-
 The `@mines/nest` server uses a database to store data about the games it is
 serving. The database schema is managed through a set of database migrations
 using [flyway][flyway] community edition. The migrations are kept in
@@ -57,9 +54,6 @@ The above requires the `flyway` command to be accessible on the `$PATH`.
 [flyway]: https://flywaydb.org/documentation/
 
 ### Testing
-
-**WARNING** The tests for `GameService` currently `TRUNCATE` database tables
-before and after test execution.
 
 Unit tests are written with [Jest][jest] and are complemented with
 [Stryker][stryker]. Test execution is done with the `test` or `test:*` scripts
