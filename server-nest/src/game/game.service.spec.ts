@@ -1,10 +1,28 @@
+import SQL from '@nearform/sql';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuid } from 'uuid';
 import { NoRecordError } from '../errors';
+import { getClient } from '../vendor/db';
 import { GameMoveDto } from './game.dto';
 import { Game } from './game.model';
 import { GameService } from './game.service';
 import { GameMoveType } from './game-move.model';
+
+beforeEach(() => {
+  const client = getClient();
+  return client
+    .connect()
+    .then(() => client.query(SQL`TRUNCATE game CASCADE`))
+    .finally(() => client.end());
+});
+
+afterEach(() => {
+  const client = getClient();
+  return client
+    .connect()
+    .then(() => client.query(SQL`TRUNCATE game CASCADE`))
+    .finally(() => client.end());
+});
 
 describe('GameService', () => {
   let service: GameService;
@@ -52,7 +70,7 @@ describe('GameService', () => {
       });
       const result = await service.list();
       expect(result).toHaveLength(1);
-      expect(result).toContain(game);
+      expect(result.map((g) => g.id)).toContain(game.id);
     });
   });
 
@@ -71,54 +89,9 @@ describe('GameService', () => {
       expect(result).toBeUndefined();
     });
 
-    it('finds the an existing game', async () => {
+    it('finds an existing game', async () => {
       const result = await service.findById(game.id);
-      expect(result).toBe(game);
-    });
-  });
-
-  describe('#updateById', () => {
-    let game: Game;
-
-    beforeEach(async () => {
-      game = await service.create({
-        rows: 2,
-        columns: 2,
-      });
-    });
-
-    it('throws for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).rejects.toThrow(
-        NoRecordError
-      );
-    });
-
-    it('throws an error about Game for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).rejects.toThrow(/^Game/);
-    });
-
-    it('throws if ids do not match', async () => {
-      const g2 = await service.create({ rows: 2, columns: 2 });
-      expect(() => service.updateById(g2.id, game)).rejects.toThrow();
-    });
-
-    it('throws error about same game if mismatched games', async () => {
-      const g2 = await service.create({ rows: 2, columns: 2 });
-      expect(() => service.updateById(g2.id, game)).rejects.toThrow(
-        /same Game/
-      );
-    });
-
-    it('returns the old game', async () => {
-      const v2 = game.openCoordinates(0, 0);
-      const result = await service.updateById(game.id, v2);
-      expect(result).toBe(game);
-    });
-
-    it('replaces the old game', async () => {
-      const v2 = game.openCoordinates(0, 0);
-      await service.updateById(game.id, v2);
-      expect(await service.findById(game.id)).toBe(v2);
+      expect(result).toEqual(game);
     });
   });
 
@@ -136,11 +109,7 @@ describe('GameService', () => {
     for (let i = 0; i < moveTypes.length; i++) {
       const moveType = moveTypes[i];
       describe(moveType, () => {
-        let move: GameMoveDto;
-
-        beforeEach(() => {
-          move = { column: 0, type: moveType, row: 0 };
-        });
+        const move: GameMoveDto = { column: 0, type: moveType, row: 0 };
 
         it('throws for unknown id', () => {
           expect(
@@ -150,7 +119,7 @@ describe('GameService', () => {
 
         it('returns a new game', async () => {
           const result = await service.addMoveById(game.id, move);
-          expect(result).not.toBe(game);
+          expect(result).not.toEqual(game);
         });
 
         it('returns a game with a new board state', async () => {
@@ -165,7 +134,7 @@ describe('GameService', () => {
 
         it('replaces the old game', async () => {
           const result = await service.addMoveById(game.id, move);
-          expect(await service.findById(game.id)).toBe(result);
+          expect(service.findById(game.id)).resolves.toEqual(result);
         });
       });
     }
@@ -185,7 +154,7 @@ describe('GameService', () => {
         row: 0,
         type: GameMoveType.OPEN,
       });
-      expect(result.board[0]).not.toBe(game.board[0]);
+      expect(result.board[0]).not.toEqual(game.board[0]);
     });
   });
 });

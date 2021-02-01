@@ -5,17 +5,23 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 import { GameMoveDto } from './game.dto';
-import { GameService } from './game.service';
+import { BaseGameService, GameService } from './game.service';
+import { MemGameService } from './game.mem-service';
 import { GameMoveType } from './game-move.model';
 
 describe(GameController, () => {
   let controller: GameController;
-  let service: GameService;
+  let service: BaseGameService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GameController],
-      providers: [GameService],
+      providers: [
+        {
+          provide: GameService,
+          useClass: MemGameService,
+        },
+      ],
     }).compile();
 
     controller = module.get<GameController>(GameController);
