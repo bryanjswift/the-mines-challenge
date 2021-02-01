@@ -108,10 +108,14 @@ export class Game {
     this.rows = rows;
   }
 
-  flagCoordinates(column: number, row: number): Game {
+  findCell(column: number, row: number): Cell {
     const gridProps = { rows: this.rows, columns: this.columns };
     const cellIndex = Game.getIndex(gridProps, column, row);
-    const cellId = this.cells[cellIndex].id;
+    return this.cells[cellIndex];
+  }
+
+  flagCoordinates(column: number, row: number): Game {
+    const cellId = this.findCell(column, row).id;
     return this.copyWithGameMove({ type: GameMoveType.FLAG, cellId });
   }
 
@@ -120,10 +124,8 @@ export class Game {
   }
 
   openCoordinates(column: number, row: number): Game {
-    const gridProps = { rows: this.rows, columns: this.columns };
-    const cellIndex = Game.getIndex(gridProps, column, row);
-    const cellId = this.cells[cellIndex].id;
-    return this.copyWithGameMove({ type: GameMoveType.OPEN, cellId });
+    const cellId = this.findCell(column, row).id;
+    return this.open(cellId);
   }
 
   get board(): string[] {

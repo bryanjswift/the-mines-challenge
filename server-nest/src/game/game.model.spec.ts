@@ -326,6 +326,71 @@ describe('new Game', () => {
   });
 });
 
+describe('Game#findCell', () => {
+  let cells: Cell[];
+  let game: Game;
+
+  beforeAll(() => {
+    // | 3 | M | 2 | 0 |
+    // | M | M | 2 | 0 |
+    // | 2 | 2 | 1 | 0 |
+    // | 0 | 0 | 0 | 0 |
+    cells = [
+      // Row 1
+      new Cell({ isMine: false }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 2
+      new Cell({ isMine: true }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 3
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 4
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+    ];
+  });
+
+  beforeEach(() => {
+    game = new Game({
+      rows: 4,
+      columns: 4,
+      cells,
+    });
+  });
+
+  it('finds the first cell', () => {
+    const subject = game.findCell(0, 0);
+    expect(subject.id).toEqual(cells[0].id);
+  });
+
+  it('finds the last cell', () => {
+    const subject = game.findCell(3, 3);
+    expect(subject.id).toEqual(cells[cells.length - 1].id);
+  });
+
+  it('finds cell at (2, 2)', () => {
+    const subject = game.findCell(2, 2);
+    expect(subject.id).toEqual(cells[10].id);
+  });
+
+  it('throws when column is out of bounds', () => {
+    expect(() => game.findCell(4, 0)).toThrowError(/columns/);
+  });
+
+  it('throws when row is out of bounds', () => {
+    expect(() => game.findCell(0, 4)).toThrowError(/rows/);
+  });
+});
+
 describe('Game#flagCoordinates', () => {
   let cells: Cell[];
   let game: Game;

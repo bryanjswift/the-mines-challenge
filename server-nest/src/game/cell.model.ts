@@ -36,6 +36,11 @@ function getOppositeLocation(location: CellLocation): CellLocation {
   }
 }
 
+interface CellJSON {
+  id: CellId;
+  isMine: boolean;
+}
+
 interface CellState {
   isFlagged?: boolean;
   isMine?: boolean;
@@ -58,9 +63,13 @@ export class Cell {
   readonly isMine: boolean;
   private readonly positionalNeighbors: CellLocations;
 
-  constructor(state?: CellState) {
-    this.id = uuid();
-    this.initialState = Object.freeze({ ...DEFAULT_CELL_STATE, ...state });
+  constructor(state?: CellState & { id?: CellId }) {
+    const { id, ...initialState } = state ?? {};
+    this.id = id ?? uuid();
+    this.initialState = Object.freeze({
+      ...DEFAULT_CELL_STATE,
+      ...initialState,
+    });
     this.isMine = this.initialState.isMine;
     this.positionalNeighbors = {};
   }
@@ -109,6 +118,13 @@ export class Cell {
 
   getNeighbor(location: CellLocation): Cell {
     return this.positionalNeighbors[location];
+  }
+
+  toJSON(): CellJSON {
+    return {
+      id: this.id,
+      isMine: this.isMine,
+    };
   }
 
   private get isEmpty(): boolean {

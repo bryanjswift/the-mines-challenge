@@ -1,5 +1,17 @@
 version: '3'
 services:
+  db:
+    image: postgres:13.1
+    container_name: db01
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mines_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+
   api:
     container_name: api
     build:
@@ -25,18 +37,27 @@ services:
       - api
 
   eventstore.db:
-    image: eventstore/eventstore
+    image: eventstore/eventstore:20.10.0-buster-slim
+    container_name: eventstore01
     environment:
       - EVENTSTORE_CLUSTER_SIZE=1
-      - EVENTSTORE_INT_TCP_PORT=1112
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
       - EVENTSTORE_EXT_TCP_PORT=1113
-      - EVENTSTORE_INT_HTTP_PORT=2112
       - EVENTSTORE_EXT_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
     ports:
-      - '1112:1112'
       - '1113:1113'
-      - '2112:2112'
       - '2113:2113'
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
 
   localstack:
     image: localstack/localstack
@@ -44,7 +65,6 @@ services:
       - '53:53'
       - '443:443'
       - '4567-4607:4567-4607'
-      - '${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}'
     environment:
       - SERVICES=sqs,dynamodb
       - DEBUG=1
@@ -55,7 +75,7 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
 
   apm01:
-    image: docker.elastic.co/apm/apm-server:7.6.1
+    image: docker.elastic.co/apm/apm-server:7.10.2
     container_name: apm01
     volumes:
       - ./apm-server.docker.yml:/usr/share/apm-server/apm-server.yml
@@ -68,7 +88,7 @@ services:
       - elastic
 
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
     container_name: es01
     environment:
       - node.name=es01
@@ -89,7 +109,7 @@ services:
       - elastic
 
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
     container_name: es02
     environment:
       - node.name=es02
@@ -110,7 +130,7 @@ services:
       - elastic
 
   es03:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
     container_name: es03
     environment:
       - node.name=es03
@@ -131,7 +151,7 @@ services:
       - elastic
 
   kib01:
-    image: docker.elastic.co/kibana/kibana:7.6.1
+    image: docker.elastic.co/kibana/kibana:7.10.2
     container_name: kib01
     ports:
       - 5601:5601
@@ -152,6 +172,9 @@ volumes:
     driver: local
   data03:
     driver: local
+  eventstore-volume-data:
+  eventstore-volume-logs:
+  pg_data:
 
 networks:
   elastic:

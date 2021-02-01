@@ -1,17 +1,39 @@
+import { SqlStatement } from '@nearform/sql';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuid } from 'uuid';
 import { NoRecordError } from '../errors';
+import { Cell } from './cell.model';
 import { GameMoveDto } from './game.dto';
 import { Game } from './game.model';
-import { GameService } from './game.service';
-import { GameMoveType } from './game-move.model';
+import {
+  GameService,
+  GameCellRecord,
+  GameMoveRecord,
+  GameRecord,
+} from './game.service';
+import { GameMove, GameMoveType } from './game-move.model';
+
+const mockClient = {
+  query: jest.fn(),
+  release: () => {},
+};
+
+const mockPool = {
+  connect: async () => mockClient,
+};
 
 describe('GameService', () => {
   let service: GameService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GameService],
+      providers: [
+        GameService,
+        {
+          provide: 'DB_POOL',
+          useValue: mockPool,
+        },
+      ],
     }).compile();
 
     service = module.get<GameService>(GameService);
@@ -22,16 +44,41 @@ describe('GameService', () => {
   });
 
   describe('#create', () => {
-    it('creates a game instance', () => {
-      const result = service.create({
+    beforeEach(() => {
+      mockClient.query
+        // BEGIN
+        .mockImplementationOnce(() => Promise.resolve())
+        // INSERT INTO game
+        .mockImplementationOnce((statement: SqlStatement) =>
+          Promise.resolve({
+            rowCount: 1,
+            rows: [{ id: statement.values[0] }],
+          })
+        )
+        // INSERT INTO game_cell
+        .mockResolvedValueOnce({
+          rowCount: 4,
+          rows: [
+            genGameCellRecord(),
+            genGameCellRecord(),
+            genGameCellRecord(),
+            genGameCellRecord(),
+          ],
+        })
+        // COMMIT
+        .mockImplementationOnce(() => Promise.resolve());
+    });
+
+    it('creates a game instance', async () => {
+      const result = await service.create({
         rows: 2,
         columns: 2,
       });
       expect(result).toBeInstanceOf(Game);
     });
 
-    it('creates a game instance with expected cells', () => {
-      const result = service.create({
+    it('creates a game instance with expected cells', async () => {
+      const result = await service.create({
         rows: 2,
         columns: 2,
       });
@@ -40,134 +87,205 @@ describe('GameService', () => {
   });
 
   describe('#list', () => {
-    it('is empty', () => {
-      const result = service.list();
+    it('is empty', async () => {
+      mockClient.query
+        // SELECT FROM game
+        .mockResolvedValueOnce({
+          rowCount: 0,
+          rows: [],
+        });
+      const result = await service.list();
       expect(result).toHaveLength(0);
     });
 
-    it('has contents after create', () => {
-      const game = service.create({
-        rows: 2,
-        columns: 2,
-      });
-      const result = service.list();
+    it('has contents after create', async () => {
+      const game = new Game({ columns: 2, rows: 2 });
+      mockClient.query
+        // SELECT FROM game
+        .mockResolvedValueOnce({
+          rowCount: 1,
+          rows: [genGameRecord({ id: game.id })],
+        });
+      const result = await service.list();
       expect(result).toHaveLength(1);
-      expect(result).toContain(game);
+      expect(result.map((g) => g.id)).toContain(game.id);
     });
   });
 
   describe('#findById', () => {
-    let game: Game;
-
-    beforeEach(() => {
-      game = service.create({
-        rows: 2,
-        columns: 2,
-      });
-    });
-
-    it('is undefined for unknown id', () => {
-      const result = service.findById(uuid());
+    it('is undefined for unknown id', async () => {
+      mockClient.query
+        // SELECT FROM game
+        .mockResolvedValueOnce({
+          rowCount: 0,
+          rows: [],
+        });
+      const result = await service.findById(uuid());
       expect(result).toBeUndefined();
     });
 
-    it('finds the an existing game', () => {
-      const result = service.findById(game.id);
-      expect(result).toBe(game);
-    });
-  });
-
-  describe('#updateById', () => {
-    let game: Game;
-
-    beforeEach(() => {
-      game = service.create({
-        rows: 2,
-        columns: 2,
-      });
-    });
-
-    it('throws for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).toThrow(NoRecordError);
-    });
-
-    it('throws an error about Game for unknown id', () => {
-      expect(() => service.updateById(uuid(), null)).toThrow(/^Game/);
-    });
-
-    it('throws if ids do not match', () => {
-      const g2 = service.create({ rows: 2, columns: 2 });
-      expect(() => service.updateById(g2.id, game)).toThrow();
-    });
-
-    it('throws error about same game if mismatched games', () => {
-      const g2 = service.create({ rows: 2, columns: 2 });
-      expect(() => service.updateById(g2.id, game)).toThrow(/same Game/);
-    });
-
-    it('returns the old game', () => {
-      const v2 = game.openCoordinates(0, 0);
-      const result = service.updateById(game.id, v2);
-      expect(result).toBe(game);
-    });
-
-    it('replaces the old game', () => {
-      const v2 = game.openCoordinates(0, 0);
-      service.updateById(game.id, v2);
-      expect(service.findById(game.id)).toBe(v2);
+    it('finds an existing game', async () => {
+      const game = new Game({ columns: 2, rows: 2 });
+      mockClient.query
+        // SELECT FROM game
+        .mockResolvedValueOnce({
+          rowCount: 1,
+          rows: [makeGameRecord(game)],
+        });
+      const result = await service.findById(game.id);
+      expect(result).toEqual(game);
     });
   });
 
   describe('#addMoveById', () => {
     const moveTypes = [GameMoveType.FLAG, GameMoveType.OPEN];
-    let game: Game;
-
-    beforeEach(() => {
-      game = service.create({
-        rows: 2,
-        columns: 2,
-      });
-    });
 
     for (let i = 0; i < moveTypes.length; i++) {
       const moveType = moveTypes[i];
       describe(moveType, () => {
-        let move: GameMoveDto;
-
-        beforeEach(() => {
-          move = { column: 0, type: moveType, row: 0 };
-        });
+        const move: GameMoveDto = { column: 0, type: moveType, row: 0 };
 
         it('throws for unknown id', () => {
-          expect(() => service.addMoveById(uuid(), move)).toThrow(
-            NoRecordError
-          );
+          mockClient.query
+            // SELECT FROM game (findById)
+            .mockResolvedValueOnce({
+              rowCount: 0,
+              rows: [],
+            });
+          expect(
+            async () => await service.addMoveById(uuid(), move)
+          ).rejects.toThrow(NoRecordError);
         });
 
-        it('returns a new game', () => {
-          const result = service.addMoveById(game.id, move);
-          expect(result).not.toBe(game);
+        it('returns a new game', async () => {
+          const game = new Game({ columns: 2, rows: 2 });
+          mockClient.query
+            // SELECT FROM game (findById)
+            .mockResolvedValueOnce({
+              rowCount: 1,
+              rows: [makeGameRecord(game)],
+            })
+            // BEGIN
+            .mockImplementationOnce(() => Promise.resolve())
+            // INSERT INTO game_move
+            .mockImplementationOnce(() =>
+              Promise.resolve({
+                rowCount: 1,
+                rows: [{ move_id: uuid() }],
+              })
+            )
+            // COMMIT
+            .mockImplementationOnce(() => Promise.resolve());
+          const result = await service.addMoveById(game.id, move);
+          expect(result).not.toEqual(game);
         });
 
-        it('returns a game with a new board state', () => {
-          const result = service.addMoveById(game.id, move);
+        it('returns a game with a new board state', async () => {
+          const game = new Game({ columns: 2, rows: 2 });
+          mockClient.query
+            // SELECT FROM game (findById)
+            .mockResolvedValueOnce({
+              rowCount: 1,
+              rows: [makeGameRecord(game)],
+            })
+            // BEGIN
+            .mockImplementationOnce(() => Promise.resolve())
+            // INSERT INTO game_move
+            .mockImplementationOnce(() =>
+              Promise.resolve({
+                rowCount: 1,
+                rows: [{ move_id: uuid() }],
+              })
+            )
+            // COMMIT
+            .mockImplementationOnce(() => Promise.resolve());
+          const result = await service.addMoveById(game.id, move);
           expect(result.board).not.toEqual(game.board);
         });
 
-        it('returns a game with same id', () => {
-          const result = service.addMoveById(game.id, move);
+        it('returns a game with same id', async () => {
+          const game = new Game({ columns: 2, rows: 2 });
+          mockClient.query
+            // SELECT FROM game (findById)
+            .mockResolvedValueOnce({
+              rowCount: 1,
+              rows: [makeGameRecord(game)],
+            })
+            // BEGIN
+            .mockImplementationOnce(() => Promise.resolve())
+            // INSERT INTO game_move
+            .mockImplementationOnce(() =>
+              Promise.resolve({
+                rowCount: 1,
+                rows: [{ move_id: uuid() }],
+              })
+            )
+            // COMMIT
+            .mockImplementationOnce(() => Promise.resolve());
+          const result = await service.addMoveById(game.id, move);
           expect(result).toHaveProperty('id', game.id);
         });
 
-        it('replaces the old game', () => {
-          const result = service.addMoveById(game.id, move);
-          expect(service.findById(game.id)).toBe(result);
+        it('replaces the old game', async () => {
+          const game = new Game({ columns: 2, rows: 2 });
+          mockClient.query
+            // SELECT FROM game (findById)
+            .mockResolvedValueOnce({
+              rowCount: 1,
+              rows: [makeGameRecord(game)],
+            })
+            // BEGIN
+            .mockImplementationOnce(() => Promise.resolve())
+            // INSERT INTO game_move
+            .mockImplementationOnce(() =>
+              Promise.resolve({
+                rowCount: 1,
+                rows: [{ move_id: uuid() }],
+              })
+            )
+            // COMMIT
+            .mockImplementationOnce(() => Promise.resolve())
+            // SELECT FROM game (findById)
+            .mockResolvedValueOnce({
+              rowCount: 1,
+              rows: [
+                genGameRecord({
+                  ...makeGameRecord(game),
+                  moves: [
+                    {
+                      cell_id: game.findCell(move.column, move.row).id,
+                      move_type: GameMoveType[move.type],
+                    },
+                  ],
+                }),
+              ],
+            });
+          const result = await service.addMoveById(game.id, move);
+          expect(service.findById(game.id)).resolves.toEqual(result);
         });
       });
     }
 
-    it('flags a cell', () => {
-      const result = service.addMoveById(game.id, {
+    it('flags a cell', async () => {
+      const game = new Game({ columns: 2, rows: 2 });
+      mockClient.query
+        // SELECT FROM game (findById)
+        .mockResolvedValueOnce({
+          rowCount: 1,
+          rows: [makeGameRecord(game)],
+        })
+        // BEGIN
+        .mockImplementationOnce(() => Promise.resolve())
+        // INSERT INTO game_move
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            rowCount: 1,
+            rows: [{ move_id: uuid() }],
+          })
+        )
+        // COMMIT
+        .mockImplementationOnce(() => Promise.resolve());
+      const result = await service.addMoveById(game.id, {
         column: 0,
         row: 0,
         type: GameMoveType.FLAG,
@@ -175,13 +293,70 @@ describe('GameService', () => {
       expect(result.board[0]).toBe('F');
     });
 
-    it('opens a cell', () => {
-      const result = service.addMoveById(game.id, {
+    it('opens a cell', async () => {
+      const game = new Game({ columns: 2, rows: 2 });
+      mockClient.query
+        // SELECT FROM game (findById)
+        .mockResolvedValueOnce({
+          rowCount: 1,
+          rows: [makeGameRecord(game)],
+        })
+        // BEGIN
+        .mockImplementationOnce(() => Promise.resolve())
+        // INSERT INTO game_move
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            rowCount: 1,
+            rows: [{ move_id: uuid() }],
+          })
+        )
+        // COMMIT
+        .mockImplementationOnce(() => Promise.resolve());
+      const result = await service.addMoveById(game.id, {
         column: 0,
         row: 0,
         type: GameMoveType.OPEN,
       });
-      expect(result.board[0]).not.toBe(game.board[0]);
+      expect(result.board[0]).not.toEqual(game.board[0]);
     });
   });
+});
+
+const genGameCellRecord = (
+  options?: Partial<GameCellRecord>
+): GameCellRecord => ({
+  id: uuid(),
+  is_mine: options?.is_mine ?? false,
+});
+
+const genGameRecord = (options?: Partial<GameRecord>): GameRecord => {
+  const columns = options?.columns ?? 2;
+  const rows = options?.rows ?? 2;
+  const cells =
+    options?.cells ?? new Array(columns * rows).fill(genGameCellRecord());
+  return {
+    id: options?.id ?? uuid(),
+    cells,
+    columns,
+    rows,
+    moves: options?.moves ?? [],
+  };
+};
+
+const makeGameCellRecord = (cell: Cell): GameCellRecord => ({
+  id: cell.id,
+  is_mine: cell.isMine,
+});
+
+const makeGameMoveRecord = (move: GameMove): GameMoveRecord => ({
+  cell_id: move.cellId,
+  move_type: move.type,
+});
+
+const makeGameRecord = (game: Game): GameRecord => ({
+  id: game.id,
+  cells: game.cells.map((c) => makeGameCellRecord(c)),
+  columns: game.columns,
+  moves: game.moves.map((m) => makeGameMoveRecord(m)),
+  rows: game.rows,
 });
