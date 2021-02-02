@@ -116,5 +116,16 @@ describe(GameController, () => {
       expect(result).toHaveProperty('board');
       expect(result).toHaveProperty('status');
     });
+
+    it('updates a Game by flagging', async () => {
+      const { id } = await controller.create({ rows: 10, columns: 10 });
+      const result = await controller.addMove(id, {
+        ...alpha,
+        type: GameMoveType.FLAG,
+      });
+      expect(result).toHaveProperty('id', id);
+      expect(result).toHaveProperty('board');
+      expect(result).toHaveProperty('status');
+    });
   });
 });
