@@ -84,6 +84,89 @@ describe('GameService', () => {
       });
       expect(result.cells).toHaveLength(4);
     });
+
+    it('rolls back when insert game fails', async () => {
+      mockClient.query
+        .mockReset()
+        // BEGIN
+        .mockImplementationOnce(() => Promise.resolve())
+        // INSERT INTO game
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            rowCount: 0,
+            rows: [],
+          })
+        )
+        // ROLLBACK
+        .mockImplementationOnce(() => Promise.resolve());
+      await expect(() =>
+        service.create({
+          rows: 2,
+          columns: 2,
+        })
+      ).rejects.toThrow(/^Wrong number of records when inserting Game/);
+      expect(mockClient.query).toHaveBeenLastCalledWith({
+        strings: ['ROLLBACK'],
+        values: [],
+      });
+    });
+
+    it('rolls back when insert game generates new id', async () => {
+      mockClient.query
+        .mockReset()
+        // BEGIN
+        .mockImplementationOnce(() => Promise.resolve())
+        // INSERT INTO game
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            rowCount: 1,
+            rows: [{ id: uuid() }],
+          })
+        )
+        // ROLLBACK
+        .mockImplementationOnce(() => Promise.resolve());
+      await expect(() =>
+        service.create({
+          rows: 2,
+          columns: 2,
+        })
+      ).rejects.toThrow(/^Game created with a different id/);
+      expect(mockClient.query).toHaveBeenLastCalledWith({
+        strings: ['ROLLBACK'],
+        values: [],
+      });
+    });
+
+    it('rolls back when insert game has too few cells', async () => {
+      mockClient.query
+        .mockReset()
+        // BEGIN
+        .mockImplementationOnce(() => Promise.resolve())
+        // INSERT INTO game
+        .mockImplementationOnce((statement: SqlStatement) =>
+          Promise.resolve({
+            rowCount: 1,
+            rows: [{ id: statement.values[0] }],
+          })
+        )
+        // INSERT INTO game_cell
+        .mockResolvedValueOnce({
+          rowCount: 0,
+          rows: [],
+        })
+        // ROLLBACK
+        .mockImplementationOnce(() => Promise.resolve());
+      await expect(() =>
+        service.create({
+          rows: 2,
+          columns: 2,
+        })
+      ).rejects.toThrow(/^Wrong number of cells created when inserting Game/);
+      expect(mockClient.query).toHaveBeenLastCalledWith({
+        strings: ['ROLLBACK'],
+        values: [],
+      });
+    });
   });
 
   describe('#list', () => {
