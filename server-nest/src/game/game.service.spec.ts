@@ -232,6 +232,27 @@ describe('GameService', () => {
       const result = await service.findById(game.id);
       expect(result).toEqual(game);
     });
+
+    it('throws when single record not found', async () => {
+      const game = new Game({ columns: 2, rows: 2 });
+      mockClient.query
+        // SELECT FROM game
+        .mockResolvedValueOnce({
+          rowCount: 2,
+          rows: [makeGameRecord(game), makeGameRecord(game)],
+        });
+      expect(() => service.findById(game.id)).rejects.toThrow(
+        /^Found multiple records with game_id/
+      );
+    });
+
+    it('throws if the query throws', async () => {
+      const game = new Game({ columns: 2, rows: 2 });
+      mockClient.query
+        // SELECT FROM game
+        .mockRejectedValueOnce(new Error('Fake Error'));
+      expect(() => service.findById(game.id)).rejects.toThrow('Fake Error');
+    });
   });
 
   describe('#addMoveById', () => {

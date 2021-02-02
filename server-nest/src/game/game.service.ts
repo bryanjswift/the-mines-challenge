@@ -237,9 +237,7 @@ export class GameService implements BaseGameService {
       );
       return games.pop();
     } catch (error) {
-      // Whatever error happened means we didn't find a record.
-      // TODO: Log the error
-      return undefined;
+      throw error;
     } finally {
       client.release();
     }
