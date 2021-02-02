@@ -12,7 +12,7 @@ CREATE OR REPLACE VIEW game_cells AS (
                 'id', game_cell.cell_id
             ) AS cell
          FROM game_cell
-         ORDER BY game_cell.game_sequence_id
+         ORDER BY game_cell.game_id, game_cell.game_sequence_id
     ) as game_data
     GROUP BY game_id
 );
