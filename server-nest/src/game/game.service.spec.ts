@@ -15,7 +15,7 @@ import { GameMove, GameMoveType } from './game-move.model';
 
 const mockClient = {
   query: jest.fn(),
-  release: () => {},
+  release: jest.fn(),
 };
 
 const mockPool = {

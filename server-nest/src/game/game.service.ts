@@ -188,8 +188,6 @@ export class GameService implements BaseGameService {
             })),
           })
       );
-    } catch (error) {
-      throw error;
     } finally {
       client.release();
     }
@@ -236,8 +234,6 @@ export class GameService implements BaseGameService {
           })
       );
       return games.pop();
-    } catch (error) {
-      throw error;
     } finally {
       client.release();
     }
