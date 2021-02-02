@@ -116,7 +116,7 @@ export class GameService implements BaseGameService {
         );
       } else if (gameIds.rows[0].id !== game.id) {
         throw new Error(
-          `Game created with a different. Actual: ${gameIds.rows[0].id} Expected: ${game.id}`
+          `Game created with a different id. Actual: ${gameIds.rows[0].id} Expected: ${game.id}`
         );
       }
       const cellInsertRaw = `
@@ -237,9 +237,7 @@ export class GameService implements BaseGameService {
       );
       return games.pop();
     } catch (error) {
-      // Whatever error happened means we didn't find a record.
-      // TODO: Log the error
-      return undefined;
+      throw error;
     } finally {
       client.release();
     }

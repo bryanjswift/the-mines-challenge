@@ -35,6 +35,34 @@ describe(Cell, () => {
     });
   });
 
+  describe('#toJSON', () => {
+    let model: Cell;
+
+    beforeEach(() => {
+      model = new Cell();
+    });
+
+    it('has only specific keys', () => {
+      const subject = model.toJSON();
+      expect(Object.keys(subject)).toEqual(['id', 'isMine']);
+    });
+
+    it('has the same id', () => {
+      const subject = model.toJSON();
+      expect(model.id).toEqual(subject.id);
+    });
+
+    it('has the same mine value', () => {
+      const subject = model.toJSON();
+      expect(model.isMine).toEqual(subject.isMine);
+    });
+
+    it('stringifies to json record', () => {
+      const subject = model.toJSON();
+      expect(JSON.stringify(subject)).toEqual(JSON.stringify(model));
+    });
+  });
+
   describe('not a mine', () => {
     const isMine = false;
 
