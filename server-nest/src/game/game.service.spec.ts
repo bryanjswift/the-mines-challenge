@@ -187,11 +187,25 @@ describe('GameService', () => {
         // SELECT FROM game
         .mockResolvedValueOnce({
           rowCount: 1,
-          rows: [genGameRecord({ id: game.id })],
+          rows: [
+            genGameRecord({
+              id: game.id,
+              moves: [
+                { cell_id: game.cells[0].id, move_type: GameMoveType.OPEN },
+              ],
+            }),
+          ],
         });
       const result = await service.list();
       expect(result).toHaveLength(1);
       expect(result.map((g) => g.id)).toContain(game.id);
+    });
+
+    it('rethrows an error', async () => {
+      mockClient.query
+        // SELECT FROM game
+        .mockRejectedValue(new Error('Fake Error'));
+      expect(() => service.list()).rejects.toThrow('Fake Error');
     });
   });
 
