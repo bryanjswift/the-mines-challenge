@@ -1,7 +1,12 @@
 .github
 .vscode
+.watchman
+dist
+migrations
 node_modules
-server-express
+server-nest/coverage
+server-nest/dist
+server-nest/node_modules
 ui/build
 ui/dist
 ui/node_modules
