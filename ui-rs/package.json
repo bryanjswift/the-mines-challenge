@@ -9,7 +9,7 @@
   },
   "homepage": "https://github.com/bryanjswift/the-mines-challenge#readme",
   "scripts": {
-    "start": "webpack serve",
+    "start": "webpack serve --history-api-fallback",
     "build": "webpack",
     "build:watch": "webpack --watch"
   },
