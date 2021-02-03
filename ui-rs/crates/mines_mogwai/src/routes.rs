@@ -15,6 +15,7 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     let tx_cells: Transmitter<CellInteract> = Transmitter::new();
     let rx_cell_updates = Receiver::new();
     let rx_game_board = Receiver::new();
+    let rx_game_status = Receiver::new();
     tx_cells.wire_map(&rx_cell_updates, |interaction| CellUpdate::Single {
         column: interaction.column,
         row: interaction.row,
@@ -26,6 +27,17 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     // Fetch the initial board state
     tx_game.wire_map(&rx_game_board, |game_state| CellUpdate::All {
         cells: game_state.board.clone(),
+    });
+    tx_game.wire_filter_map(&rx_game_status, |game_state| match game_state.status {
+        api::GameStatus::WON => Some(Patch::Replace {
+            index: 0,
+            value: builder! { <h2>"You did the thing! 🥳"</h2> },
+        }),
+        api::GameStatus::LOST => Some(Patch::Replace {
+            index: 0,
+            value: builder! { <h2>"BOOM 💥"</h2> },
+        }),
+        api::GameStatus::OPEN => None,
     });
     let tx_api =
         tx_game.contra_filter_map(|r: &Result<api::GameState, api::FetchError>| r.clone().ok());
@@ -63,6 +75,9 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
                     </table>
                 </slot>
             </div>
+            <slot name="game-status" patch:children=rx_game_status>
+                <span></span>
+            </slot>
         </main>
     }
 }
