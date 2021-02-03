@@ -28,9 +28,9 @@ pub fn run_app() -> Result<(), JsValue> {
     console_log::init_with_level(log::Level::Trace).expect("could not init console_log");
 
     if cfg!(debug_assertions) {
-        log::trace!("Hello from debug mogwai-multipage");
+        log::trace!("Hello from debug @mines/uirs");
     } else {
-        log::trace!("Hello from release mogwai-multipage");
+        log::trace!("Hello from release @mines/uirs");
     }
 
     let initial_route = Route::from(utils::window().location().pathname().unwrap_throw());
