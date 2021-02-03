@@ -27,9 +27,9 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     tx_game.wire_map(&rx_game_board, |game_state| CellUpdate::All {
         cells: game_state.board.clone(),
     });
-    let tx =
+    let tx_api =
         tx_game.contra_filter_map(|r: &Result<api::GameState, api::FetchError>| r.clone().ok());
-    tx.send_async(api::get_game(game_id));
+    tx_api.send_async(api::get_game(game_id));
     // Set up to receive later board states
     tx_cells.spawn_recv().respond(move |interaction| {
         let input = api::GameMoveInput {
@@ -41,7 +41,7 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
                 false => api::GameMoveType::OPEN,
             },
         };
-        tx.send_async(api::patch_game(input));
+        tx_api.send_async(api::patch_game(input));
     });
     // Patch the initial board state into the game board slot
     let rx_patch_game = rx_game_board.branch_filter_map(move |update| match update {
