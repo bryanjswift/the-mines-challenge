@@ -67,17 +67,21 @@ fn game_board(
 
 fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement> {
     let rx_game_status = Receiver::new();
-    tx_game.wire_filter_map(&rx_game_status, |game_state| match game_state.status {
-        api::GameStatus::WON => Some(Patch::Replace {
-            index: 0,
-            value: builder! { <h2>"You did the thing! 🥳"</h2> },
-        }),
-        api::GameStatus::LOST => Some(Patch::Replace {
-            index: 0,
-            value: builder! { <h2>"BOOM 💥"</h2> },
-        }),
-        api::GameStatus::OPEN => None,
-    });
+    tx_game.wire_filter_fold(
+        &rx_game_status,
+        api::GameStatus::OPEN,
+        |status, game_state| match (status, game_state.status) {
+            (api::GameStatus::OPEN, api::GameStatus::WON) => Some(Patch::Replace {
+                index: 0,
+                value: builder! { <h2>"You did the thing! 🥳"</h2> },
+            }),
+            (api::GameStatus::OPEN, api::GameStatus::LOST) => Some(Patch::Replace {
+                index: 0,
+                value: builder! { <h2>"BOOM 💥"</h2> },
+            }),
+            _ => None,
+        },
+    );
     builder! {
         <slot name="game-status" patch:children=rx_game_status>
             <span></span>
