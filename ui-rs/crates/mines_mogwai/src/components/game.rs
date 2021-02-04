@@ -90,12 +90,23 @@ fn board_row<'a>(
 pub fn board<'a>(
     cells: Vec<Vec<String>>,
     tx: &Transmitter<CellInteract>,
-    rx: &Receiver<CellUpdate>,
 ) -> ViewBuilder<HtmlElement> {
+    let rx = Receiver::new();
+    // The responses to `CellInteract` through individual `CellUpdate` represent optimisitic
+    // updates. They reflect changes we can know on the client side without additional information
+    // from the server.
+    tx.wire_map(&rx, |interaction| CellUpdate::Single {
+        column: interaction.column,
+        row: interaction.row,
+        value: match interaction.flag {
+            true => "F".into(),
+            false => "*".into(),
+        },
+    });
     let children = cells
         .into_iter()
         .enumerate()
-        .map(|(row, cells)| board_row(row, cells, tx, rx));
+        .map(|(row, cells)| board_row(row, cells, tx, &rx));
     let mut tbody: ViewBuilder<HtmlElement> = builder! { <tbody /> };
     for child in children {
         tbody.with(child);
