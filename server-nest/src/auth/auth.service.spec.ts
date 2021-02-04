@@ -47,10 +47,13 @@ describe(AuthService, () => {
     });
 
     describe(`#validateUser(${username}, ${badPassword})`, () => {
-      it('throws an error for incorrect password', () => {
-        expect(
-          subject.validateUser(username, badPassword)
-        ).rejects.toBeInstanceOf(UnauthorizedException);
+      it('throws an error for incorrect password', async () => {
+        try {
+          await subject.validateUser(username, badPassword);
+          fail('Expected an error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(UnauthorizedException);
+        }
       });
     });
   });

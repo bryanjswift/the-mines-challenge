@@ -1,10 +1,10 @@
 import { Pool } from 'pg';
 import SQL from '@nearform/sql';
 import { Inject, Injectable } from '@nestjs/common';
-import { NoRecordError } from '../errors';
+import { GameCompleteError, NoRecordError } from '../errors';
 import { Cell } from './cell.model';
 import { GameMoveDto } from './game.dto';
-import { Game, GameId, Props } from './game.model';
+import { Game, GameId, GameStatus, Props } from './game.model';
 import { GameMoveType } from './game-move.model';
 
 export interface BaseGameService {
@@ -52,11 +52,14 @@ export class GameService implements BaseGameService {
    * @returns a `Game` with the move applied.
    * @throws if `id` does not exist.
    * @throws if `(column, row)` can not be changed.
+   * @throws if `game` is already in a completed state.
    */
   async addMoveById(id: GameId, move: GameMoveDto): Promise<Game> {
     const current = await this.findById(id);
     if (typeof current === 'undefined' || current === null) {
       throw new NoRecordError(id, 'Game');
+    } else if (current.gameStatus !== GameStatus.OPEN) {
+      throw new GameCompleteError(current);
     }
     const { column, row } = move;
     const cell = current.findCell(column, row);
