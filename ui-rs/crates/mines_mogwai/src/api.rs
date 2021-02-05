@@ -38,7 +38,9 @@ pub mod model {
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub enum FetchError {
+        Conflict,
         FetchError,
+        NotFound,
         ParseError,
         RequestCreateError,
         RequestHeaderSetError,
@@ -124,10 +126,17 @@ where
         .map_err(|_| FetchError::FetchError)?;
     // `resp_value` is a `Response` object.
     let resp: Response = resp_value.dyn_into().unwrap();
-    // Convert this other `Promise` into a rust `Future`.
-    let json = JsFuture::from(resp.json().map_err(|_| FetchError::FetchError)?)
-        .await
-        .map_err(|_| FetchError::FetchError)?;
-    // Use serde to parse the JSON into a struct.
-    json.into_serde().map_err(|_| FetchError::ParseError)
+    match resp.status() {
+        100..=299 => {
+            // Convert this other `Promise` into a rust `Future`.
+            let json = JsFuture::from(resp.json().map_err(|_| FetchError::FetchError)?)
+                .await
+                .map_err(|_| FetchError::FetchError)?;
+            // Use serde to parse the JSON into a struct.
+            json.into_serde().map_err(|_| FetchError::ParseError)
+        }
+        404 => Err(FetchError::NotFound),
+        409 => Err(FetchError::Conflict),
+        _ => Err(FetchError::FetchError),
+    }
 }
