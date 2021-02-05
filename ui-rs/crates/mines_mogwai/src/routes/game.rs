@@ -75,23 +75,36 @@ fn game_board(
 
 fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement> {
     let rx_game_status = Receiver::new();
+    // Only send an update in to the `rx_game_status` if the status has changed
     tx_game.wire_filter_fold(
         &rx_game_status,
         api::GameStatus::OPEN,
-        |status, game_state| match (status, game_state.status) {
-            (api::GameStatus::OPEN, api::GameStatus::WON) => Some(Patch::Replace {
-                index: 0,
-                value: builder! { <h2>"You did the thing! 🥳"</h2> },
-            }),
-            (api::GameStatus::OPEN, api::GameStatus::LOST) => Some(Patch::Replace {
-                index: 0,
-                value: builder! { <h2>"BOOM 💥"</h2> },
-            }),
-            _ => None,
+        |status, game_state| {
+            if *status == game_state.status {
+                None
+            } else {
+                *status = game_state.status;
+                Some(*status)
+            }
         },
     );
+    // Update the view whenever a new game status is received
+    let rx_game_status_view = rx_game_status.branch_map(|status| match status {
+        api::GameStatus::WON => Patch::Replace {
+            index: 0,
+            value: builder! { <h2>"You did the thing! 🥳"</h2> },
+        },
+        api::GameStatus::LOST => Patch::Replace {
+            index: 0,
+            value: builder! { <h2>"BOOM 💥"</h2> },
+        },
+        api::GameStatus::OPEN => Patch::Replace {
+            index: 0,
+            value: builder! { <span></span> },
+        },
+    });
     builder! {
-        <slot name="game-status" patch:children=rx_game_status>
+        <slot name="game-status" patch:children=rx_game_status_view>
             <span></span>
         </slot>
     }
