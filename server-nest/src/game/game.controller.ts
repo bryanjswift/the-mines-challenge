@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   Header,
@@ -11,7 +12,7 @@ import {
   UnprocessableEntityException,
   UsePipes,
 } from '@nestjs/common';
-import { NoRecordError } from '../errors';
+import { GameCompleteError, NoRecordError } from '../errors';
 import { IoValidationPipe } from '../io-validation.pipe';
 import { CreateGameDto, GameMoveDto } from './game.dto';
 import { Game, GameId } from './game.model';
@@ -59,6 +60,11 @@ export class GameController {
     } catch (error) {
       if (error instanceof NoRecordError) {
         throw new NotFoundException();
+      } else if (error instanceof GameCompleteError) {
+        throw new ConflictException({
+          statusCode: 409,
+          message: error.message,
+        });
       } else {
         throw new UnprocessableEntityException(
           'Coordinates out of range.',
