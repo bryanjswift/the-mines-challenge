@@ -9,8 +9,16 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     let tx_cells: Transmitter<CellInteract> = Transmitter::new();
     // Create the upstream `Transmitter` for `tx_game` (i.e. messages sent to `tx_api` will be
     // passed to `tx_game` if the response is success.
-    let tx_api =
-        tx_game.contra_filter_map(|r: &Result<api::GameState, api::FetchError>| r.clone().ok());
+    use api::{FetchError, GameState};
+    let tx_api = tx_game.contra_filter_fold(
+        None,
+        |current: &mut Option<GameState>, r: &Result<GameState, FetchError>| {
+            if let Ok(next) = r {
+                current.replace(next.clone());
+            }
+            current.clone()
+        },
+    );
     tx_api.send_async(api::get_game(game_id));
     // Set up to receive board interactions which will trigger future board states through api
     // responses received in `tx_api`.
