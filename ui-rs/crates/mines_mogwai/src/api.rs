@@ -29,7 +29,7 @@ pub mod model {
         OPEN,
     }
 
-    #[derive(Clone, Copy, Debug, Deserialize)]
+    #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
     pub enum GameStatus {
         OPEN,
         WON,
