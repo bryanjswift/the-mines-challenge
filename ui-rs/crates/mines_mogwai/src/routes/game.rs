@@ -111,38 +111,73 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
 }
 
 #[cfg(test)]
-mod game_status_test {
+mod game_board {
+    use super::*;
+
+    /// Create a `Vec` of owned `String` values.
+    macro_rules! vec_of_strings {
+        ($($x:expr),*) => (vec![$($x.to_string()),*]);
+    }
+
+    #[test]
+    fn starts_empty() {
+        let tx_game = Transmitter::new();
+        let tx_cells = Transmitter::new();
+        let builder = game_board(&tx_game, tx_cells);
+        let ssr = View::from(builder);
+        assert_eq!(
+            ssr.html_string(),
+            String::from("<slot name=\"game-board\"><table><tbody></tbody></table></slot>")
+        );
+    }
+
+    #[test]
+    fn updates_board_with_cells() {
+        use std::{cell::RefCell, rc::Rc};
+        let tx_game = Transmitter::new();
+        let tx_cells = Transmitter::new();
+        let builder = game_board(&tx_game, tx_cells);
+        // Set up the ability to look at the most recently received patch
+        let patch_receiver = builder.patches.first().unwrap();
+        let respond_count = Rc::new(RefCell::new(0));
+        let remote_respond_count = respond_count.clone();
+        // Set up the `Receiver` to check each `Patch` received
+        patch_receiver.branch().respond(move |patch| {
+            // Store the number of Patch values received
+            let mut count = remote_respond_count.borrow_mut();
+            *count += 1;
+            // Check that each received patch is to replace primary view
+            assert!(matches!(
+                patch,
+                Patch::Replace { index: 0, value: _ }
+            ));
+        });
+        // Send a game state
+        tx_game.send(&api::GameState {
+            id: uuid::Uuid::new_v4(),
+            board: vec![vec_of_strings![" ", "1", "F", "M"]],
+            status: api::GameStatus::LOST,
+        });
+        // Test the number of patch receivers
+        assert_eq!(builder.patches.len(), 1);
+        // Test the number of updates received matches the number sent
+        assert_eq!(*respond_count.borrow(), 1);
+    }
+}
+
+#[cfg(test)]
+mod game_status {
     use super::*;
 
     #[test]
     fn starts_empty() {
         let tx = Transmitter::new();
-        let ViewBuilder {
-            attribs,
-            children,
-            element,
-            patches,
-            ..
-        } = game_status(&tx);
-        assert!(matches!(element, Some(tag) if tag == "slot".to_string()));
-        assert_eq!(patches.len(), 1);
-        assert_eq!(children.len(), 1);
-        if let Some(ViewBuilder { element, .. }) = children.first() {
-            assert_eq!(element.clone(), Some(String::from("span")));
-        } else {
-            assert!(false, "child was not <span>");
-        }
-        let name_attribute = attribs.iter().find(|cmd| match cmd {
-            AttributeCmd::Attrib { name, .. } => name == "name",
-            _ => false,
-        });
-        match name_attribute {
-            Some(AttributeCmd::Attrib { effect, .. }) => match effect {
-                Effect::OnceNow { now } => assert_eq!(now, "game-status"),
-                _ => assert!(false, "name was not game-status"),
-            },
-            _ => assert!(false, "name did not exist"),
-        };
+        let builder = game_status(&tx);
+        let ssr = View::from(builder);
+        assert_eq!(
+            ssr.html_string(),
+            String::from("<slot name=\"game-status\"><span></span></slot>")
+        );
     }
 
     #[test]
