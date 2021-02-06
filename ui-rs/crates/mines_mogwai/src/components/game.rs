@@ -56,9 +56,6 @@ fn board_cell<'a>(
     });
     builder! {
         <td
-            valign="middle"
-            align="center"
-            style="height: 50px; width: 50px; border: 1px solid black;"
             on:click=tx.contra_map(move |event: &Event| CellInteract::new((col, row), event))
         >
             // Cells initialize to empty but may update if revealed or clicked
