@@ -109,3 +109,87 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
         </slot>
     }
 }
+
+#[cfg(test)]
+mod game_status_test {
+    use super::*;
+
+    #[test]
+    fn starts_empty() {
+        let tx = Transmitter::new();
+        let ViewBuilder {
+            attribs,
+            children,
+            element,
+            patches,
+            ..
+        } = game_status(&tx);
+        assert!(matches!(element, Some(tag) if tag == "slot".to_string()));
+        assert_eq!(patches.len(), 1);
+        assert_eq!(children.len(), 1);
+        if let Some(ViewBuilder { element, .. }) = children.first() {
+            assert_eq!(element.clone(), Some(String::from("span")));
+        } else {
+            assert!(false, "child was not <span>");
+        }
+        let name_attribute = attribs.iter().find(|cmd| match cmd {
+            AttributeCmd::Attrib { name, .. } => name == "name",
+            _ => false,
+        });
+        match name_attribute {
+            Some(AttributeCmd::Attrib { effect, .. }) => match effect {
+                Effect::OnceNow { now } => assert_eq!(now, "game-status"),
+                _ => assert!(false, "name was not game-status"),
+            },
+            _ => assert!(false, "name did not exist"),
+        };
+    }
+
+    #[test]
+    fn stays_empty_on_open() {
+        let tx = Transmitter::new();
+        let builder = game_status(&tx);
+        let ssr = View::from(builder);
+        tx.send(&api::GameState {
+            id: uuid::Uuid::new_v4(),
+            board: Vec::new(),
+            status: api::GameStatus::OPEN,
+        });
+        assert_eq!(
+            ssr.html_string(),
+            String::from("<slot name=\"game-status\"><span></span></slot>")
+        );
+    }
+
+    #[test]
+    fn booms_on_lost() {
+        let tx = Transmitter::new();
+        let builder = game_status(&tx);
+        let ssr = View::from(builder);
+        tx.send(&api::GameState {
+            id: uuid::Uuid::new_v4(),
+            board: Vec::new(),
+            status: api::GameStatus::LOST,
+        });
+        assert_eq!(
+            ssr.html_string(),
+            String::from("<slot name=\"game-status\"><h2>BOOM 💥</h2></slot>")
+        );
+    }
+
+    #[test]
+    fn dings_on_won() {
+        let tx = Transmitter::new();
+        let builder = game_status(&tx);
+        let ssr = View::from(builder);
+        tx.send(&api::GameState {
+            id: uuid::Uuid::new_v4(),
+            board: Vec::new(),
+            status: api::GameStatus::WON,
+        });
+        assert_eq!(
+            ssr.html_string(),
+            String::from("<slot name=\"game-status\"><h2>You did the thing! 🥳</h2></slot>")
+        );
+    }
+}
