@@ -14,10 +14,10 @@ license = "MIT"
 crate-type = ["cdylib"]
 
 [dependencies]
-anyhow = "1.0.32"
+anyhow = "1.0.38"
 dotenv_codegen = "0.15.0"
-serde = "1.0.116"
-serde_json = "1.0.58"
-yew = "0.17.3"
+serde = "1.0.120"
+serde_json = "1.0.61"
+yew = "0.17.4"
 yew-router = "0.14.0"
-wasm-bindgen = "0.2.68"
+wasm-bindgen = "0.2.69"
