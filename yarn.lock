@@ -180,13 +180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-call-delegate@npm:7.12.1":
-  version: 7.12.1
-  resolution: "@babel/helper-call-delegate@npm:7.12.1"
+"@babel/helper-call-delegate@npm:7.12.13":
+  version: 7.12.13
+  resolution: "@babel/helper-call-delegate@npm:7.12.13"
   dependencies:
-    "@babel/helper-hoist-variables": ^7.10.4
-    "@babel/types": ^7.12.1
-  checksum: 0b01b03bfc6983e9c8275373df32a41a9af94530ada27d8ae03996dbd42a600638ab35176dadc3e9a7655b3d5b00b1f08265e4af83ccfdc3649ad6d388f876a1
+    "@babel/helper-hoist-variables": ^7.12.13
+    "@babel/types": ^7.12.13
+  checksum: aaf0d662643e68a066200a8c4be2f86b815ed17f088360d714b32be08c364760b1024ce7248f5d92e5fec1d38278384a237518053c95bbebbbc37309ea048a5b
   languageName: node
   linkType: hard
 
@@ -225,12 +225,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-hoist-variables@npm:^7.10.4":
-  version: 7.10.4
-  resolution: "@babel/helper-hoist-variables@npm:7.10.4"
+"@babel/helper-hoist-variables@npm:^7.12.13":
+  version: 7.12.13
+  resolution: "@babel/helper-hoist-variables@npm:7.12.13"
   dependencies:
-    "@babel/types": ^7.10.4
-  checksum: 0bc1976366e1535920ac46ecf89700a738bb38f1413ca42f1bc11bef708f297f011078077355dfe81b3e5af8ef696c5fb752408d6b65f85c71839c28ce95afaa
+    "@babel/types": ^7.12.13
+  checksum: dc3cc7d1e15c6befbb196c6ce5a758b6a27eda41243401281c192607c00ac785083a3a6383b68be130d505d1e71563946f299b33935ae9e12865abb03cad1f36
   languageName: node
   linkType: hard
 
@@ -643,6 +643,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/types@npm:^7.12.13":
+  version: 7.12.13
+  resolution: "@babel/types@npm:7.12.13"
+  dependencies:
+    "@babel/helper-validator-identifier": ^7.12.11
+    lodash: ^4.17.19
+    to-fast-properties: ^2.0.0
+  checksum: b6bb1356a7f3737a03c9362df03fd08a2b0599d117169cf7e2e856551fdf01cf4d5188d6370b23315f196058b0239fd609b65ccadcfed3bb3c0b90c27575e805
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.8.3":
   version: 7.12.12
   resolution: "@babel/types@npm:7.12.12"
@@ -990,7 +1001,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mines/ui@workspace:ui"
   dependencies:
-    "@babel/helper-call-delegate": 7.12.1
+    "@babel/helper-call-delegate": 7.12.13
     "@types/node": 14.14.22
     "@types/react": 17.0.0
     eslint: 7.19.0
