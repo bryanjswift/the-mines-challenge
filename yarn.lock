@@ -967,7 +967,7 @@ __metadata:
     "@types/faker": 5.1.6
     "@types/jest": 26.0.20
     "@types/node": 14.14.25
-    "@types/passport-jwt": 3.0.3
+    "@types/passport-jwt": 3.0.4
     "@types/passport-local": 1.0.33
     "@types/pg": 7.14.9
     "@types/supertest": 2.0.10
@@ -1693,14 +1693,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-jwt@npm:3.0.3":
-  version: 3.0.3
-  resolution: "@types/passport-jwt@npm:3.0.3"
+"@types/passport-jwt@npm:3.0.4":
+  version: 3.0.4
+  resolution: "@types/passport-jwt@npm:3.0.4"
   dependencies:
     "@types/express": "*"
     "@types/jsonwebtoken": "*"
     "@types/passport-strategy": "*"
-  checksum: 929b0caa5b071f3ceafb6832316f6706b21eab39148913fa1735ffd3d2a8c21eda61a4e44fe6cbb217d4baad7d2b460e6f6ec16994cbafb7ffb6fb5d757cf6a2
+  checksum: 4220e5f57394ff5a3d557b67ef94ba754b7e90248386b10d1207758e2c5f93f8b27617d2877bae27399a1d42f396e8b1684d295de6e2991271a0bec2d2112afa
   languageName: node
   linkType: hard
 
