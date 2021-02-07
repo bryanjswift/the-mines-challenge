@@ -50,7 +50,7 @@
     "@stryker-mutator/jest-runner": "4.4.1",
     "@types/faker": "5.1.6",
     "@types/jest": "26.0.20",
-    "@types/node": "14.14.22",
+    "@types/node": "14.14.25",
     "@types/passport-jwt": "3.0.3",
     "@types/passport-local": "1.0.33",
     "@types/pg": "7.14.9",
