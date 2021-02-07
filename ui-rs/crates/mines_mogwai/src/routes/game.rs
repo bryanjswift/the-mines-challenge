@@ -1,6 +1,9 @@
 use crate::{api, components};
 use mogwai::prelude::*;
 
+/// Create a game screen for the game referenced by the provided `api::GameId`. Set up the game
+/// screen and display a game board. The board will display as empty until game information can be
+/// retrieved from the API.
 #[allow(unused_braces)]
 pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     use components::game::CellInteract;
