@@ -7,6 +7,7 @@ dist/
 server-nest/schema.gql
 server-nest/reports/
 ui-rs/target/
+ui-rs/crates/mines_mogwai/target/
 ui-rs/crates/mines_uirs/target/
 
 # dependencies
@@ -22,6 +23,7 @@ node_modules/
 coverage/
 
 # editors
+.vim-lsp-settings/settings.json
 .vscode/settings.json
 .idea/
 
