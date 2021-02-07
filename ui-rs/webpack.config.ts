@@ -38,6 +38,8 @@ const config: webpack.Configuration = {
     ...(dev ? [new webpack.HotModuleReplacementPlugin()] : []),
     new MiniCssExtractPlugin({ filename: '[name].[chunkhash].css' }),
     new HtmlWebpackPlugin({
+      inject: 'body',
+      publicPath: '/',
       template: 'src/index.ejs',
     }),
     new webpack.DefinePlugin({

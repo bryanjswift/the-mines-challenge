@@ -69,10 +69,13 @@ describe(GameController, () => {
   });
 
   describe('GET /:id', () => {
-    it('throws NotFoundException for non-existing id', () => {
-      expect(() => controller.findOne('foo')).rejects.toThrowError(
-        NotFoundException
-      );
+    it('throws NotFoundException for non-existing id', async () => {
+      try {
+        await controller.findOne('foo');
+        fail('Expected an error to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
     });
 
     it('serializes a Game', async () => {
@@ -89,24 +92,33 @@ describe(GameController, () => {
     const alpha: GameMoveDto = { column: 0, type: GameMoveType.OPEN, row: 0 };
     const type = GameMoveType.OPEN;
 
-    it('throws NotFoundException for non-existing id', () => {
-      expect(() => controller.addMove('foo', alpha)).rejects.toThrowError(
-        NotFoundException
-      );
+    it('throws NotFoundException for non-existing id', async () => {
+      try {
+        await controller.addMove('foo', alpha);
+        fail('Expected an error to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
     });
 
     it('throws UnprocessableEntityException for out of bounds row', async () => {
       const { id } = await controller.create({ rows: 10, columns: 10 });
-      expect(() =>
-        controller.addMove(id, { column: 11, type, row: 0 })
-      ).rejects.toThrowError(UnprocessableEntityException);
+      try {
+        await controller.addMove(id, { column: 11, type, row: 0 });
+        fail('Expected an error to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnprocessableEntityException);
+      }
     });
 
     it('throws UnprocessableEntityException for out of bounds column', async () => {
       const { id } = await controller.create({ rows: 10, columns: 10 });
-      expect(() =>
-        controller.addMove(id, { column: 0, type, row: 11 })
-      ).rejects.toThrowError(UnprocessableEntityException);
+      try {
+        await controller.addMove(id, { column: 0, type, row: 11 });
+        fail('Expected an error to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnprocessableEntityException);
+      }
     });
 
     it('updates a Game', async () => {

@@ -23,6 +23,7 @@ coverage/
 
 # editors
 .vscode/settings.json
+.idea/
 
 # production
 build/

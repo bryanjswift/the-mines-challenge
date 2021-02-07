@@ -248,16 +248,23 @@ export class Game {
       .map((move) => move.cellId);
   }
 
-  private get isLost(): boolean {
+  private static isLost(views: CellView[]): boolean {
     // if any open cells are a mine; game is lost
-    return this.views.some((view) => view.isOpen && view.isMine);
+    return views.some((view) => view.isOpen && view.isMine);
+  }
+
+  private static isWon(views: CellView[]): boolean {
+    // if all cells except mines are open; game is won
+    return views.every((view) => (view.isOpen ? !view.isMine : view.isMine));
+  }
+
+  private get isLost(): boolean {
+    return Game.isLost(this.views);
   }
 
   private get isWon(): boolean {
     // if all cells except mines are open; game is won
-    return this.views.every((view) =>
-      view.isOpen ? !view.isMine : view.isMine
-    );
+    return Game.isWon(this.views);
   }
 
   private get viewCache(): Record<CellId, CellView> {
