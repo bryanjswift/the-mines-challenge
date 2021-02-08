@@ -1,18 +1,19 @@
 use crate::{api, components};
 use mogwai::prelude::*;
 
+/// Create a game screen for the game referenced by the provided `api::GameId`. Set up the game
+/// screen and display a game board. The board will display as empty until game information can be
+/// retrieved from the API.
 #[allow(unused_braces)]
 pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
-    use components::game::CellInteract;
     // Create a transmitter to send button clicks into.
     let tx_game: Transmitter<api::GameState> = Transmitter::new();
-    let tx_cells: Transmitter<CellInteract> = Transmitter::new();
+    let tx_cells: Transmitter<components::game::CellInteract> = Transmitter::new();
     // Create the upstream `Transmitter` for `tx_game` (i.e. messages sent to `tx_api` will be
     // passed to `tx_game` if the response is success.
-    use api::{FetchError, GameState};
     let tx_api = tx_game.contra_filter_fold(
         None,
-        |current: &mut Option<GameState>, r: &Result<GameState, FetchError>| {
+        |current: &mut Option<api::GameState>, r: &Result<api::GameState, api::FetchError>| {
             if let Ok(next) = r {
                 current.replace(next.clone());
             }
@@ -51,14 +52,15 @@ fn game_board(
     tx_game: &Transmitter<api::GameState>,
     tx_cells: Transmitter<components::game::CellInteract>,
 ) -> ViewBuilder<HtmlElement> {
-    use components::game::CellUpdate;
     let rx_game_board = Receiver::new();
-    tx_game.wire_map(&rx_game_board, |game_state| CellUpdate::All {
-        cells: game_state.board.clone(),
+    tx_game.wire_map(&rx_game_board, |game_state| {
+        components::game::CellUpdate::All {
+            cells: game_state.board.clone(),
+        }
     });
     // Patch the initial board state into the game board slot
     let rx_patch_game = rx_game_board.branch_filter_map(move |update| match update {
-        CellUpdate::All { cells } => Some(Patch::Replace {
+        components::game::CellUpdate::All { cells } => Some(Patch::Replace {
             index: 0,
             value: components::game::board(cells.clone(), &tx_cells),
         }),
