@@ -19,11 +19,11 @@ default = ["console_error_panic_hook"]
 [dependencies]
 console_log = "0.2.0"
 dotenv_codegen = "0.15.0"
-log = "0.4.13"
+log = "0.4.14"
 mogwai = "0.4.0"
-serde = { version = "1.0.120", features = ["derive"] }
-serde_json = "1.0.61"
-wasm-bindgen-futures = "0.4.19"
+serde = { version = "1.0.123", features = ["derive"] }
+serde_json = "1.0.62"
+wasm-bindgen-futures = "0.4.20"
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
@@ -45,7 +45,7 @@ features = [
 ]
 
 [dependencies.wasm-bindgen]
-version = "0.2.69"
+version = "0.2.70"
 features = [
   "serde-serialize"
 ]
@@ -65,4 +65,4 @@ features = [
 ]
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.19"
+wasm-bindgen-test = "0.3.20"
