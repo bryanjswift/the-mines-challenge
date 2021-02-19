@@ -36,44 +36,6 @@ services:
     depends_on:
       - api
 
-  eventstore.db:
-    image: eventstore/eventstore:20.10.0-buster-slim
-    container_name: eventstore01
-    environment:
-      - EVENTSTORE_CLUSTER_SIZE=1
-      - EVENTSTORE_RUN_PROJECTIONS=All
-      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
-      - EVENTSTORE_EXT_TCP_PORT=1113
-      - EVENTSTORE_EXT_HTTP_PORT=2113
-      - EVENTSTORE_INSECURE=true
-      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-    ports:
-      - '1113:1113'
-      - '2113:2113'
-    volumes:
-      - type: volume
-        source: eventstore-volume-data
-        target: /var/lib/eventstore
-      - type: volume
-        source: eventstore-volume-logs
-        target: /var/log/eventstore
-
-  localstack:
-    image: localstack/localstack
-    ports:
-      - '53:53'
-      - '443:443'
-      - '4567-4607:4567-4607'
-    environment:
-      - SERVICES=sqs,dynamodb
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    volumes:
-      - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-
   apm01:
     image: docker.elastic.co/apm/apm-server:7.10.2
     container_name: apm01
@@ -177,5 +139,6 @@ volumes:
   pg_data:
 
 networks:
+  default:
   elastic:
     driver: bridge
