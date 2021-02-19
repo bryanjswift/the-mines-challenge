@@ -31,6 +31,13 @@ impl CellInteract {
     }
 }
 
+/// Allow an owned `CellInteract` to be treated as a reference.
+impl AsRef<CellInteract> for CellInteract {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
 /// Create a `<td>` representing a single game cell. `coords` are expected to be `(column, row)` or
 /// `(x, y)` in the grid. Interactions are transmitted to `tx` and new text to display is received
 /// by `rx`.
