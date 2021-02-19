@@ -14,9 +14,13 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Route {
+    /// Screen showing a specific game
     Game { game_id: api::GameId },
+    /// Screen showing the list of games
     GameList,
+    /// Default landing screen
     Home,
+    /// Screen to display when the requested path does not exist
     NotFound,
 }
 
@@ -28,9 +32,9 @@ pub fn run_app() -> Result<(), JsValue> {
     console_log::init_with_level(log::Level::Trace).expect("could not init console_log");
 
     if cfg!(debug_assertions) {
-        log::trace!("Hello from debug @mines/uirs");
+        ::log::trace!("Hello from debug @mines/uirs");
     } else {
-        log::trace!("Hello from release @mines/uirs");
+        ::log::trace!("Hello from release @mines/uirs");
     }
 
     let initial_route = Route::from(utils::window().location().pathname().unwrap_throw());
