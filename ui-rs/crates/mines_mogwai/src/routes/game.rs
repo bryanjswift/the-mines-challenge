@@ -24,16 +24,7 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     // Set up to receive board interactions which will trigger future board states through api
     // responses received in `tx_api`.
     tx_cells.spawn_recv().respond(move |interaction| {
-        let input = api::GameMoveInput {
-            game_id,
-            column: interaction.column,
-            row: interaction.row,
-            move_type: match interaction.flag {
-                true => api::GameMoveType::FLAG,
-                false => api::GameMoveType::OPEN,
-            },
-        };
-        tx_api.send_async(api::patch_game(input));
+        tx_api.send_async(api::patch_game(game_id, interaction.into()));
     });
     builder! {
         <main class="container">
