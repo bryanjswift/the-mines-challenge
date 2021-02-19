@@ -112,6 +112,20 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
     }
 }
 
+impl<T> From<T> for api::GameMoveInput where T: AsRef<components::game::CellInteract> {
+    fn from(interaction: T) -> Self {
+        let interaction = interaction.as_ref();
+        Self {
+            column: interaction.column,
+            row: interaction.row,
+            move_type: match interaction.flag {
+                true => api::GameMoveType::FLAG,
+                false => api::GameMoveType::OPEN,
+            },
+        }
+    }
+}
+
 #[cfg(test)]
 mod game_board {
     use super::*;
@@ -228,5 +242,36 @@ mod game_status {
             ssr.html_string(),
             String::from("<slot name=\"game-status\"><h2>You did the thing! 🥳</h2></slot>")
         );
+    }
+}
+
+#[cfg(test)]
+mod cell_interact {
+    use super::*;
+
+    #[test]
+    fn creates_input_from_owned() {
+        let interaction = components::game::CellInteract {
+            row: 3,
+            column: 4,
+            flag: false,
+        };
+        let input = api::GameMoveInput::from(interaction);
+        assert_eq!(interaction.column, input.column);
+        assert_eq!(interaction.row, input.row);
+        assert_eq!(api::GameMoveType::OPEN, input.move_type);
+    }
+
+    #[test]
+    fn creates_input_from_reference() {
+        let interaction = components::game::CellInteract {
+            row: 3,
+            column: 4,
+            flag: true,
+        };
+        let input = api::GameMoveInput::from(&interaction);
+        assert_eq!(interaction.column, input.column);
+        assert_eq!(interaction.row, input.row);
+        assert_eq!(api::GameMoveType::FLAG, input.move_type);
     }
 }
