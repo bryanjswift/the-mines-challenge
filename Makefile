@@ -92,7 +92,7 @@ $(UI_RS)/.env: $(UI_RS)/.env.sample
 		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
 
-$(UI_RS)/Cargo.lock: $(CARGO_TOML)
+$(UI_RS)/Cargo.lock: $(CARGO_TOML) init
 	cargo check --release --manifest-path=$(UI_RS)/Cargo.toml --workspace
 
 $(UI_RS_MOGWAI_OUT): $(UI_RS)/.env $(UI_RS_MOGWAI_SRC) $(UI_RS)/Cargo.lock
@@ -112,7 +112,7 @@ $(UI_RS_YEW_OUT): $(UI_RS)/.env $(UI_RS_YEW_SRC) $(UI_RS)/Cargo.lock
 $(UI_RS_OUT): node_modules $(UI_RS)/.env $(UI_RS_SRC) $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
 	yarn workspace @mines/uirs build
 
-node_modules: $(PACKAGE_JSON) yarn.lock
+node_modules: $(PACKAGE_JSON) yarn.lock init
 	yarn install
 	@touch -mr $(shell ls -Atd $? | head -1) $@
 
