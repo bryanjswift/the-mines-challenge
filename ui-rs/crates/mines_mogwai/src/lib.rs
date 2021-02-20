@@ -71,10 +71,7 @@ mod route_dispatch {
     pub fn view_builder(tx: Transmitter<Route>, route: Route) -> ViewBuilder<HtmlElement> {
         match route {
             Route::Game { game_id } => routes::game(game_id),
-            Route::GameList => {
-                let component = routes::GameList::new(tx, vec![]);
-                Gizmo::from(component).view_builder()
-            }
+            Route::GameList => routes::game_list(tx),
             Route::Home => routes::home(tx),
             Route::NotFound => routes::not_found(),
         }

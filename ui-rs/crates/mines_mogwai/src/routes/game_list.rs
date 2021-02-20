@@ -2,24 +2,30 @@ use crate::{api, Route};
 use mogwai::prelude::*;
 use std::rc::Rc;
 
-pub struct GameList {
+/// Create a `ViewBuilder` to represent a list of games.
+pub fn game_list(dispatch: Transmitter<Route>) -> ViewBuilder<HtmlElement> {
+    let component = GameList::new(dispatch, vec![]);
+    Gizmo::from(component).view_builder()
+}
+
+struct GameList {
     dispatch: Transmitter<Route>,
     game_ids: Rc<Vec<api::GameId>>,
 }
 
 #[derive(Clone, Debug)]
-pub enum GameListModel {
+enum GameListModel {
     Navigate { game_id: api::GameId },
     ReplaceList { game_ids: Rc<Vec<api::GameId>> },
 }
 
 #[derive(Clone, Debug)]
-pub struct GameListView {
+struct GameListView {
     game_ids: Rc<Vec<api::GameId>>,
 }
 
 impl GameList {
-    pub fn new(dispatch: Transmitter<Route>, game_ids: Vec<api::GameId>) -> Self {
+    fn new(dispatch: Transmitter<Route>, game_ids: Vec<api::GameId>) -> Self {
         Self {
             dispatch,
             game_ids: Rc::new(game_ids),
