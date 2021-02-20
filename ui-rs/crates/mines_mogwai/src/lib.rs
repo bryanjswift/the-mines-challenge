@@ -35,15 +35,19 @@ pub fn run_app() -> Result<(), wasm_bindgen::JsValue> {
         ::log::trace!("Hello from release @mines/uirs");
     }
 
-    let path = utils::window().location().pathname().unwrap_throw();
-    let initial_route: Route = path.into();
-    // Create our app's view by hydrating a gizmo from an initial state
-    let root: Gizmo<App> = App::gizmo(initial_route);
+    let pathname = utils::window().location().pathname();
+    if let Ok(path) = pathname {
+        let initial_route: Route = path.into();
+        // Create our app's view by hydrating a gizmo from an initial state
+        let root: Gizmo<App> = App::gizmo(initial_route);
 
-    // Hand the app's view ownership to the window so it never
-    // goes out of scope
-    let view = View::from(root.view_builder());
-    view.run()
+        // Hand the app's view ownership to the window so it never
+        // goes out of scope
+        let view = View::from(root.view_builder());
+        view.run()
+    } else {
+        Err("Unable to get current URL path".into())
+    }
 }
 
 mod route_dispatch {
