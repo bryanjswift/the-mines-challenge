@@ -921,10 +921,10 @@ __metadata:
     reflect-metadata: 0.1.13
     rxjs: 6.6.3
     supertest: 6.1.3
-    ts-jest: 26.5.0
+    ts-jest: 26.5.1
     ts-node: 9.1.1
     tsconfig-paths: 3.9.0
-    typescript: 4.1.3
+    typescript: 4.1.5
     ulid: 2.3.0
     uuid: 8.3.2
     webpack: 5.23.0
@@ -945,7 +945,7 @@ __metadata:
     next: 10.0.7
     react: 17.0.1
     react-dom: 17.0.1
-    typescript: 4.1.3
+    typescript: 4.1.5
   languageName: unknown
   linkType: soft
 
@@ -956,9 +956,9 @@ __metadata:
     css-loader: 5.0.2
     html-webpack-plugin: 5.2.0
     mini-css-extract-plugin: 1.3.8
-    ts-loader: 8.0.15
+    ts-loader: 8.0.17
     ts-node: 9.1.1
-    typescript: 4.1.3
+    typescript: 4.1.5
     url-loader: 4.1.1
     webpack: 5.23.0
     webpack-cli: 4.5.0
@@ -12400,7 +12400,7 @@ fsevents@~2.3.1:
     husky: 4.3.8
     prettier: 2.2.1
     pretty-quick: 3.1.0
-    typescript: 4.1.3
+    typescript: 4.1.5
   languageName: unknown
   linkType: soft
 
@@ -12584,9 +12584,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:26.5.0":
-  version: 26.5.0
-  resolution: "ts-jest@npm:26.5.0"
+"ts-jest@npm:26.5.1":
+  version: 26.5.1
+  resolution: "ts-jest@npm:26.5.1"
   dependencies:
     "@types/jest": 26.x
     bs-logger: 0.x
@@ -12604,13 +12604,13 @@ fsevents@~2.3.1:
     typescript: ">=3.8 <5.0"
   bin:
     ts-jest: cli.js
-  checksum: 5932ba26136feb4edac746609198fcebf2dcf865dcfbf64f54b7cc97aea61529d52660de8d0d500b1c9b5e3e5a29540458c195f8a4190f2edb67846a1423d922
+  checksum: f054d4ef42740981688ebd5f314a864a8027ee2e02d2df4bfa7579148da59dda089224f2ea30ee16d9e919ec29fb50c5da953a6bd4573b6599c3aad46a2dd6cb
   languageName: node
   linkType: hard
 
-"ts-loader@npm:8.0.15":
-  version: 8.0.15
-  resolution: "ts-loader@npm:8.0.15"
+"ts-loader@npm:8.0.17":
+  version: 8.0.17
+  resolution: "ts-loader@npm:8.0.17"
   dependencies:
     chalk: ^4.1.0
     enhanced-resolve: ^4.0.0
@@ -12620,7 +12620,7 @@ fsevents@~2.3.1:
   peerDependencies:
     typescript: "*"
     webpack: "*"
-  checksum: bf47ef147ae56af9d4e1c3ed2eb43815c850ed04524a4b2043b5f679fd92859016323521a76c62bea42391242da9dd1da8dd0e5ec8f7158e6206b9d97ff90b43
+  checksum: e09b71875034ec5daf0f6eac2acefea31c78df1a0aa2d6f76f66954326acf93bafa9092a5a7f5872276bba39ba4dfebbcb7c21ef88d4334ff95bb4d216b9dfe0
   languageName: node
   linkType: hard
 
@@ -12830,16 +12830,6 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-typescript@4.1.3:
-  version: 4.1.3
-  resolution: "typescript@npm:4.1.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 4f7ab1506ea22c7a1c313ec5b4285e93ce08d709ad6086d02d3096adb399ca339972ee56d1e578213c51dd0fb7b0fad50283c2d3c39642405644458ae29774f8
-  languageName: node
-  linkType: hard
-
 typescript@4.1.5:
   version: 4.1.5
   resolution: "typescript@npm:4.1.5"
@@ -12847,16 +12837,6 @@ typescript@4.1.5:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 29157c84426ac94ce97aac836264f303a26bd9fb30865650229e3406a36ca2e89735ef4b8878075ba1b95fa4d3ff9810057b64888700c28e20b4034a6db4da83
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@4.1.3#builtin<compat/typescript>":
-  version: 4.1.3
-  resolution: "typescript@patch:typescript@npm%3A4.1.3#builtin<compat/typescript>::version=4.1.3&hash=cc6730"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 017af992148346e671d5b83b041773825888e9c94db8d2b9472cdbb6d6f0ee85927817473121524d319f8be6ffe5a6904d27ff6ef21356d2274fcadd52e17938
   languageName: node
   linkType: hard
 
