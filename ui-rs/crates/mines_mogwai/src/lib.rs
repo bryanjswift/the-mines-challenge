@@ -35,7 +35,8 @@ pub fn run_app() -> Result<(), wasm_bindgen::JsValue> {
         ::log::trace!("Hello from release @mines/uirs");
     }
 
-    let initial_route = Route::from(utils::window().location().pathname().unwrap_throw());
+    let path = utils::window().location().pathname().unwrap_throw();
+    let initial_route: Route = path.into();
     // Create our app's view by hydrating a gizmo from an initial state
     let root: Gizmo<App> = App::gizmo(initial_route);
 
