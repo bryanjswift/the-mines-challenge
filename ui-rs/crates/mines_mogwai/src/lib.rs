@@ -3,9 +3,6 @@ mod app;
 mod components;
 mod routes;
 
-use crate::app::App;
-use mogwai::prelude::*;
-
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -25,8 +22,9 @@ pub enum Route {
 }
 
 #[wasm_bindgen::prelude::wasm_bindgen(start)]
-pub fn run_app() -> Result<(), JsValue> {
-    use wasm_bindgen::prelude::*;
+pub fn run_app() -> Result<(), wasm_bindgen::JsValue> {
+    use crate::app::App;
+    use mogwai::prelude::*;
 
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
     console_log::init_with_level(log::Level::Trace).expect("could not init console_log");
