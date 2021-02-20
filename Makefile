@@ -52,9 +52,11 @@ UI_RS_MOGWAI_OUT := $(UI_RS_WASM_OUT_DIR)/mines_mogwai/index_bg.wasm
 UI_RS_YEW_OUT := $(UI_RS_WASM_OUT_DIR)/mines_uirs/index_bg.wasm
 UI_RS_OUT := $(UI_RS_OUT_DIR)/index.html
 
-.PHONY: all clean express nest ui uirs wasm
+.PHONY: all clean init nest ui uirs wasm
 
-all: express nest ui uirs
+all: init nest ui uirs
+
+init: .git/config
 
 nest: $(NEST_OUT)
 
@@ -63,6 +65,9 @@ ui: $(UI_NEXT_OUT)
 uirs: $(UI_RS_OUT)
 
 wasm: $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
+
+.git/config: .githooks/*
+	git config core.hooksPath .githooks
 
 $(NEST)/.env: $(NEST)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
