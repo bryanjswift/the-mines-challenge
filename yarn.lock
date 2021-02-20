@@ -900,10 +900,10 @@ __metadata:
     "@stryker-mutator/jest-runner": 4.4.1
     "@types/faker": 5.1.7
     "@types/jest": 26.0.20
-    "@types/node": 14.14.25
-    "@types/passport-jwt": 3.0.4
+    "@types/node": 14.14.31
+    "@types/passport-jwt": 3.0.5
     "@types/passport-local": 1.0.33
-    "@types/pg": 7.14.9
+    "@types/pg": 7.14.10
     "@types/supertest": 2.0.10
     "@types/uuid": 8.3.0
     dotenv: 8.2.0
@@ -936,8 +936,8 @@ __metadata:
   resolution: "@mines/ui@workspace:ui"
   dependencies:
     "@babel/helper-call-delegate": 7.12.13
-    "@types/node": 14.14.25
-    "@types/react": 17.0.1
+    "@types/node": 14.14.31
+    "@types/react": 17.0.2
     eslint: 7.20.0
     eslint-plugin-react: 7.22.0
     fp-ts: 2.9.5
@@ -1606,10 +1606,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:14.14.25":
-  version: 14.14.25
-  resolution: "@types/node@npm:14.14.25"
-  checksum: 64c42730f4169e49ec378870622ef06c5d820b31340e224cc1b45bf06c8b0cfa28daa587b4ae2b8ea1f712ef049bae4d9c92925b157ba9ba7cde3b22ff552513
+"@types/node@npm:14.14.31":
+  version: 14.14.31
+  resolution: "@types/node@npm:14.14.31"
+  checksum: 635dc8a0898a923621e02ca179e17baa39fdfa44f0096fcc1b7046c9b32317e74a99956a7b45ca0e8069874f51f4e7873a418239a318a4b6e7936f6510ac5992
   languageName: node
   linkType: hard
 
@@ -1627,14 +1627,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-jwt@npm:3.0.4":
-  version: 3.0.4
-  resolution: "@types/passport-jwt@npm:3.0.4"
+"@types/passport-jwt@npm:3.0.5":
+  version: 3.0.5
+  resolution: "@types/passport-jwt@npm:3.0.5"
   dependencies:
     "@types/express": "*"
     "@types/jsonwebtoken": "*"
     "@types/passport-strategy": "*"
-  checksum: 4220e5f57394ff5a3d557b67ef94ba754b7e90248386b10d1207758e2c5f93f8b27617d2877bae27399a1d42f396e8b1684d295de6e2991271a0bec2d2112afa
+  checksum: 4b5e41b5e1669b5d88ebc3b6f4559ffd7028657659429c0608e7d8502ab86a073c3d735443f812677175fb10544a6b52ddb0f1be0bf93bd2ca4899fcb7ffd5d8
   languageName: node
   linkType: hard
 
@@ -1668,13 +1668,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg@npm:7.14.9":
-  version: 7.14.9
-  resolution: "@types/pg@npm:7.14.9"
+"@types/pg@npm:7.14.10":
+  version: 7.14.10
+  resolution: "@types/pg@npm:7.14.10"
   dependencies:
     "@types/node": "*"
+    pg-protocol: ^1.2.0
     pg-types: ^2.2.0
-  checksum: 5c06146b9872f409b90c25d395cff8db6bb3311e620a8b9c15d8c0cc6ca77a130c6350c9fb4bd1737c0120e0fc1c3d19385bfe9c848cd0b1ad1fed40bb0b549b
+  checksum: 80aed025dd2fc63941032c932728cd3af50e11039f16d06cf20c5db3a97c8a438d7793e25b822de2f202b0746b2404792611f0beb9753612ec01123b7acbb0eb
   languageName: node
   linkType: hard
 
@@ -1706,13 +1707,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@types/react@npm:17.0.1"
+"@types/react@npm:17.0.2":
+  version: 17.0.2
+  resolution: "@types/react@npm:17.0.2"
   dependencies:
     "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 5b490728c5210ea20b20377dd8c69b12ba7283058788d431d8b35ff4d18d03aa3a0f0cc6fe83691c8b9707d3e7ee8e9aae4e50d3989e094c907030d045d0e4e2
+  checksum: de1cd27ce57a961379978f83676d60d88bf729337683d1d4cb22dd8f285ed4200db19f7243052dc67c80133fe6798da1497456fe6f67a5bba5f5e30ce2544bfa
   languageName: node
   linkType: hard
 
@@ -9960,7 +9961,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:^1.4.0":
+"pg-protocol@npm:^1.2.0, pg-protocol@npm:^1.4.0":
   version: 1.4.0
   resolution: "pg-protocol@npm:1.4.0"
   checksum: 2b5ebfccd014a4a9127a04e34a423a9e7fe6f6b96c32698929e0860e32c453e64438c935068405ee923ab99788345b9591a6dbaa30bba70e724d7fc4d5f5d21e
