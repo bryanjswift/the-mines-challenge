@@ -1,5 +1,4 @@
 use mogwai::prelude::*;
-use web_sys::MouseEvent;
 
 pub enum CellUpdate {
     All {
@@ -16,17 +15,16 @@ pub enum CellUpdate {
 pub struct CellInteract {
     pub row: usize,
     pub column: usize,
-    pub flag: bool,
+    pub kind: CellInteractKind,
 }
 
 impl CellInteract {
-    fn new(coords: (usize, usize), event: &Event) -> Self {
+    pub fn new(coords: (usize, usize), event: &Event) -> Self {
         let (column, row) = coords;
-        let event: Option<&MouseEvent> = event.dyn_ref();
         CellInteract {
             row,
             column,
-            flag: event.map(|e| e.alt_key() || e.ctrl_key()).unwrap_or(false),
+            kind: CellInteractKind::from(event),
         }
     }
 }
@@ -35,6 +33,24 @@ impl CellInteract {
 impl AsRef<CellInteract> for CellInteract {
     fn as_ref(&self) -> &Self {
         self
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum CellInteractKind {
+    Flag,
+    RemoveFlag,
+    Open,
+}
+
+impl From<&Event> for CellInteractKind {
+    fn from(event: &Event) -> Self {
+        let event: Option<&web_sys::MouseEvent> = event.dyn_ref();
+        if event.map(|e| e.alt_key() || e.ctrl_key()).unwrap_or(false) {
+            CellInteractKind::Flag
+        } else {
+            CellInteractKind::Open
+        }
     }
 }
 
@@ -102,9 +118,10 @@ pub fn board<'a>(
     tx.wire_map(&rx, |interaction| CellUpdate::Single {
         column: interaction.column,
         row: interaction.row,
-        value: match interaction.flag {
-            true => "F".into(),
-            false => "*".into(),
+        value: match interaction.kind {
+            CellInteractKind::Flag => "F".into(),
+            CellInteractKind::RemoveFlag => " ".into(),
+            CellInteractKind::Open => "*".into(),
         },
     });
     let children = cells

@@ -103,15 +103,19 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
     }
 }
 
-impl<T> From<T> for api::GameMoveInput where T: AsRef<components::game::CellInteract> {
+impl<T> From<T> for api::GameMoveInput
+where
+    T: AsRef<components::game::CellInteract>,
+{
     fn from(interaction: T) -> Self {
         let interaction = interaction.as_ref();
         Self {
             column: interaction.column,
             row: interaction.row,
-            move_type: match interaction.flag {
-                true => api::GameMoveType::FLAG,
-                false => api::GameMoveType::OPEN,
+            move_type: match interaction.kind {
+                components::game::CellInteractKind::Flag => api::GameMoveType::FLAG,
+                components::game::CellInteractKind::RemoveFlag => api::GameMoveType::FLAG,
+                components::game::CellInteractKind::Open => api::GameMoveType::OPEN,
             },
         }
     }
@@ -154,10 +158,7 @@ mod game_board {
             let mut count = remote_respond_count.borrow_mut();
             *count += 1;
             // Check that each received patch is to replace primary view
-            assert!(matches!(
-                patch,
-                Patch::Replace { index: 0, value: _ }
-            ));
+            assert!(matches!(patch, Patch::Replace { index: 0, value: _ }));
         });
         // Send a game state
         tx_game.send(&api::GameState {
@@ -245,7 +246,7 @@ mod cell_interact {
         let interaction = components::game::CellInteract {
             row: 3,
             column: 4,
-            flag: false,
+            kind: components::game::CellInteractKind::Open,
         };
         let input = api::GameMoveInput::from(interaction);
         assert_eq!(interaction.column, input.column);
@@ -258,7 +259,7 @@ mod cell_interact {
         let interaction = components::game::CellInteract {
             row: 3,
             column: 4,
-            flag: true,
+            kind: components::game::CellInteractKind::Flag,
         };
         let input = api::GameMoveInput::from(&interaction);
         assert_eq!(interaction.column, input.column);
