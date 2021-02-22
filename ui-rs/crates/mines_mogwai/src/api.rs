@@ -9,8 +9,6 @@ pub mod model {
 
     #[derive(Clone, Debug, Serialize)]
     pub struct GameMoveInput {
-        #[serde(skip)]
-        pub game_id: GameId,
         pub column: usize,
         pub row: usize,
         #[serde(rename = "type")]
@@ -23,7 +21,7 @@ pub mod model {
         pub rows: usize,
     }
 
-    #[derive(Clone, Copy, Debug, Serialize)]
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
     pub enum GameMoveType {
         FLAG,
         OPEN,
@@ -76,8 +74,9 @@ pub async fn get_game_list() -> Result<Vec<model::GameId>, FetchError> {
     get(url).await
 }
 
-pub async fn patch_game(input: GameMoveInput) -> Result<GameState, FetchError> {
-    let url = format!("{}/game/{}", API_BASE_URL, input.game_id);
+/// Add a move defined by `input` to the game identified by `game_id`.
+pub async fn patch_game(game_id: GameId, input: GameMoveInput) -> Result<GameState, FetchError> {
+    let url = format!("{}/game/{}", API_BASE_URL, game_id);
     fetch(url, Some("PATCH"), Some(&input)).await
 }
 
@@ -125,18 +124,22 @@ where
         .await
         .map_err(|_| FetchError::FetchError)?;
     // `resp_value` is a `Response` object.
-    let resp: Response = resp_value.dyn_into().unwrap();
-    match resp.status() {
-        100..=299 => {
-            // Convert this other `Promise` into a rust `Future`.
-            let json = JsFuture::from(resp.json().map_err(|_| FetchError::FetchError)?)
-                .await
-                .map_err(|_| FetchError::FetchError)?;
-            // Use serde to parse the JSON into a struct.
-            json.into_serde().map_err(|_| FetchError::ParseError)
+    let result: Result<Response, JsValue> = resp_value.dyn_into();
+    if let Ok(resp) = result {
+        match resp.status() {
+            100..=299 => {
+                // Convert this other `Promise` into a rust `Future`.
+                let json = JsFuture::from(resp.json().map_err(|_| FetchError::FetchError)?)
+                    .await
+                    .map_err(|_| FetchError::FetchError)?;
+                // Use serde to parse the JSON into a struct.
+                json.into_serde().map_err(|_| FetchError::ParseError)
+            }
+            404 => Err(FetchError::NotFound),
+            409 => Err(FetchError::Conflict),
+            _ => Err(FetchError::FetchError),
         }
-        404 => Err(FetchError::NotFound),
-        409 => Err(FetchError::Conflict),
-        _ => Err(FetchError::FetchError),
+    } else {
+        Err(FetchError::FetchError)
     }
 }

@@ -1,10 +1,8 @@
 mod api;
 mod app;
 mod components;
+mod model;
 mod routes;
-
-use crate::app::App;
-use mogwai::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -14,33 +12,43 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Route {
+    /// Screen showing a specific game
     Game { game_id: api::GameId },
+    /// Screen showing the list of games
     GameList,
+    /// Default landing screen
     Home,
+    /// Screen to display when the requested path does not exist
     NotFound,
 }
 
 #[wasm_bindgen::prelude::wasm_bindgen(start)]
-pub fn run_app() -> Result<(), JsValue> {
-    use wasm_bindgen::prelude::*;
+pub fn run_app() -> Result<(), wasm_bindgen::JsValue> {
+    use crate::app::App;
+    use mogwai::prelude::*;
 
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
     console_log::init_with_level(log::Level::Trace).expect("could not init console_log");
 
     if cfg!(debug_assertions) {
-        log::trace!("Hello from debug @mines/uirs");
+        ::log::trace!("Hello from debug @mines/uirs");
     } else {
-        log::trace!("Hello from release @mines/uirs");
+        ::log::trace!("Hello from release @mines/uirs");
     }
 
-    let initial_route = Route::from(utils::window().location().pathname().unwrap_throw());
-    // Create our app's view by hydrating a gizmo from an initial state
-    let root: Gizmo<App> = App::gizmo(initial_route);
+    let pathname = utils::window().location().pathname();
+    if let Ok(path) = pathname {
+        let initial_route: Route = path.into();
+        // Create our app's view by hydrating a gizmo from an initial state
+        let root: Gizmo<App> = App::gizmo(initial_route);
 
-    // Hand the app's view ownership to the window so it never
-    // goes out of scope
-    let view = View::from(root.view_builder());
-    view.run()
+        // Hand the app's view ownership to the window so it never
+        // goes out of scope
+        let view = View::from(root.view_builder());
+        view.run()
+    } else {
+        Err("Unable to get current URL path".into())
+    }
 }
 
 mod route_dispatch {
@@ -68,10 +76,7 @@ mod route_dispatch {
     pub fn view_builder(tx: Transmitter<Route>, route: Route) -> ViewBuilder<HtmlElement> {
         match route {
             Route::Game { game_id } => routes::game(game_id),
-            Route::GameList => {
-                let component = routes::GameList::new(tx, vec![]);
-                Gizmo::from(component).view_builder()
-            }
+            Route::GameList => routes::game_list(tx),
             Route::Home => routes::home(tx),
             Route::NotFound => routes::not_found(),
         }

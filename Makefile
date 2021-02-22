@@ -52,9 +52,11 @@ UI_RS_MOGWAI_OUT := $(UI_RS_WASM_OUT_DIR)/mines_mogwai/index_bg.wasm
 UI_RS_YEW_OUT := $(UI_RS_WASM_OUT_DIR)/mines_uirs/index_bg.wasm
 UI_RS_OUT := $(UI_RS_OUT_DIR)/index.html
 
-.PHONY: all clean express nest ui uirs wasm
+.PHONY: all clean init nest ui uirs wasm
 
-all: express nest ui uirs
+all: init nest ui uirs
+
+init: .git/config
 
 nest: $(NEST_OUT)
 
@@ -63,6 +65,9 @@ ui: $(UI_NEXT_OUT)
 uirs: $(UI_RS_OUT)
 
 wasm: $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
+
+.git/config: .githooks/*
+	git config core.hooksPath .githooks
 
 $(NEST)/.env: $(NEST)/.env.sample
 	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
@@ -87,7 +92,7 @@ $(UI_RS)/.env: $(UI_RS)/.env.sample
 		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
 
-$(UI_RS)/Cargo.lock: $(CARGO_TOML)
+$(UI_RS)/Cargo.lock: $(CARGO_TOML) init
 	cargo check --release --manifest-path=$(UI_RS)/Cargo.toml --workspace
 
 $(UI_RS_MOGWAI_OUT): $(UI_RS)/.env $(UI_RS_MOGWAI_SRC) $(UI_RS)/Cargo.lock
@@ -107,7 +112,7 @@ $(UI_RS_YEW_OUT): $(UI_RS)/.env $(UI_RS_YEW_SRC) $(UI_RS)/Cargo.lock
 $(UI_RS_OUT): node_modules $(UI_RS)/.env $(UI_RS_SRC) $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
 	yarn workspace @mines/uirs build
 
-node_modules: $(PACKAGE_JSON) yarn.lock
+node_modules: $(PACKAGE_JSON) yarn.lock init
 	yarn install
 	@touch -mr $(shell ls -Atd $? | head -1) $@
 

@@ -1,35 +1,5 @@
+use crate::model::{CellInteract, CellUpdate};
 use mogwai::prelude::*;
-use web_sys::MouseEvent;
-
-pub enum CellUpdate {
-    All {
-        cells: Vec<Vec<String>>,
-    },
-    Single {
-        row: usize,
-        column: usize,
-        value: String,
-    },
-}
-
-#[derive(Copy, Clone, Debug)]
-pub struct CellInteract {
-    pub row: usize,
-    pub column: usize,
-    pub flag: bool,
-}
-
-impl CellInteract {
-    fn new(coords: (usize, usize), event: &Event) -> Self {
-        let (column, row) = coords;
-        let event: Option<&MouseEvent> = event.dyn_ref();
-        CellInteract {
-            row,
-            column,
-            flag: event.map(|e| e.alt_key() || e.ctrl_key()).unwrap_or(false),
-        }
-    }
-}
 
 /// Create a `<td>` representing a single game cell. `coords` are expected to be `(column, row)` or
 /// `(x, y)` in the grid. Interactions are transmitted to `tx` and new text to display is received
@@ -40,28 +10,28 @@ fn board_cell<'a>(
     tx: &Transmitter<CellInteract>,
     rx: &Receiver<CellUpdate>,
 ) -> ViewBuilder<HtmlElement> {
+    use crate::components::cell::{BoardCell, BoardValue};
     let (col, row, initial_value) = coords;
-    let rx_text = rx.branch_filter_map(move |update| match update {
+    let tx_in = Transmitter::new();
+    let rx_value: Receiver<BoardValue> = rx.branch_filter_map(move |update| match update {
         CellUpdate::All { cells } => cells
             .get(row)
             .map(|r| r.get(col))
             .flatten()
-            .map(|s| s.to_owned()),
+            .map(|s| s.into()),
         CellUpdate::Single {
             row: y,
             column: x,
             value,
-        } if *x == col && *y == row => Some(value.to_owned()),
+        } if *x == col && *y == row => Some(value.into()),
         _ => None,
     });
-    builder! {
-        <td
-            on:click=tx.contra_map(move |event: &Event| CellInteract::new((col, row), event))
-        >
-            // Cells initialize to empty but may update if revealed or clicked
-            {(initial_value, rx_text)}
-        </td>
-    }
+    let c = Gizmo::from_parts(
+        BoardCell::new((col, row), &initial_value, tx.clone()),
+        tx_in,
+        rx_value,
+    );
+    c.view_builder()
 }
 
 /// Create a `<tr>` representing a row of game cells. Interactions are transmitted to `tx` and new
@@ -89,17 +59,6 @@ pub fn board<'a>(
     tx: &Transmitter<CellInteract>,
 ) -> ViewBuilder<HtmlElement> {
     let rx = Receiver::new();
-    // The responses to `CellInteract` through individual `CellUpdate` represent optimisitic
-    // updates. They reflect changes we can know on the client side without additional information
-    // from the server.
-    tx.wire_map(&rx, |interaction| CellUpdate::Single {
-        column: interaction.column,
-        row: interaction.row,
-        value: match interaction.flag {
-            true => "F".into(),
-            false => "*".into(),
-        },
-    });
     let children = cells
         .into_iter()
         .enumerate()
