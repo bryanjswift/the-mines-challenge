@@ -58,20 +58,7 @@ pub fn board<'a>(
     cells: Vec<Vec<String>>,
     tx: &Transmitter<CellInteract>,
 ) -> ViewBuilder<HtmlElement> {
-    use crate::model::CellInteractKind;
     let rx = Receiver::new();
-    // The responses to `CellInteract` through individual `CellUpdate` represent optimisitic
-    // updates. They reflect changes we can know on the client side without additional information
-    // from the server.
-    tx.wire_map(&rx, |interaction| CellUpdate::Single {
-        column: interaction.column,
-        row: interaction.row,
-        value: match interaction.kind {
-            CellInteractKind::Flag => "F".into(),
-            CellInteractKind::RemoveFlag => " ".into(),
-            CellInteractKind::Open => "*".into(),
-        },
-    });
     let children = cells
         .into_iter()
         .enumerate()
