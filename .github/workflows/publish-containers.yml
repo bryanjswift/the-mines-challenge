@@ -14,7 +14,7 @@ jobs:
   # Publish image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   publish_api_container:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     # Only publish if triggered by a push event
     if: github.event_name == 'push'
     env:
@@ -42,7 +42,7 @@ jobs:
           # Push the tagged image to package management
           docker push $IMAGE_ID:$VERSION
   publish_ui_container:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     # Only publish if triggered by a push event
     if: github.event_name == 'push'
     env:

@@ -6,7 +6,7 @@ on:
       - 'server-nest/**'
 jobs:
   generate_mutants_api:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         node-version: [12.x]
