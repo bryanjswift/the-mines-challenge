@@ -47,6 +47,7 @@ fn game_board(
     tx_game.wire_map(&rx_game_board, |game_state| model::CellUpdate::All {
         cells: game_state.board.clone(),
     });
+    // FIXME: stop replacing the whole table each time an update is received from the server
     // Patch the initial board state into the game board slot
     let rx_patch_game = rx_game_board.branch_filter_map(move |update| match update {
         model::CellUpdate::All { cells } => Some(Patch::Replace {
