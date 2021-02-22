@@ -5,7 +5,7 @@ on:
       - 'ui/**'
 jobs:
   build_ui_container:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       IMAGE_NAME: ui
     steps:
