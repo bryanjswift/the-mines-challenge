@@ -1,4 +1,4 @@
-use crate::components::{CellInteract, CellInteractKind};
+use crate::model::{CellInteract, CellInteractKind};
 use mogwai::prelude::*;
 
 pub struct BoardCell {

@@ -1,47 +1,5 @@
+use crate::model::{CellInteract, CellUpdate};
 use mogwai::prelude::*;
-
-pub enum CellUpdate {
-    All {
-        cells: Vec<Vec<String>>,
-    },
-    Single {
-        row: usize,
-        column: usize,
-        value: String,
-    },
-}
-
-#[derive(Copy, Clone, Debug)]
-pub struct CellInteract {
-    pub row: usize,
-    pub column: usize,
-    pub kind: CellInteractKind,
-}
-
-/// Allow an owned `CellInteract` to be treated as a reference.
-impl AsRef<CellInteract> for CellInteract {
-    fn as_ref(&self) -> &Self {
-        self
-    }
-}
-
-#[derive(Clone, Copy, Debug)]
-pub enum CellInteractKind {
-    Flag,
-    RemoveFlag,
-    Open,
-}
-
-impl From<&Event> for CellInteractKind {
-    fn from(event: &Event) -> Self {
-        let event: Option<&web_sys::MouseEvent> = event.dyn_ref();
-        if event.map(|e| e.alt_key() || e.ctrl_key()).unwrap_or(false) {
-            CellInteractKind::Flag
-        } else {
-            CellInteractKind::Open
-        }
-    }
-}
 
 /// Create a `<td>` representing a single game cell. `coords` are expected to be `(column, row)` or
 /// `(x, y)` in the grid. Interactions are transmitted to `tx` and new text to display is received
@@ -100,6 +58,7 @@ pub fn board<'a>(
     cells: Vec<Vec<String>>,
     tx: &Transmitter<CellInteract>,
 ) -> ViewBuilder<HtmlElement> {
+    use crate::model::CellInteractKind;
     let rx = Receiver::new();
     // The responses to `CellInteract` through individual `CellUpdate` represent optimisitic
     // updates. They reflect changes we can know on the client side without additional information

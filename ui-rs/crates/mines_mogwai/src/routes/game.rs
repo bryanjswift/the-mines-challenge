@@ -1,4 +1,4 @@
-use crate::{api, components};
+use crate::{api, components, model};
 use mogwai::prelude::*;
 
 /// Create a game screen for the game referenced by the provided `api::GameId`. Set up the game
@@ -8,7 +8,7 @@ use mogwai::prelude::*;
 pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
     // Create a transmitter to send button clicks into.
     let tx_game: Transmitter<api::GameState> = Transmitter::new();
-    let tx_cells: Transmitter<components::game::CellInteract> = Transmitter::new();
+    let tx_cells: Transmitter<model::CellInteract> = Transmitter::new();
     // Create the upstream `Transmitter` for `tx_game` (i.e. messages sent to `tx_api` will be
     // passed to `tx_game` if the response is success.
     let tx_api = tx_game.contra_filter_fold(
@@ -41,17 +41,15 @@ pub fn game(game_id: api::GameId) -> ViewBuilder<HtmlElement> {
 
 fn game_board(
     tx_game: &Transmitter<api::GameState>,
-    tx_cells: Transmitter<components::game::CellInteract>,
+    tx_cells: Transmitter<model::CellInteract>,
 ) -> ViewBuilder<HtmlElement> {
     let rx_game_board = Receiver::new();
-    tx_game.wire_map(&rx_game_board, |game_state| {
-        components::game::CellUpdate::All {
-            cells: game_state.board.clone(),
-        }
+    tx_game.wire_map(&rx_game_board, |game_state| model::CellUpdate::All {
+        cells: game_state.board.clone(),
     });
     // Patch the initial board state into the game board slot
     let rx_patch_game = rx_game_board.branch_filter_map(move |update| match update {
-        components::game::CellUpdate::All { cells } => Some(Patch::Replace {
+        model::CellUpdate::All { cells } => Some(Patch::Replace {
             index: 0,
             value: components::game::board(cells.clone(), &tx_cells),
         }),
@@ -105,7 +103,7 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
 
 impl<T> From<T> for api::GameMoveInput
 where
-    T: AsRef<components::game::CellInteract>,
+    T: AsRef<model::CellInteract>,
 {
     fn from(interaction: T) -> Self {
         let interaction = interaction.as_ref();
@@ -113,9 +111,9 @@ where
             column: interaction.column,
             row: interaction.row,
             move_type: match interaction.kind {
-                components::game::CellInteractKind::Flag => api::GameMoveType::FLAG,
-                components::game::CellInteractKind::RemoveFlag => api::GameMoveType::FLAG,
-                components::game::CellInteractKind::Open => api::GameMoveType::OPEN,
+                model::CellInteractKind::Flag => api::GameMoveType::FLAG,
+                model::CellInteractKind::RemoveFlag => api::GameMoveType::FLAG,
+                model::CellInteractKind::Open => api::GameMoveType::OPEN,
             },
         }
     }
@@ -243,10 +241,10 @@ mod cell_interact {
 
     #[test]
     fn creates_input_from_owned() {
-        let interaction = components::game::CellInteract {
+        let interaction = model::CellInteract {
             row: 3,
             column: 4,
-            kind: components::game::CellInteractKind::Open,
+            kind: model::CellInteractKind::Open,
         };
         let input = api::GameMoveInput::from(interaction);
         assert_eq!(interaction.column, input.column);
@@ -256,10 +254,10 @@ mod cell_interact {
 
     #[test]
     fn creates_input_from_reference() {
-        let interaction = components::game::CellInteract {
+        let interaction = model::CellInteract {
             row: 3,
             column: 4,
-            kind: components::game::CellInteractKind::Flag,
+            kind: model::CellInteractKind::Flag,
         };
         let input = api::GameMoveInput::from(&interaction);
         assert_eq!(interaction.column, input.column);
