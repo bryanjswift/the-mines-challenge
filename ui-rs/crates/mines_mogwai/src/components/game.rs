@@ -18,17 +18,6 @@ pub struct CellInteract {
     pub kind: CellInteractKind,
 }
 
-impl CellInteract {
-    pub fn new(coords: (usize, usize), event: &Event) -> Self {
-        let (column, row) = coords;
-        CellInteract {
-            row,
-            column,
-            kind: CellInteractKind::from(event),
-        }
-    }
-}
-
 /// Allow an owned `CellInteract` to be treated as a reference.
 impl AsRef<CellInteract> for CellInteract {
     fn as_ref(&self) -> &Self {
@@ -63,28 +52,28 @@ fn board_cell<'a>(
     tx: &Transmitter<CellInteract>,
     rx: &Receiver<CellUpdate>,
 ) -> ViewBuilder<HtmlElement> {
+    use crate::components::cell::{BoardCell, BoardValue};
     let (col, row, initial_value) = coords;
-    let rx_text = rx.branch_filter_map(move |update| match update {
+    let tx_in = Transmitter::new();
+    let rx_value: Receiver<BoardValue> = rx.branch_filter_map(move |update| match update {
         CellUpdate::All { cells } => cells
             .get(row)
             .map(|r| r.get(col))
             .flatten()
-            .map(|s| s.to_owned()),
+            .map(|s| s.into()),
         CellUpdate::Single {
             row: y,
             column: x,
             value,
-        } if *x == col && *y == row => Some(value.to_owned()),
+        } if *x == col && *y == row => Some(value.into()),
         _ => None,
     });
-    builder! {
-        <td
-            on:click=tx.contra_map(move |event: &Event| CellInteract::new((col, row), event))
-        >
-            // Cells initialize to empty but may update if revealed or clicked
-            {(initial_value, rx_text)}
-        </td>
-    }
+    let c = Gizmo::from_parts(
+        BoardCell::new((col, row), &initial_value, tx.clone()),
+        tx_in,
+        rx_value,
+    );
+    c.view_builder()
 }
 
 /// Create a `<tr>` representing a row of game cells. Interactions are transmitted to `tx` and new
