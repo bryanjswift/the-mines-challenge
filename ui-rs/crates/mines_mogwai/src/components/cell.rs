@@ -1,4 +1,4 @@
-use crate::model::{CellInteract, CellInteractKind};
+use crate::model::{CellInteract, CellInteractKind, CellUpdate};
 use mogwai::prelude::*;
 
 pub struct BoardCell {
@@ -30,7 +30,7 @@ impl BoardCell {
 
 impl Component for BoardCell {
     type ModelMsg = BoardCellInteract;
-    type ViewMsg = BoardValue;
+    type ViewMsg = CellUpdate;
     type DomNode = HtmlElement;
 
     fn update(
@@ -51,12 +51,17 @@ impl Component for BoardCell {
             row: self.row,
             kind,
         };
+        let board_value = match kind {
+            CellInteractKind::RemoveFlag => BoardValue::Closed,
+            CellInteractKind::Flag => BoardValue::Flag,
+            CellInteractKind::Open => BoardValue::Pending,
+        };
         // Optimistically update the cell because certain actions don't depend
         // on the game state so the `BoardCell` "knows" the result
-        tx.send(match kind {
-            CellInteractKind::RemoveFlag => &BoardValue::Closed,
-            CellInteractKind::Flag => &BoardValue::Flag,
-            CellInteractKind::Open => &BoardValue::Pending,
+        tx.send(&CellUpdate::Single {
+            column: self.column,
+            row: self.row,
+            value: board_value.to_string(),
         });
         // Send the `CellInteract` out it (may) eventually result in receiving
         // a `ViewMessage`
@@ -69,7 +74,22 @@ impl Component for BoardCell {
         tx: &Transmitter<Self::ModelMsg>,
         rx: &Receiver<Self::ViewMsg>,
     ) -> ViewBuilder<HtmlElement> {
-        let rx_text = rx.branch_map(|update| update.to_string());
+        let col = self.column;
+        let row = self.row;
+        let rx_value: Receiver<BoardValue> = rx.branch_filter_map(move |update| match update {
+            CellUpdate::All { cells } => cells
+                .get(row)
+                .map(|r| r.get(col))
+                .flatten()
+                .map(|s| s.into()),
+            CellUpdate::Single {
+                row: y,
+                column: x,
+                value,
+            } if *x == col && *y == row => Some(value.into()),
+            _ => None,
+        });
+        let rx_text = rx_value.branch_map(|update| update.to_string());
         builder! {
             <td
                 on:click=tx.contra_map(|event: &Event| BoardCellInteract::from(event))
