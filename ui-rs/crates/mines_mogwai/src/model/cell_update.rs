@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub enum CellUpdate {
     All {
         cells: Vec<Vec<String>>,

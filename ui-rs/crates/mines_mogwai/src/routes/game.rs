@@ -43,18 +43,26 @@ fn game_board(
     tx_game: &Transmitter<api::GameState>,
     tx_cells: Transmitter<model::CellInteract>,
 ) -> ViewBuilder<HtmlElement> {
-    let rx_game_board = Receiver::new();
-    tx_game.wire_map(&rx_game_board, |game_state| model::CellUpdate::All {
-        cells: game_state.board.clone(),
-    });
-    // FIXME: stop replacing the whole table each time an update is received from the server
+    let rx_game = tx_game.spawn_recv();
+    let rx_cells = tx_game
+        .spawn_recv()
+        .branch_map(|game_state| model::CellUpdate::All {
+            cells: game_state.board.clone(),
+        });
+    let rx_state =
+        rx_game.branch_filter_fold(None, |current: &mut Option<api::GameState>, game_state| {
+            match current {
+                Some(state) if state.id == game_state.id => None,
+                _ => {
+                    current.replace(game_state.clone());
+                    current.clone()
+                }
+            }
+        });
     // Patch the initial board state into the game board slot
-    let rx_patch_game = rx_game_board.branch_filter_map(move |update| match update {
-        model::CellUpdate::All { cells } => Some(Patch::Replace {
-            index: 0,
-            value: components::game::board(cells.clone(), &tx_cells),
-        }),
-        _ => None,
+    let rx_patch_game = rx_state.branch_map(move |game_state| Patch::Replace {
+        index: 0,
+        value: components::game::board(game_state.board.clone(), &tx_cells, &rx_cells),
     });
     builder! {
         <slot name="game-board" patch:children=rx_patch_game>
