@@ -121,7 +121,7 @@ where
             row: interaction.row,
             move_type: match interaction.kind {
                 model::CellInteractKind::Flag => api::GameMoveType::FLAG,
-                model::CellInteractKind::RemoveFlag => api::GameMoveType::FLAG,
+                model::CellInteractKind::RemoveFlag => api::GameMoveType::REMOVE_FLAG,
                 model::CellInteractKind::Open => api::GameMoveType::OPEN,
             },
         }

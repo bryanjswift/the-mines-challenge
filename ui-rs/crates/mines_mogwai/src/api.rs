@@ -25,6 +25,7 @@ pub mod model {
     pub enum GameMoveType {
         FLAG,
         OPEN,
+        REMOVE_FLAG,
     }
 
     #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]

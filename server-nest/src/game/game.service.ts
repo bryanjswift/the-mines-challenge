@@ -7,6 +7,14 @@ import { GameMoveDto } from './game.dto';
 import { Game, GameId, GameStatus, Props } from './game.model';
 import { GameMoveType } from './game-move.model';
 
+/**
+ * Throws with the given message if called, intended for use in exhaustiveness
+ * checks.
+ */
+function assertNever(message: string): never {
+  throw new Error(message);
+}
+
 export interface BaseGameService {
   /**
    * Find the `Game` associated with `id`, add the move represented by the
@@ -92,6 +100,12 @@ export class GameService implements BaseGameService {
         break;
       case GameMoveType.OPEN:
         next = current.openCoordinates(column, row);
+        break;
+      case GameMoveType.REMOVE_FLAG:
+        next = current.unflagCoordinates(column, row);
+        break;
+      default:
+        next = assertNever(`Unhandled move type ${move.type}`);
         break;
     }
     return next;

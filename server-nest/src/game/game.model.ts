@@ -128,6 +128,11 @@ export class Game {
     return this.open(cellId);
   }
 
+  unflagCoordinates(column: number, row: number): Game {
+    const cellId = this.findCell(column, row).id;
+    return this.copyWithGameMove({ type: GameMoveType.REMOVE_FLAG, cellId });
+  }
+
   get board(): string[] {
     return this.views.map((cell) => cell.status);
   }
