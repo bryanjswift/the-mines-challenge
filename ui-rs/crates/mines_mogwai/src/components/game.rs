@@ -10,14 +10,10 @@ fn board_row<'a>(
     rx: &Receiver<CellUpdate>,
 ) -> ViewBuilder<HtmlElement> {
     use crate::components::cell::BoardCell;
-    let children = initial_cells.into_iter().enumerate().map(|(col, value)| {
-        Gizmo::from_parts(
-            BoardCell::new((col, row), &value, tx.clone()),
-            Transmitter::new(),
-            rx.branch(),
-        )
-        .view_builder()
-    });
+    let children = initial_cells
+        .into_iter()
+        .enumerate()
+        .map(|(col, value)| BoardCell::gizmo(col, row, value, tx, rx).view_builder());
     let mut tr = builder! { <tr /> };
     for child in children {
         tr.with(child);

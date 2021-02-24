@@ -9,22 +9,23 @@ pub struct BoardCell {
 }
 
 impl BoardCell {
-    pub fn new<T>(
-        coords: (usize, usize),
-        initial_value: T,
-        tx_cells: Transmitter<CellInteract>,
-    ) -> Self
-    where
-        T: AsRef<str>,
-    {
-        let (column, row) = coords;
-        let current_display: BoardValue = initial_value.into();
-        BoardCell {
-            column,
-            current_display,
-            row,
-            tx_cells,
-        }
+    pub fn gizmo(
+        column: usize,
+        row: usize,
+        initial_value: String,
+        tx: &Transmitter<CellInteract>,
+        rx: &Receiver<CellUpdate>,
+    ) -> Gizmo<Self> {
+        Gizmo::from_parts(
+            BoardCell {
+                column,
+                current_display: initial_value.into(),
+                row,
+                tx_cells: tx.clone(),
+            },
+            Transmitter::new(),
+            rx.branch(),
+        )
     }
 }
 
