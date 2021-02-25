@@ -43,7 +43,7 @@ impl Component for BoardCell {
         // The kind of `CellInteract` to send out depends on the current state
         // of the `BoardCell`
         let kind = match (self.current_display, msg) {
-            (BoardValue::Flag, BoardCellInteract::Flag) => CellInteractKind::RemoveFlag,
+            (BoardValue::Flag, _) => CellInteractKind::RemoveFlag,
             (BoardValue::Closed, BoardCellInteract::Flag) => CellInteractKind::Flag,
             _ => CellInteractKind::Open,
         };
