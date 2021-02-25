@@ -57,6 +57,10 @@ impl Component for BoardCell {
             CellInteractKind::Flag => BoardValue::Flag,
             CellInteractKind::Open => BoardValue::Pending,
         };
+        // `current_display` will get out of sync with the displayed value if the cell moves to an
+        // open state because messages from the `Receiver` don't have any way update the
+        // `current_display` value.
+        self.current_display = board_value;
         // Optimistically update the cell because certain actions don't depend
         // on the game state so the `BoardCell` "knows" the result
         tx.send(&CellUpdate::Single {
