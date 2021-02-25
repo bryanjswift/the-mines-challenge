@@ -23,16 +23,22 @@ pub mod model {
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
     pub enum GameMoveType {
-        FLAG,
-        OPEN,
-        REMOVE_FLAG,
+        #[serde(rename = "FLAG")]
+        Flag,
+        #[serde(rename = "OPEN")]
+        Open,
+        #[serde(rename = "REMOVE_FLAG")]
+        RemoveFlag,
     }
 
     #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
     pub enum GameStatus {
-        OPEN,
-        WON,
-        LOST,
+        #[serde(rename = "OPEN")]
+        Open,
+        #[serde(rename = "WON")]
+        Won,
+        #[serde(rename = "LOST")]
+        Lost,
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]

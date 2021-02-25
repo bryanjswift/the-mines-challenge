@@ -78,7 +78,7 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
     // Only send an update in to the `rx_game_status` if the status has changed
     tx_game.wire_filter_fold(
         &rx_game_status,
-        api::GameStatus::OPEN,
+        api::GameStatus::Open,
         |status, game_state| {
             if *status == game_state.status {
                 None
@@ -90,15 +90,15 @@ fn game_status(tx_game: &Transmitter<api::GameState>) -> ViewBuilder<HtmlElement
     );
     // Update the view whenever a new game status is received
     let rx_game_status_view = rx_game_status.branch_map(|status| match status {
-        api::GameStatus::WON => Patch::Replace {
+        api::GameStatus::Won => Patch::Replace {
             index: 0,
             value: builder! { <h2>"You did the thing! 🥳"</h2> },
         },
-        api::GameStatus::LOST => Patch::Replace {
+        api::GameStatus::Lost => Patch::Replace {
             index: 0,
             value: builder! { <h2>"BOOM 💥"</h2> },
         },
-        api::GameStatus::OPEN => Patch::Replace {
+        api::GameStatus::Open => Patch::Replace {
             index: 0,
             value: builder! { <span></span> },
         },
@@ -120,9 +120,9 @@ where
             column: interaction.column,
             row: interaction.row,
             move_type: match interaction.kind {
-                model::CellInteractKind::Flag => api::GameMoveType::FLAG,
-                model::CellInteractKind::RemoveFlag => api::GameMoveType::REMOVE_FLAG,
-                model::CellInteractKind::Open => api::GameMoveType::OPEN,
+                model::CellInteractKind::Flag => api::GameMoveType::Flag,
+                model::CellInteractKind::RemoveFlag => api::GameMoveType::RemoveFlag,
+                model::CellInteractKind::Open => api::GameMoveType::Open,
             },
         }
     }
@@ -171,7 +171,7 @@ mod game_board {
         tx_game.send(&api::GameState {
             id: uuid::Uuid::new_v4(),
             board: vec![vec_of_strings![" ", "1", "F", "M"]],
-            status: api::GameStatus::LOST,
+            status: api::GameStatus::Lost,
         });
         // Test the number of patch receivers
         assert_eq!(builder.patches.len(), 1);
@@ -203,7 +203,7 @@ mod game_status {
         tx.send(&api::GameState {
             id: uuid::Uuid::new_v4(),
             board: Vec::new(),
-            status: api::GameStatus::OPEN,
+            status: api::GameStatus::Open,
         });
         assert_eq!(
             ssr.html_string(),
@@ -219,7 +219,7 @@ mod game_status {
         tx.send(&api::GameState {
             id: uuid::Uuid::new_v4(),
             board: Vec::new(),
-            status: api::GameStatus::LOST,
+            status: api::GameStatus::Lost,
         });
         assert_eq!(
             ssr.html_string(),
@@ -235,7 +235,7 @@ mod game_status {
         tx.send(&api::GameState {
             id: uuid::Uuid::new_v4(),
             board: Vec::new(),
-            status: api::GameStatus::WON,
+            status: api::GameStatus::Won,
         });
         assert_eq!(
             ssr.html_string(),
@@ -258,7 +258,7 @@ mod cell_interact {
         let input = api::GameMoveInput::from(interaction);
         assert_eq!(interaction.column, input.column);
         assert_eq!(interaction.row, input.row);
-        assert_eq!(api::GameMoveType::OPEN, input.move_type);
+        assert_eq!(api::GameMoveType::Open, input.move_type);
     }
 
     #[test]
@@ -271,6 +271,6 @@ mod cell_interact {
         let input = api::GameMoveInput::from(&interaction);
         assert_eq!(interaction.column, input.column);
         assert_eq!(interaction.row, input.row);
-        assert_eq!(api::GameMoveType::FLAG, input.move_type);
+        assert_eq!(api::GameMoveType::Flag, input.move_type);
     }
 }
