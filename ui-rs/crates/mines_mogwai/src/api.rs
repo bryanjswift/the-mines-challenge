@@ -1,12 +1,14 @@
 use dotenv_codegen::dotenv;
 
-const API_BASE_URL: &str = dotenv!("API_BASE_URL");
+const API_BASE_URL: &str = dotenv!("UI_BASE_API_URL");
 
 pub mod model {
     use serde::{Deserialize, Serialize};
 
     pub type GameId = uuid::Uuid;
 
+    /// Data transfer object intended for use as the request body when adding a new move to an
+    /// existing Game.
     #[derive(Clone, Debug, Serialize)]
     pub struct GameMoveInput {
         pub column: usize,
@@ -15,23 +17,36 @@ pub mod model {
         pub move_type: GameMoveType,
     }
 
+    /// Data transfer object intended for use as the request body when creating a new Game.
     #[derive(Clone, Debug, Serialize)]
     pub struct GameCreateInput {
         pub columns: usize,
         pub rows: usize,
     }
 
+    /// Represents the kind of move being added to a Game.
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
     pub enum GameMoveType {
-        FLAG,
-        OPEN,
+        #[serde(rename = "FLAG")]
+        Flag,
+        #[serde(rename = "OPEN")]
+        Open,
+        #[serde(rename = "REMOVE_FLAG")]
+        RemoveFlag,
     }
 
+    /// Represents the current state of a Game.
     #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
     pub enum GameStatus {
-        OPEN,
-        WON,
-        LOST,
+        /// Represents a game which is still playable, new moves will be applied.
+        #[serde(rename = "OPEN")]
+        Open,
+        /// Represents a completed game in which all mines were successfully avoided
+        #[serde(rename = "WON")]
+        Won,
+        /// Represents a completed game in which a mine was opened
+        #[serde(rename = "LOST")]
+        Lost,
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]

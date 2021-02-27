@@ -7,6 +7,7 @@ import { CellId } from './cell.model';
 export enum GameMoveType {
   FLAG = 'FLAG',
   OPEN = 'OPEN',
+  REMOVE_FLAG = 'REMOVE_FLAG',
 }
 
 /**

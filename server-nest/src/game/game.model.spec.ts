@@ -667,3 +667,88 @@ describe('Game#openCoordinates', () => {
     expect(() => game.openCoordinates(0, 4)).toThrowError(/rows/);
   });
 });
+
+describe('Game#unflagCoordinates', () => {
+  let cells: Cell[];
+  let game: Game;
+
+  beforeAll(() => {
+    // | 3 | M | 2 | 0 |
+    // | M | M | 2 | 0 |
+    // | 2 | 2 | 1 | 0 |
+    // | 0 | 0 | 0 | 0 |
+    cells = [
+      // Row 1
+      new Cell({ isMine: false }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 2
+      new Cell({ isMine: true }),
+      new Cell({ isMine: true }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 3
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      // Row 4
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+      new Cell({ isMine: false }),
+    ];
+  });
+
+  beforeEach(() => {
+    game = new Game({
+      rows: 4,
+      columns: 4,
+      cells,
+    });
+  });
+
+  it('retains the id', () => {
+    const subject = game.unflagCoordinates(0, 0);
+    expect(subject.id).toEqual(game.id);
+  });
+
+  it('does nothing when cell not flagged', () => {
+    const subject = game.unflagCoordinates(0, 0);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('goes back to same state when unflagging flagged cell', () => {
+    const intermediate = game.flagCoordinates(0, 0);
+    // prettier-ignore
+    expect(intermediate.board).toEqual([
+      'F', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+    const subject = intermediate.unflagCoordinates(0, 0);
+    // prettier-ignore
+    expect(subject.board).toEqual([
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+      ' ', ' ', ' ', ' ',
+    ]);
+  });
+
+  it('throws when column is out of bounds', () => {
+    expect(() => game.unflagCoordinates(4, 0)).toThrowError(/columns/);
+  });
+
+  it('throws when row is out of bounds', () => {
+    expect(() => game.unflagCoordinates(0, 4)).toThrowError(/rows/);
+  });
+});

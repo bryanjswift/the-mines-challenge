@@ -5,7 +5,7 @@ import { JwtModuleOptions, JwtOptionsFactory } from '@nestjs/jwt';
 export class JwtConfigService implements JwtOptionsFactory {
   createJwtOptions(): JwtModuleOptions {
     return {
-      secret: process.env.JWT_SECRET,
+      secret: process.env.API_JWT_SECRET,
       signOptions: { expiresIn: '60s' },
     };
   }

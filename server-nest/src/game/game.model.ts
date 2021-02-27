@@ -128,6 +128,11 @@ export class Game {
     return this.open(cellId);
   }
 
+  unflagCoordinates(column: number, row: number): Game {
+    const cellId = this.findCell(column, row).id;
+    return this.copyWithGameMove({ type: GameMoveType.REMOVE_FLAG, cellId });
+  }
+
   get board(): string[] {
     return this.views.map((cell) => cell.status);
   }
@@ -172,14 +177,15 @@ export class Game {
    * `moves` and `cells`.
    */
   private static computeViews(moves: GameMove[], cells: Cell[]): CellView[] {
-    const flaggedCellIds = cells
+    const initialFlaggedMoves: GameMove[] = cells
       .filter((cell) => cell.initialState.isFlagged)
-      .map(pickCellId)
-      .concat(Game.getFlaggedCellIds(moves));
-    const openedCellIds = cells
+      .map((cell) => ({ type: GameMoveType.FLAG, cellId: cell.id }));
+    const initialOpenedMoves: GameMove[] = cells
       .filter((cell) => cell.initialState.isOpen)
-      .map(pickCellId)
-      .concat(Game.getOpenedCellIds(moves));
+      .map((cell) => ({ type: GameMoveType.OPEN, cellId: cell.id }));
+    const allMoves = initialFlaggedMoves.concat(initialOpenedMoves, moves);
+    const flaggedCellIds = Game.getFlaggedCellIds(allMoves);
+    const openedCellIds = Game.getOpenedCellIds(allMoves);
     const openedCells = cells
       .map((cell) =>
         openedCellIds.includes(cell.id) ? [...cell.neighborsChain, cell] : []
@@ -217,9 +223,18 @@ export class Game {
    * @returns the list of `CellId` corresponding to flagged `Cell`.
    */
   private static getFlaggedCellIds(moves: GameMove[]): CellId[] {
-    return moves
-      .filter((move) => move.type === GameMoveType.FLAG)
-      .map((move) => move.cellId);
+    const flagged = moves.reduce((flaggedCells, move) => {
+      switch (move.type) {
+        case GameMoveType.FLAG:
+          flaggedCells.add(move.cellId);
+          break;
+        case GameMoveType.REMOVE_FLAG:
+          flaggedCells.delete(move.cellId);
+          break;
+      }
+      return flaggedCells;
+    }, new Set<CellId>());
+    return [...flagged];
   }
 
   private static getIndex(

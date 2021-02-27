@@ -19,22 +19,14 @@ the decorators which power the `@nestjs/graphql` setup.
 ### Environment Variables
 
 The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
-`/mines/dev/nest` path and place them into `server-nest/.env`. The
-`server-nest/.env.sample` file includes the names of environment variables the
-`@mines/nest` package expects.
+`/mines/dev` path and place them into `.env`. The `.env.sample` file includes
+the names of environment variables expected in all packages. The environment
+variables specific to the `@mines/nest` package are listed below.
 
-- _APM_SERVICE_ENABLED_ identifies if the application should attempt to connect
-  and send data to Elastic APM.
-- _APM_SERVICE_URL_ is used by the `elastic-apm-node` library to know where to
-  send application performance monitoring data.
-- _APM_SERVICE_NAME_ is used by the `elastic-apm-node` library to identify data
-  the service sends to Elastic APM.
-- _APM_SERVICE_TOKEN_ is used by the `elastic-apm-node` library to authenticate
-  against Elastic APM.
-- _JWT_SECRET_ is used by `LocalStrategy` and `JwtModule` (via
+- _API_JWT_SECRET_ is used by `LocalStrategy` and `JwtModule` (via
   `JwtConfigService`). It is the symmetric secret used to sign JWTs generated
   and verified by the API.
-- _PORT_ is where the API will be served.
+- _API_PORT_ is where the API will be served.
 
 ### Database
 
@@ -87,11 +79,12 @@ To run the locally built Docker image:
 ### Environment Variables
 
 The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
-`/mines/dev/ui` path and place them into `ui/.env`. The `ui/.env.sample` file
-includes the names of environment variables the `@mines/ui` package expects.
+`/mines/dev` path and place them into `.env`. The `.env.sample` file includes
+the names of environment variables expected in all packages. The environment
+variables specific to the `@mines/ui` package are listed below.
 
-- _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
-  server.
+- _UI_BASE_API_URL_ is base URL including scheme (and port if needed) of the
+  API server.
 
 ## @mines/uirs
 
@@ -124,12 +117,12 @@ compilation cycles.
 ### Environment Variables
 
 The [`Makefile`](./Makefile) will pull parameters defined in AWS SSM under the
-`/mines/dev/ui` path and place them into `ui-rs/.env`. The `ui-rs/.env.sample`
-file includes the names of environment variables the `@mines/uirs` package
-expects.
+`/mines/dev` path and place them into `.env`. The `.env.sample` file includes
+the names of environment variables expected in all packages. The environment
+variables specific to the `@mines/uirs` package are listed below.
 
-- _API_BASE_URL_ is base URL including scheme (and port if needed) of the API
-  server.
+- _UI_BASE_API_URL_ is base URL including scheme (and port if needed) of the
+  API server.
 
 ### Running in Development
 
@@ -156,11 +149,7 @@ list the files watchman is tracking.
 
 ## docker-compose
 
-The [`docker-compose.yml`](./docker-compose.yml) defines a
-[localstack][localstack] and [event store][eventstore] container. These were
-meant to be starting points for different types of databases. As well as an
-[elasticsearch and kibana stack][elk] for experimentation.
+The [`docker-compose.yml`](./docker-compose.yml) defines a [db][postgres] using
+Postgres 13 database. The database is used to store data about created games.
 
-[localstack]: https://github.com/localstack/localstack
-[eventstore]: https://eventstore.com/
-[elk]: https://www.elastic.co/what-is/elk-stack
+[postgres]: https://www.postgresql.org
