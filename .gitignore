@@ -6,6 +6,7 @@
 dist/
 server-nest/schema.gql
 server-nest/reports/
+target/
 ui-rs/target/
 ui-rs/crates/mines_mogwai/target/
 ui-rs/crates/mines_uirs/target/

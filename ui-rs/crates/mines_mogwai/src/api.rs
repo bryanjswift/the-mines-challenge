@@ -1,6 +1,6 @@
 use dotenv_codegen::dotenv;
 
-const API_BASE_URL: &str = dotenv!("API_BASE_URL");
+const API_BASE_URL: &str = dotenv!("UI_BASE_API_URL");
 
 pub mod model {
     use serde::{Deserialize, Serialize};

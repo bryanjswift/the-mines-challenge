@@ -69,47 +69,43 @@ wasm: $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
 .git/config: .githooks/*
 	git config core.hooksPath .githooks
 
-$(NEST)/.env: $(NEST)/.env.sample
-	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/nest --recursive \
+.env: .env.sample
+	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev --recursive \
 		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
 		> $@
+
+$(NEST)/.env: .env
+	cp $? $@
 
 $(NEST_OUT): node_modules $(NEST)/.env $(NEST_SRC)
 	@# Remove files from `NEST_OUT` that don't correspond to source files
 	@rm -rf $(filter-out $(NEST_OUT), $(wildcard $(NEST_OUT_DIR)/*.* $(NEST_OUT_DIR)/*/*.*))
 	yarn workspace @mines/nest build
 
-$(UI)/.env: $(UI)/.env.sample
-	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/ui --recursive \
-		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
-		> $@
+$(UI)/.env: .env
+	cp $? $@
 
 $(UI_NEXT_OUT): node_modules $(UI)/.env $(UI_SRC)
 	yarn workspace @mines/ui build
 
-$(UI_RS)/.env: $(UI_RS)/.env.sample
-	aws --profile=$(AWS_PROFILE) ssm get-parameters-by-path --with-decryption --path /mines/dev/ui --recursive \
-		| jq --raw-output '.Parameters[] | (.Name | sub("[a-z/]+/"; "")) + ("=\"") + (.Value) + ("\"")' \
-		> $@
+Cargo.lock: $(CARGO_TOML) init
+	cargo check --release --workspace
 
-$(UI_RS)/Cargo.lock: $(CARGO_TOML) init
-	cargo check --release --manifest-path=$(UI_RS)/Cargo.toml --workspace
-
-$(UI_RS_MOGWAI_OUT): $(UI_RS)/.env $(UI_RS_MOGWAI_SRC) $(UI_RS)/Cargo.lock
+$(UI_RS_MOGWAI_OUT): .env $(UI_RS_MOGWAI_SRC) Cargo.lock
 	wasm-pack build \
 		--release \
 		--out-name=index \
 		--out-dir=$(PWD)/$(UI_RS_WASM_OUT_DIR)/mines_mogwai/ \
 		$(UI_RS_CRATE_SRC_DIR)/mines_mogwai
 
-$(UI_RS_YEW_OUT): $(UI_RS)/.env $(UI_RS_YEW_SRC) $(UI_RS)/Cargo.lock
+$(UI_RS_YEW_OUT): .env $(UI_RS_YEW_SRC) Cargo.lock
 	wasm-pack build \
 		--release \
 		--out-name=index \
 		--out-dir=$(PWD)/$(UI_RS_WASM_OUT_DIR)/mines_uirs/ \
 		$(UI_RS_CRATE_SRC_DIR)/mines_uirs
 
-$(UI_RS_OUT): node_modules $(UI_RS)/.env $(UI_RS_SRC) $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
+$(UI_RS_OUT): node_modules .env $(UI_RS_SRC) $(UI_RS_MOGWAI_OUT) $(UI_RS_YEW_OUT)
 	yarn workspace @mines/uirs build
 
 node_modules: $(PACKAGE_JSON) yarn.lock init
