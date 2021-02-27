@@ -33,4 +33,4 @@ jobs:
           yarn workspace @mines/nest ${{ matrix.task }}
         env:
           CI: true
-          JWT_SECRET: 'a value for tests'
+          API_JWT_SECRET: 'a value for tests'

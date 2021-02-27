@@ -91,14 +91,14 @@ $(UI_NEXT_OUT): node_modules $(UI)/.env $(UI_SRC)
 Cargo.lock: $(CARGO_TOML) init
 	cargo check --release --workspace
 
-$(UI_RS_MOGWAI_OUT): .env $(UI_RS_MOGWAI_SRC) Cargo.lock
+$(UI_RS_MOGWAI_OUT): .env $(UI_RS_MOGWAI_SRC)
 	wasm-pack build \
 		--release \
 		--out-name=index \
 		--out-dir=$(PWD)/$(UI_RS_WASM_OUT_DIR)/mines_mogwai/ \
 		$(UI_RS_CRATE_SRC_DIR)/mines_mogwai
 
-$(UI_RS_YEW_OUT): .env $(UI_RS_YEW_SRC) Cargo.lock
+$(UI_RS_YEW_OUT): .env $(UI_RS_YEW_SRC)
 	wasm-pack build \
 		--release \
 		--out-name=index \
