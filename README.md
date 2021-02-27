@@ -149,11 +149,7 @@ list the files watchman is tracking.
 
 ## docker-compose
 
-The [`docker-compose.yml`](./docker-compose.yml) defines a
-[localstack][localstack] and [event store][eventstore] container. These were
-meant to be starting points for different types of databases. As well as an
-[elasticsearch and kibana stack][elk] for experimentation.
+The [`docker-compose.yml`](./docker-compose.yml) defines a [db][postgres] using
+Postgres 13 database. The database is used to store data about created games.
 
-[localstack]: https://github.com/localstack/localstack
-[eventstore]: https://eventstore.com/
-[elk]: https://www.elastic.co/what-is/elk-stack
+[postgres]: https://www.postgresql.org
