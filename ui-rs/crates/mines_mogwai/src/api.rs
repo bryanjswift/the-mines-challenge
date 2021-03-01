@@ -67,7 +67,7 @@ pub mod model {
     #[derive(Clone, Debug, Deserialize)]
     pub struct GameState {
         pub id: GameId,
-        pub board: Vec<Vec<String>>,
+        pub board: Vec<Vec<crate::model::BoardValue>>,
         pub status: GameStatus,
     }
 

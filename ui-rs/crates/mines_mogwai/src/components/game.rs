@@ -5,7 +5,7 @@ use mogwai::prelude::*;
 /// text to display is received by `rx`.
 fn board_row<'a>(
     row: usize,
-    initial_cells: Vec<String>,
+    initial_cells: Vec<crate::model::BoardValue>,
     tx: &Transmitter<CellInteract>,
     rx: &Receiver<CellUpdate>,
 ) -> ViewBuilder<HtmlElement> {
@@ -23,7 +23,7 @@ fn board_row<'a>(
 
 #[allow(unused_braces)]
 pub fn board<'a>(
-    cells: Vec<Vec<String>>,
+    cells: Vec<Vec<crate::model::BoardValue>>,
     tx: &Transmitter<CellInteract>,
     rx: &Receiver<CellUpdate>,
 ) -> ViewBuilder<HtmlElement> {

@@ -1,12 +1,12 @@
 #[derive(Clone)]
 pub enum CellUpdate {
     All {
-        cells: Vec<Vec<String>>,
+        cells: Vec<Vec<crate::model::BoardValue>>,
     },
     #[allow(unused)]
     Single {
         row: usize,
         column: usize,
-        value: String,
+        value: crate::model::BoardValue,
     },
 }
