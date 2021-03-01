@@ -71,7 +71,7 @@ impl Component for GameList {
         in_sub.send_async(async {
             match crate::api::get_game_list().await {
                 Ok(ids) => GameListModel::ReplaceList {
-                    game_ids: Rc::new(ids.clone()),
+                    game_ids: Rc::new(ids),
                 },
                 Err(_) => GameListModel::ReplaceList {
                     game_ids: Rc::new(vec![]),
