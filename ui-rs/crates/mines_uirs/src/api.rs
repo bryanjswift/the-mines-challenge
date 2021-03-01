@@ -6,7 +6,7 @@ use yew::callback::Callback;
 use yew::format::{Json, Nothing};
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 
-const API_BASE_URL: &str = dotenv!("API_BASE_URL");
+const API_BASE_URL: &str = dotenv!("UI_BASE_API_URL");
 
 pub type GameBoard = Vec<Vec<String>>;
 pub type GameId = String;
