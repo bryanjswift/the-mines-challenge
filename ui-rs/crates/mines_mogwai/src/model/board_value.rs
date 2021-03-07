@@ -25,26 +25,19 @@ impl std::fmt::Display for BoardValue {
     }
 }
 
-impl<T> From<T> for BoardValue
-where
-    T: AsRef<str>,
-{
-    fn from(value: T) -> Self {
-        let current = value.as_ref();
-        if current == "" || current == " " {
-            BoardValue::Closed
-        } else if current == "M" {
-            BoardValue::Mine
-        } else if current == "F" {
-            BoardValue::Flag
-        } else if current == "*" {
-            BoardValue::Pending
-        } else {
-            use std::str::FromStr;
-            match usize::from_str(&current) {
-                Ok(v) => BoardValue::Open(v),
-                _ => BoardValue::Closed,
-            }
+impl std::str::FromStr for BoardValue {
+    type Err = BoardValueConvertError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "" | " " => Ok(BoardValue::Closed),
+            "M" => Ok(BoardValue::Mine),
+            "F" => Ok(BoardValue::Flag),
+            "*" => Ok(BoardValue::Pending),
+            current => match usize::from_str(&current) {
+                Ok(v) => Ok(BoardValue::Open(v)),
+                _ => Err(BoardValueConvertError::ExpectedNeighborCount),
+            },
         }
     }
 }
@@ -54,7 +47,20 @@ impl<'de> serde::de::Deserialize<'de> for BoardValue {
     where
         D: serde::de::Deserializer<'de>,
     {
+        use std::str::FromStr;
         let s = String::deserialize(deserializer)?;
-        Ok(BoardValue::from(s))
+        BoardValue::from_str(&s).map_err(|e| match e {
+            BoardValueConvertError::ExpectedNeighborCount => serde::de::Error::invalid_value(
+                serde::de::Unexpected::Str(&s),
+                &"a positive integer",
+            ),
+        })
     }
+}
+
+/// The types of errors the can happen when attempting to convert a `&str` into a `BoardValue`.
+#[derive(Clone, Debug)]
+pub enum BoardValueConvertError {
+    /// Tried to parse as a count of neighbor mines but failed
+    ExpectedNeighborCount,
 }
