@@ -42,21 +42,27 @@ impl Component for Main {
         match msg {
             Create => {
                 tx.send(&MainView::Creating);
-                let api_tx = tx.contra_map(|r: &Result<api::GameCreated, api::FetchError>| match r {
-                    Ok(response) => MainView::CreateGameSuccess(response.id),
-                    Err(err) => MainView::CreateGameError(*err),
-                });
+                let api_tx =
+                    tx.contra_map(|r: &Result<api::GameCreated, api::FetchError>| match r {
+                        Ok(response) => MainView::CreateGameSuccess(response.id),
+                        Err(err) => MainView::CreateGameError(*err),
+                    });
                 api_tx.send_async(api::create_game(self.difficulty.into()));
                 let dispatch = self.dispatch.clone();
-                api_tx.spawn_recv().branch_filter_map(|r| r.ok()).respond(move |response| 
-                    dispatch.send(&Route::Game { game_id: response.id })
-                );
+                api_tx
+                    .spawn_recv()
+                    .branch_filter_map(|r| r.ok())
+                    .respond(move |response| {
+                        dispatch.send(&Route::Game {
+                            game_id: response.id,
+                        })
+                    });
             }
             SetDifficulty(difficulty) if *difficulty != self.difficulty => {
                 self.difficulty = *difficulty;
                 tx.send(&MainView::DifficultyChanged(*difficulty))
             }
-            _ => ()
+            _ => (),
         }
     }
 
@@ -66,14 +72,22 @@ impl Component for Main {
         tx: &Transmitter<Self::ModelMsg>,
         rx: &Receiver<Self::ViewMsg>,
     ) -> ViewBuilder<Self::DomNode> {
-        let rx_difficulty = rx.branch_fold(self.difficulty, |current: &mut Difficulty, msg| match msg {
-            MainView::DifficultyChanged(difficulty) => *difficulty,
-            _ => *current,
-        });
-        let rx_size: Receiver<(usize, usize)> = rx_difficulty.branch_map(|difficulty| difficulty.into());
+        let rx_difficulty =
+            rx.branch_fold(self.difficulty, |current: &mut Difficulty, msg| match msg {
+                MainView::DifficultyChanged(difficulty) => *difficulty,
+                _ => *current,
+            });
+        let rx_size: Receiver<(usize, usize)> =
+            rx_difficulty.branch_map(|difficulty| difficulty.into());
         let (initial_rows, initial_cols): (usize, usize) = self.difficulty.into();
-        let rows = (format!("{}", initial_rows), rx_size.branch_map(|(rows, _)| format!("{}", rows)));
-        let cols = (format!("{}", initial_cols), rx_size.branch_map(|(_, cols)| format!("{}", cols)));
+        let rows = (
+            format!("{}", initial_rows),
+            rx_size.branch_map(|(rows, _)| format!("{}", rows)),
+        );
+        let cols = (
+            format!("{}", initial_cols),
+            rx_size.branch_map(|(_, cols)| format!("{}", cols)),
+        );
         builder! {
             <section>
                 <h1>"Letʼs Play Minesweeper"</h1>
@@ -114,7 +128,7 @@ enum MainModel {
     /// `Difficulty`.
     Create,
     /// The `SetDifficulty` message is sent to update the currently set `Difficulty`.
-    SetDifficulty(Difficulty)
+    SetDifficulty(Difficulty),
 }
 
 /// The "view" events used to trigger changes to how the `Main` `Component` is rendered.
@@ -174,10 +188,7 @@ impl From<&Difficulty> for (usize, usize) {
 impl From<Difficulty> for api::model::GameCreateInput {
     fn from(difficulty: Difficulty) -> Self {
         let (rows, columns) = difficulty.into();
-        Self {
-            columns,
-            rows,
-        }
+        Self { columns, rows }
     }
 }
 
@@ -189,17 +200,19 @@ impl Main {
         &self,
         tx: &Transmitter<MainModel>,
         rx: &Receiver<Difficulty>,
-        difficulty: Difficulty
+        difficulty: Difficulty,
     ) -> ViewBuilder<HtmlElement> {
         let initial_class = if self.difficulty == difficulty {
             String::from("active")
         } else {
             String::from("")
         };
-        let rx_class = rx.branch_map(move |current_difficulty| if *current_difficulty == difficulty {
-            String::from("active")
-        } else {
-            String::from("")
+        let rx_class = rx.branch_map(move |current_difficulty| {
+            if *current_difficulty == difficulty {
+                String::from("active")
+            } else {
+                String::from("")
+            }
         });
         let class_effect = (initial_class, rx_class);
         builder! {

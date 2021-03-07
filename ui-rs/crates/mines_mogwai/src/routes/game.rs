@@ -134,7 +134,7 @@ mod game_board {
 
     /// Create a `Vec` of owned `String` values.
     macro_rules! vec_of_strings {
-        ($($x:expr),*) => (vec![$($x.to_string()),*]);
+        ($($x:expr),*) => (vec![$($x.into()),*]);
     }
 
     #[test]
