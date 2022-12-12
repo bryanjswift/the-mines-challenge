@@ -28,7 +28,7 @@
     "@nestjs/passport": "7.1.5",
     "@nestjs/platform-express": "7.6.12",
     "dotenv": "8.2.0",
-    "express": "4.17.1",
+    "express": "4.17.3",
     "fp-ts": "2.9.5",
     "io-ts": "2.2.14",
     "passport": "0.4.1",
